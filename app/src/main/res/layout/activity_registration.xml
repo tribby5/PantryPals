@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.android.databaes.socialpantry.auth.RegistrationActivity">
+
+    <TextView
+        android:id="@+id/TVtitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/TVdescription"
+        android:text="@string/reg_title"
+        android:textAlignment="center"
+        android:textSize="48sp" />
+
+    <TextView
+        android:id="@+id/TVdescription"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TVtitle"
+        android:text="@string/reg_description"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="36sp" />
+
+    <LinearLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="300dp"
+
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/TFname"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="@string/reg_name_first"
+            android:text="@string/emptystring"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/TFnameLast"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="@string/reg_name_last"
+            android:text="@string/emptystring"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+
+        <EditText
+            android:id="@+id/TFemail"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="@string/reg_email"
+            android:text="@string/emptystring"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/passwordRequire"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="30sp"
+            android:text="@string/reg_password_requirements"
+            android:textAlignment="viewStart"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/TFpassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="@string/reg_password"
+            android:inputType="textPassword"
+            android:text="@string/emptystring"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/TFpasswordConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:hint="@string/reg_password_confirm"
+            android:inputType="textPassword"
+            android:text="@string/emptystring"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="36sp" />
+
+    <Button
+        android:id="@+id/Bregister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/reg_ButtonReg"
+        android:textAlignment="center"
+        android:textSize="18sp" />
+
+
+</LinearLayout>

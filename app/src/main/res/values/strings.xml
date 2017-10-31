@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">PantryPals</string>
+
+    <!-- Auth -->
+    <!-- Login page-->
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_field_required">Field Required</string>
+    <string name="error_invalid_email">Invalid Email Entered</string>
+    <string name="auth_failed">Authentication Failed</string>
+    <string name="modal_reset_title">Reset Password</string>
+    <string name="reset_password_button">Reset Password</string>
+    <string name="reset_email_confirm">Reset email sent to: </string>
+    <string name="reset_email">Email of Account</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="emptystring"></string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="register">Register</string>
+
+    <!-- Registration page-->
+    <string name="error_invalid_password_confirm">Passwords do not match</string>
+    <string name="reg_title">Registration</string>
+    <string name="reg_description">Please fill out this form to register for a PantryPals account</string>
+    <string name="reg_name_first">First Name</string>
+    <string name="reg_name_last">Last Name</string>
+    <string name="reg_email">Email</string>
+    <string name="reg_password_requirements">Password must be at least 6 characters.</string>
+    <string name="reg_password">Password</string>
+    <string name="reg_password_confirm">Confirm Password</string>
+    <string name="reg_ButtonReg">Register</string>
+    <string name="reg_confirmed">Email vertification has been sent</string>
+</resources>

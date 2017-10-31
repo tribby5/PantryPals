@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "874867503778",
+    "firebase_url": "https://pantry-pals.firebaseio.com",
+    "project_id": "pantry-pals",
+    "storage_bucket": "pantry-pals.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874867503778:android:6f44fca777ddd108",
+        "android_client_info": {
+          "package_name": "com.android.databaes.pantrypals"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874867503778-05pe3oasr23aq2st9ijlstca7kgscl0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.databaes.pantrypals",
+            "certificate_hash": "a4a6f2b0bcda0242d811506bf87ae055e1fd2d83"
+          }
+        },
+        {
+          "client_id": "874867503778-dok0t6gh806pj7lfm6do2jofksvbg31g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3Gn5eZ8PPZGpG6CCSBaUPNwySpqEhe7o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "874867503778-dok0t6gh806pj7lfm6do2jofksvbg31g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
