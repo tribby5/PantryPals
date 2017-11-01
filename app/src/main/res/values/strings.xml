@@ -31,4 +31,22 @@
     <string name="reg_password_confirm">Confirm Password</string>
     <string name="reg_ButtonReg">Register</string>
     <string name="reg_confirmed">Email vertification has been sent</string>
+
+
+    <!-- Navigation bar-->
+    <string name="nav_home">Home</string>
+    <string name="nav_discover">Discover</string>
+    <string name="nav_pantry">My Pantry</string>
+    <string name="nav_profile">My Profile</string>
+    <string name="nav_notifications">Notifications</string>
+
+    <!-- Fragments -->
+    <string name="fragment_title_home">HOME FRAGMENT</string>
+    <string name="fragment_title_discover">DISCOVER FRAGMENT</string>
+    <string name="fragment_title_pantry">MY PANTRY FRAGMENT</string>
+    <string name="fragment_title_profile">MY PROFILE FRAGMENT</string>
+    <string name="fragment_title_notifications">NOTIFICATIONS FRAGMENT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

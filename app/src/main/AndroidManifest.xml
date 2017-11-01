@@ -9,15 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".auth.LoginActivity">
+        <activity android:name="pantrypals.activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".auth.RegistrationActivity" />
-        <activity android:name=".auth.HomeActivity"></activity>
+        <activity android:name="pantrypals.activities.RegistrationActivity" />
+        <activity android:name="pantrypals.activities.HomeActivity"></activity>
     </application>
 
 
