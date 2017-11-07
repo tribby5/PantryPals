@@ -1,5 +1,6 @@
 package pantrypals.discover;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -65,11 +67,17 @@ public class DiscoverFragment extends Fragment {
         setItemClickListener(communities);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void setItemClickListener(final TextView item) {
-        item.setOnClickListener(new View.OnClickListener() {
+        item.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                mListener.discoverItemClicked(item.getText());
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    item.setBackgroundResource(R.color.colorWhite);
+                    mListener.discoverItemClicked(item.getText());
+                }
+                item.setBackgroundResource(R.color.colorHint);
+                return true;
             }
         });
     }
@@ -107,6 +115,7 @@ public class DiscoverFragment extends Fragment {
         for (int i = 0; i < 5; i++) {
             FeaturedPost fp = new FeaturedPost(getContext());
             fp.setPadding(50, 50, 50, 50);
+            fp.setBackgroundColor(i * 20);
             fp.setImageResource(ids[i]);
             layout.addView(fp);
         }
