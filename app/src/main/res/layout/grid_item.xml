@@ -9,9 +9,11 @@
         android:layout_height="match_parent"
         android:id="@+id/grid_item_text"
         android:gravity="center"
-        android:textSize="@dimen/h2Size"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:hint="Title">
+        android:textSize="@dimen/h3Size"
+        android:layout_margin="@dimen/padding"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorPrimary"
+        android:hint="Title"
+        android:padding="@dimen/padding">
     </TextView>
 </pantrypals.discover.SquareLayout>

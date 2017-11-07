@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
@@ -25,8 +24,10 @@ public class DiscoverDetailFragment extends Fragment {
     private static final Map<String, List<String>> MAP = Maps.newHashMap();
 
     static {
+        MAP.put("Trending", Lists.newArrayList("Gordon Ramsay", "Pumpkin Pie", "Vegan Lovers"));
         MAP.put("Moods", Lists.newArrayList("Comfort", "Breakfast", "Healthy", "Lazy", "Date night", "Sweet tooth"));
-        // MAP.put("Cuisines", Lists.newArrayList(""));
+        MAP.put("Cuisines", Lists.newArrayList("Indian", "Mexican", "Spanish", "American", "Japanese", "French"));
+        MAP.put("Communities", Lists.newArrayList("Vegan Lovers", "Mexican Enthusiasts", "Indian Cooks", "Health Nuts"));
     }
 
     public DiscoverDetailFragment() {
