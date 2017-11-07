@@ -14,6 +14,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -21,7 +23,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     //UI components
-    private EditText newUserName;
+    private EditText newUserFirstName;
+    private EditText newUserLastName;
     private EditText newUserEmail;
     private EditText newUserPassword;
     private EditText newUserPasswordConfirm;
@@ -32,7 +35,8 @@ public class RegistrationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_registration);
         setOnClick();
         checkLogin = this;
-        newUserName = (EditText)findViewById(R.id.TFname);
+        newUserFirstName = (EditText)findViewById(R.id.TFnameFirst);
+        newUserLastName = (EditText)findViewById(R.id.TFnameLast);
         newUserEmail = (EditText)findViewById(R.id.TFemail);
         newUserPassword = (EditText)findViewById(R.id.TFpassword);
         newUserPasswordConfirm = (EditText) findViewById(R.id.TFpasswordConfirm);
@@ -101,6 +105,12 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 Toast.LENGTH_LONG).show();
                                     }
                                     else{
+                                        // Set DisplayName as name
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
+                                        user.updateProfile(profileUpdates);
+
                                         FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
