@@ -26,7 +26,7 @@ public class DiscoverDetailFragment extends Fragment {
 
     static {
         MAP.put("Moods", Lists.newArrayList("Comfort", "Breakfast", "Healthy", "Lazy", "Date night", "Sweet tooth"));
-        MAP.put("Cuisines", Lists.newArrayList(""))
+        // MAP.put("Cuisines", Lists.newArrayList(""));
     }
 
     public DiscoverDetailFragment() {
