@@ -2,6 +2,7 @@ package pantrypals.discover;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -105,6 +106,7 @@ public class DiscoverFragment extends Fragment {
         int[] ids = {R.drawable.ic_discover, R.drawable.ic_home, R.drawable.ic_notifications, R.drawable.ic_pantry, R.drawable.ic_person};
         for (int i = 0; i < 5; i++) {
             FeaturedPost fp = new FeaturedPost(getContext());
+            fp.setPadding(50, 50, 50, 50);
             fp.setImageResource(ids[i]);
             layout.addView(fp);
         }
@@ -113,18 +115,18 @@ public class DiscoverFragment extends Fragment {
     private void createSearchBar(Menu menu) {
         // Implementing ActionBar Search inside a fragment
         MenuItem item = menu.add("Search");
-        item.setIcon(R.drawable.ic_discover); // sets icon
+        item.setIcon(R.drawable.ic_discover);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         SearchView sv = new SearchView(getActivity());
 
-        // modifying the text inside edittext component
+        // Modify text in search bar
         int id = sv.getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
         TextView textView = sv.findViewById(id);
-        textView.setHint("Search for people, posts, or communities...");
-        textView.setHintTextColor(getResources().getColor(R.color.common_google_signin_btn_text_dark));
-        textView.setTextColor(getResources().getColor(R.color.common_google_signin_btn_text_light));
+        textView.setHint("Search PantryPals...");
+        textView.setHintTextColor(getResources().getColor(R.color.colorHint));
+        textView.setTextColor(getResources().getColor(R.color.colorWhite));
 
-        // implementing the listener
+        // Implement the listener
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
