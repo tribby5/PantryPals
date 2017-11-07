@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,15 +18,17 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class DiscoverFragment extends Fragment {
 
     private static final String TAG = "DiscoverFragment";
+
+    // Temporary: hardcoding results until database has correct data
+    private static final List<String> ITEMS = Lists.newArrayList("Trending", "Moods", "Cuisines", "Communities");
 
     private DiscoverItemClickListener mListener;
 
@@ -64,9 +65,7 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void populateListView(View view) {
-        List<String> items = new ArrayList<>();
-        items.addAll(Arrays.asList("Trending", "Moods", "Cuisines", "Communities"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_icon, items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_icon, ITEMS);
         ListView listView = view.findViewById(R.id.discover_list_view);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

@@ -16,11 +16,13 @@
         android:id="@+id/discover_detail_title"
         android:textColor="@color/colorBlack"/>
 
-    <ListView
+    <GridView
+        android:id="@+id/discover_detail_grid_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/discover_detail_list_view">
-
-    </ListView>
+        android:gravity="center"
+        android:columnWidth="100dp"
+        android:numColumns="2"
+        />
 
 </LinearLayout>

@@ -36,7 +36,13 @@ dependencies {
     androidTestCompile 'junit:junit:4.12'
 }
 
+repositories {
+    mavenCentral()
+}
 
+dependencies {
+    compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
+}
 
 
 

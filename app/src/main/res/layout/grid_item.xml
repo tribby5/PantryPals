@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pantrypals.discover.SquareLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/grid_item_square">
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/grid_item_text"
+        android:gravity="center"
+        android:textSize="@dimen/h2Size"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:hint="Title">
+    </TextView>
+</pantrypals.discover.SquareLayout>
