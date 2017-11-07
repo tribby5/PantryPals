@@ -49,4 +49,11 @@
 
     <!-- Discover Page -->
     <string name="discover_search_hint">Search people, posts, and communities...</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="discover_list_trending">Trending</string>
+    <string name="discover_list_moods">Moods</string>
+    <string name="discover_list_cuisines">Cuisines</string>
+    <string name="discover_list_communities">Communities</string>
 </resources>

@@ -1,5 +1,7 @@
 package pantrypals.discover;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,14 +10,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
 
 
 public class DiscoverFragment extends Fragment {
+
+    private ItemClickListener mListener;
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -26,6 +30,10 @@ public class DiscoverFragment extends Fragment {
         return fragment;
     }
 
+    /*
+     * Overridden methods
+     */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +43,54 @@ public class DiscoverFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.fragment_discover, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_discover, container, false);
+
+        populateFeaturedPosts(view);
+
+        
+
+        return view;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mListener = (ItemClickListener) context;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (ItemClickListener) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        createSearchBar(menu);
+    }
 
+    /*
+     * Helper methods
+     */
+
+    private void populateFeaturedPosts(View view) {
+        LinearLayout layout = view.findViewById(R.id.featured_posts);
+        int[] ids = {R.drawable.ic_discover, R.drawable.ic_home, R.drawable.ic_notifications, R.drawable.ic_pantry, R.drawable.ic_person};
+        for (int i = 0; i < 5; i++) {
+            FeaturedPost fp = new FeaturedPost(getContext());
+            fp.setImageResource(ids[i]);
+            layout.addView(fp);
+        }
+    }
+
+    private void createSearchBar(Menu menu) {
         // Implementing ActionBar Search inside a fragment
         MenuItem item = menu.add("Search");
         item.setIcon(R.drawable.ic_discover); // sets icon
