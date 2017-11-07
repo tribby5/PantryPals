@@ -17,40 +17,10 @@
         </LinearLayout>
     </HorizontalScrollView>
 
-    <TextView
-        android:id="@+id/discover_list_trending_item"
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/discover_list_trending"
-        android:gravity="left"
-        android:padding="@dimen/padding"
-        />
-
-    <TextView
-        android:id="@+id/discover_list_moods_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/discover_list_moods"
-        android:gravity="left"
-        android:padding="@dimen/padding"
-        />
-
-    <TextView
-        android:id="@+id/discover_list_cuisines_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/discover_list_cuisines"
-        android:gravity="left"
-        android:padding="@dimen/padding"
-        />
-
-    <TextView
-        android:id="@+id/discover_list_communities_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/discover_list_communities"
-        android:gravity="left"
-        android:padding="@dimen/padding"
-        />
+        android:id="@+id/discover_list_view">
+    </ListView>
 
 </LinearLayout>

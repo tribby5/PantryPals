@@ -3,16 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/discover_detail_layout"
+    android:orientation="vertical"
     tools:context="pantrypals.discover.DiscoverDetailFragment">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="@dimen/h1Size"
         android:padding="@dimen/padding"
         android:hint="Title"
         android:id="@+id/discover_detail_title"
         android:textColor="@color/colorBlack"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/discover_detail_list_view">
+
+    </ListView>
 
 </LinearLayout>

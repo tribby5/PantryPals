@@ -1,26 +1,33 @@
 package pantrypals.discover;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 public class DiscoverFragment extends Fragment {
+
+    private static final String TAG = "DiscoverFragment";
 
     private DiscoverItemClickListener mListener;
 
@@ -51,33 +58,22 @@ public class DiscoverFragment extends Fragment {
 
         populateFeaturedPosts(view);
 
-        setItemClickListeners(view);
+        populateListView(view);
 
         return view;
     }
 
-    private void setItemClickListeners(View view) {
-        TextView trending = view.findViewById(R.id.discover_list_trending_item);
-        setItemClickListener(trending);
-        TextView moods = view.findViewById(R.id.discover_list_moods_item);
-        setItemClickListener(moods);
-        TextView cuisines = view.findViewById(R.id.discover_list_cuisines_item);
-        setItemClickListener(cuisines);
-        TextView communities = view.findViewById(R.id.discover_list_communities_item);
-        setItemClickListener(communities);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void setItemClickListener(final TextView item) {
-        item.setOnTouchListener(new View.OnTouchListener() {
+    private void populateListView(View view) {
+        List<String> items = new ArrayList<>();
+        items.addAll(Arrays.asList("Trending", "Moods", "Cuisines", "Communities"));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item_icon, items);
+        ListView listView = view.findViewById(R.id.discover_list_view);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    item.setBackgroundResource(R.color.colorWhite);
-                    mListener.discoverItemClicked(item.getText());
-                }
-                item.setBackgroundResource(R.color.colorHint);
-                return true;
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String item = (String) adapterView.getItemAtPosition(i);
+                mListener.discoverItemClicked(item);
             }
         });
     }
