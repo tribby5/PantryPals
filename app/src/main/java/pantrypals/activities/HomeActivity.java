@@ -1,7 +1,5 @@
 package pantrypals.activities;
 
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,16 +10,15 @@ import android.view.MenuItem;
 
 import com.android.databaes.pantrypals.R;
 
+import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.discover.DiscoverFragment;
+import pantrypals.discover.DiscoverItemClickListener;
 import pantrypals.home.HomeFragment;
 import pantrypals.notifications.NotificationsFragment;
 import pantrypals.pantry.PantryFragment;
 import pantrypals.profile.ProfileFragment;
 
-public class HomeActivity extends AppCompatActivity {
-
-    private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
+public class HomeActivity extends AppCompatActivity implements DiscoverItemClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +51,22 @@ public class HomeActivity extends AppCompatActivity {
                                 break;
                         }
 
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        transaction.replace(R.id.frame_layout, selectedFragment);
-                        transaction.commit();
+                        setFragment(selectedFragment);
                         return true;
                     }
                 });
 
         //Manually displaying the first fragment - one time only
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, HomeFragment.newInstance());
-        transaction.commit();
+       setFragment(HomeFragment.newInstance());
     }
 
+    @Override
+    public void discoverItemClicked(CharSequence title) {
+        setFragment(DiscoverDetailFragment.newFragment(title));
+    }
 
-
-
+    private void setFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, fragment).commit();
+    }
 }

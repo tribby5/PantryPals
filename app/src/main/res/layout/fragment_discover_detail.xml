@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/discover_detail_layout"
+    tools:context="pantrypals.discover.DiscoverDetailFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textStyle="bold"
+        android:textSize="@dimen/h1Size"
+        android:padding="@dimen/padding"
+        android:hint="Title"
+        android:id="@+id/discover_detail_title"
+        android:textColor="@color/colorBlack"/>
+
+</LinearLayout>

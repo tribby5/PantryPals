@@ -19,7 +19,7 @@ import com.android.databaes.pantrypals.R;
 
 public class DiscoverFragment extends Fragment {
 
-    private ItemClickListener mListener;
+    private DiscoverItemClickListener mListener;
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -48,21 +48,41 @@ public class DiscoverFragment extends Fragment {
 
         populateFeaturedPosts(view);
 
-        
+        setItemClickListeners(view);
 
         return view;
+    }
+
+    private void setItemClickListeners(View view) {
+        TextView trending = view.findViewById(R.id.discover_list_trending_item);
+        setItemClickListener(trending);
+        TextView moods = view.findViewById(R.id.discover_list_moods_item);
+        setItemClickListener(moods);
+        TextView cuisines = view.findViewById(R.id.discover_list_cuisines_item);
+        setItemClickListener(cuisines);
+        TextView communities = view.findViewById(R.id.discover_list_communities_item);
+        setItemClickListener(communities);
+    }
+
+    private void setItemClickListener(final TextView item) {
+        item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.discoverItemClicked(item.getText());
+            }
+        });
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mListener = (ItemClickListener) context;
+        mListener = (DiscoverItemClickListener) context;
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mListener = (ItemClickListener) activity;
+        mListener = (DiscoverItemClickListener) activity;
     }
 
     @Override
