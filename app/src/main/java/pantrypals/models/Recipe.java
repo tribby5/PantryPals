@@ -1,20 +1,12 @@
 package pantrypals.models;
 
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
-import com.google.firebase.database.ServerValue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Hunter Lee on 11/7/2017.
+ * Created by Hunter Lee on 11/8/2017.
  */
 
-@IgnoreExtraProperties
-public class Post {
+public class Recipe {
 
     private String title;
     private String text;
@@ -22,6 +14,8 @@ public class Post {
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
+    private Map<String, Integer> ratings;
+    private float averageRating;
 
     public String getTitle() {
         return title;
@@ -59,6 +53,22 @@ public class Post {
         return likedBy;
     }
 
+    public Map<String, Integer> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Map<String, Integer> ratings) {
+        this.ratings = ratings;
+    }
+
+    public float getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(float averageRating) {
+        this.averageRating = averageRating;
+    }
+
     public void setLikedBy(Map<String, Boolean> likedBy) {
         this.likedBy = likedBy;
     }
@@ -71,7 +81,7 @@ public class Post {
         this.postedBy = postedBy;
     }
 
-    public Post() {
+    public Recipe() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 }
