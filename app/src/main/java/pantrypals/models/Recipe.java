@@ -15,7 +15,7 @@ public class Recipe {
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
     private Map<String, Integer> ratings;
-    private float averageRating;
+    private double averageRating;
 
     public String getTitle() {
         return title;
@@ -61,7 +61,7 @@ public class Recipe {
         this.ratings = ratings;
     }
 
-    public float getAverageRating() {
+    public double getAverageRating() {
         return averageRating;
     }
 
