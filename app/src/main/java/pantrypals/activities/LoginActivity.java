@@ -256,7 +256,9 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email);
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
         mDatabase.child("userAccounts").child(userId).setValue(user);
     }
 

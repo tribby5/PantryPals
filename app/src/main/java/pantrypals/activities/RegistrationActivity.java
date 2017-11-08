@@ -106,7 +106,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     }
                                     else{
                                         // Set DisplayName as name
-                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                         String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
                                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
                                         user.updateProfile(profileUpdates);
