@@ -11,6 +11,10 @@ public class Pantry {
     private Map<String, Boolean> ownedBy;
     private Boolean shared;
 
+    public Pantry() {
+        // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
+    }
+
     public Map<String, Item> getItems() {
         return items;
     }

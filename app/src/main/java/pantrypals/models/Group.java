@@ -9,7 +9,9 @@ import java.util.Map;
 public class Group {
     private Map<String, Boolean> members;
 
-    public Group() {}
+    public Group() {
+        // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
+    }
 
     public Map<String, Boolean> getMembers() {
         return members;
