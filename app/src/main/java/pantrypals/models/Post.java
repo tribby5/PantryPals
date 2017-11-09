@@ -18,7 +18,7 @@ public class Post {
 
     private String title;
     private String text;
-    private Map<String, String> timestamp;
+    private Long timestamp;
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
@@ -39,12 +39,16 @@ public class Post {
         this.text = text;
     }
 
-    public Map<String, String> getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Map<String, String> timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Map<String, String> generateTimestamp() {
+        return ServerValue.TIMESTAMP;
     }
 
     public Map<String, Comment> getComments() {

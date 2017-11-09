@@ -1,6 +1,9 @@
 package pantrypals.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.ServerValue;
+
+import java.util.Map;
 
 /**
  * Created by Hunter Lee on 11/7/2017.
@@ -8,14 +11,9 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Comment {
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
+    private String author;
+    private String text;
+    private Long timestamp;
 
     public String getAuthor() {
         return author;
@@ -33,16 +31,23 @@ public class Comment {
         this.text = text;
     }
 
-    private String uid;
-    private String author;
-    private String text;
+    public Map<String, String> generateTimestamp() {
+        return ServerValue.TIMESTAMP;
+    }
 
     public Comment() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
     }
 
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public Comment(String uid, String author, String text) {
-        this.uid = uid;
         this.author = author;
         this.text = text;
     }

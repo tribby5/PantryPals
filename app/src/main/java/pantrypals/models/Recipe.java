@@ -1,5 +1,7 @@
 package pantrypals.models;
 
+import com.google.firebase.database.ServerValue;
+
 import java.util.Map;
 
 /**
@@ -10,7 +12,7 @@ public class Recipe {
 
     private String title;
     private String text;
-    private Map<String, String> timestamp;
+    private Long timestamp;
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
@@ -33,12 +35,20 @@ public class Recipe {
         this.text = text;
     }
 
-    public Map<String, String> getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Map<String, String> timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    public Map<String, String> generateTimestamp() {
+        return ServerValue.TIMESTAMP;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
     }
 
     public Map<String, Comment> getComments() {
