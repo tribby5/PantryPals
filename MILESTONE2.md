@@ -1,10 +1,6 @@
 PantryPals - Milestone 2
 ===================
 
-### Table of contents
-[TOC]
-
-
 New Assumptions
 --------------
 For Milestone 1, we had set up a relational database schema for our Android app, PantryPals. Upon further discussion, we decided that a NoSQL database service may suit our needs better because their built-in APIs that make transmission of data easier and more seamless. We chose Google’s Firebase as our source of truth, Android Studio for IDE, and GitHub for version control. Our decision to go with Firebase was due to the flexibility of NoSQL design as well as several of the perks that Firebase itself offers. These include built in authentication and a real-time database which is essential for our social media app. Because the database is real-time and automatically pushes updates, much of the work of the interactivity between users will be handled already. 
