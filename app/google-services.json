@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "874867503778-gi224mj1haikqpe339fuqf5s23hqpr03.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.databaes.pantrypals",
+            "certificate_hash": "bd908351464491a05e53dcef88d9aa26d89cd62a"
+          }
+        },
+        {
           "client_id": "874867503778-05pe3oasr23aq2st9ijlstca7kgscl0b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
