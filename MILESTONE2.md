@@ -126,11 +126,11 @@ Additionally, [this](https://api.myjson.com/bins/9435z) is a sample JSON data th
 
 Members
 --------------
-**Matthew Tribby**: Set up and linked the Firebase database with the application, basic authentication through Firebase, login and registration page, and UI for the Pantry Pages 
+**Matthew Tribby**: Set up and linked the Firebase database with the application, basic authentication through Firebase, login and registration page, and UI for the Pantry Pages, write-up.
 
-**Aditya Srinivasan**: Worked on UI and functionality for Discover and Profile pages
+**Aditya Srinivasan**: Worked on UI and functionality for Discover and Profile pages, and contributed to write-up.
 
-**Hunter Lee**: Implemented duplication with Firebase authentication and the real-time database, created the data model in order to enable read and write with the database, designed the UI for main feed page, implemented scrolling ListView for scroll-loading, wrote Generator scripts that read from JSON and create pre-serialized Java objects for inputting data into database.
+**Hunter Lee**: Implemented duplication with Firebase authentication and the real-time database, created the data model in order to enable read and write with the database, designed the UI for main feed page, implemented scrolling ListView for scroll-loading, wrote Generator scripts that read from JSON and create pre-serialized Java objects for inputting data into database, and contributed to write-up.
 
 **Alison Huang**: Created bottom navigation bar and structure of fragments
 
