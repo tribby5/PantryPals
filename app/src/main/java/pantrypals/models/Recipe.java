@@ -12,12 +12,28 @@ public class Recipe {
 
     private String title;
     private String text;
-    private Long timestamp;
+
+    public void setTimestamp(Map timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    private Map timestamp;
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
     private Map<String, Integer> ratings;
+    private Map<String, Ingredient> requiredIngredients;
     private double averageRating;
+
+
+    public Map<String, Ingredient> getRequiredIngredients() {
+        return requiredIngredients;
+    }
+
+    public void setRequiredIngredients(Map<String, Ingredient> requiredIngredients) {
+        this.requiredIngredients = requiredIngredients;
+    }
+
 
     public String getTitle() {
         return title;
@@ -35,14 +51,7 @@ public class Recipe {
         this.text = text;
     }
 
-    public Long getTimestamp() {
-        return timestamp;
-    }
 
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
-    }
-    
     public Map<String, String> generateTimestamp() {
         return ServerValue.TIMESTAMP;
     }
@@ -93,5 +102,38 @@ public class Recipe {
 
     public Recipe() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
+    }
+
+    public static class Ingredient {
+        public Ingredient() {
+        }
+
+        private String name;
+        private double amount;
+        private String unit;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public void setAmount(double amount) {
+            this.amount = amount;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
     }
 }

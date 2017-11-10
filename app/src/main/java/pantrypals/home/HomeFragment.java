@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,9 +26,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import pantrypals.activities.HomeActivity;
+import pantrypals.datagenerator.PostGenerator;
+import pantrypals.datagenerator.RecipeGenerator;
 import pantrypals.models.Post;
+import pantrypals.models.Recipe;
 
 public class HomeFragment extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
@@ -107,6 +114,25 @@ public class HomeFragment extends Fragment {
 //            }
 //        });
 
+
+
+
+        // Post generator button
+        Button generatePostButton = (Button) view.findViewById(R.id.generatePostButton);
+        generatePostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RecipeGenerator pg = new RecipeGenerator(ref);
+                List<Recipe> recipes = pg.generateRecipes("c:\\temp\\recipe.json");
+                DatabaseReference recipeRef = mFirebaseDatabase.getReference("/recipes");
+                for (Recipe recipe : recipes) {
+                    Map<String, Boolean> postedBy = new HashMap<>();
+                    postedBy.put(mAuth.getCurrentUser().getUid(), true);
+                    recipe.setPostedBy(postedBy);
+                    recipeRef.push().setValue(recipe);
+                }
+            }
+        });
 
         return view;
     }

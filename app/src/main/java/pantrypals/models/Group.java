@@ -8,6 +8,15 @@ import java.util.Map;
 
 public class Group {
     private Map<String, Boolean> members;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Group() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
