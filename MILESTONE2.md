@@ -70,29 +70,31 @@ Home Page: Shows a link to the user’s main pantry and all the possible joint p
 
 
 If a user selects to see their own pantry, they would see this display of the rows of items that they own. In the future, the contents of this page will be able to be sorted by the different categories. There will also be a basic search functionality implemented as some people’s pantries could theoretically grow to a large size to the point where scrolling would be impractical. The orange add button on the button right of the screen represents the ability to add a new item to the pantry. By clicking on a row/item, a modal for editing or deleting the item and its characterics will appear. 
+
 ![alt text](screenshots/pantry-page.png)
 
 This represents the add item modal that appears when the orange add button is selected. This lets a user add items to their pantry
+
 ![alt text](screenshots/add-item-to-pantry.png)
 
 This is how a joint pantry will be displayed for a user. It is similar in design to the personal pantry for simplicity but instead of the orange add button which allows one to add a new item to the pantry, the item at the bottom of the pantry is just to allow the users to select items that they already own (are in their pantry) and place them in the group pantry. 
-![alt text](joint-pantry-page.png)
+![alt text](screenshots/joint-pantry-page.png)
 
 #### Profile
 The profile page contains basic information about a user, including their name, bio, the number of followers they have, and the number of people they follow. It also contains three tabs: posts, pantry, and info. The first tab shows recent posts by the user. The second tab shows the user’s pantry. Finally, the third tab shows information about the user, including their dietary restrictions, preferences, joint pantries, and which communities they belong to.
-![alt text](profile-page.png)
+![alt text](screenshots/profile-page.png)
 
 #### Discover
 The discover page is the portal through which users can explore more. At the top of the page is a search bar which users can use to search for any keyword throughout the entire app. There are also a list of featured posts that the user can explore, picked by the editors of the app. Finally, there are four additional lists of content: trending, moods, cuisines, and communities. Each of these leads to further pages that help narrow down the search, until the user finds a post they are interested in.
-![alt text](search-page.png)
-![alt text](discover-page.png)
+![alt text](screenshots/search-page.png)
+![alt text](screenshots/discover-page.png)
 
 For example, when the user clicks on “Moods”, they are brought to a page showing various kinds of moods. Each of these leads to posts related to the particular mood, which the user can peruse.
-![alt text](moods-page.png)
+![alt text](screenshots/moods-page.png)
 
 #### Feed
 Feed is the first page that users will encounter to see what relevant and new articles are posted including posts and recipes. Currently this page is displaying one element, which is in fact read from the real-time database. It also supports scrolling update, similar to that of Facebook news feed. Recipe and Post Generators will be used initially to populate the real-time database with more posts so that we could see the scrolling feed.
-![alt text](moods-page.png)
+![alt text](screenshots/feed.png)
 The data retrieval from real-time database and scrolling ListView is supported by the following code snippet: 
 ```java
         ref.limitToFirst(10).addValueEventListener(new ValueEventListener() {
@@ -120,16 +122,16 @@ Additionally, [this](https://api.myjson.com/bins/9435z) is a sample JSON data th
 
 Members
 --------------
-Matthew Tribby: Set up and linked the Firebase database with the application, basic authentication through Firebase, login and registration page, and UI for the Pantry Pages 
+**Matthew Tribby**: Set up and linked the Firebase database with the application, basic authentication through Firebase, login and registration page, and UI for the Pantry Pages 
 
-Aditya Srinivasan: Worked on UI and functionality for Discover and Profile pages
+**Aditya Srinivasan**: Worked on UI and functionality for Discover and Profile pages
 
-Hunter Lee: Implemented duplication with Firebase authentication and the real-time database, created the data model in order to enable read and write with the database, designed the UI for main feed page, implemented scrolling ListView for scroll-loading, wrote Generator scripts that read from JSON and create pre-serialized Java objects for inputting data into database.
+**Hunter Lee**: Implemented duplication with Firebase authentication and the real-time database, created the data model in order to enable read and write with the database, designed the UI for main feed page, implemented scrolling ListView for scroll-loading, wrote Generator scripts that read from JSON and create pre-serialized Java objects for inputting data into database.
 
-Alison Huang: Created bottom navigation bar and structure of fragments
+**Alison Huang**: Created bottom navigation bar and structure of fragments
 
-Anika Ayyar: Participated in group design meeting
+**Anika Ayyar**: Participated in group design meeting
 
-Luke Farrell: Participated in group design meeting
+**Luke Farrell**: Participated in group design meeting
 
-Miles Turpin: Participated in group design meeting, developing UI and functionality for Post page.
+**Miles Turpin**: Participated in group design meeting, developing UI and functionality for Post page.
