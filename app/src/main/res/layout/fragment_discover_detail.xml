@@ -1,0 +1,28 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/discover_detail_layout"
+    android:orientation="vertical"
+    tools:context="pantrypals.discover.DiscoverDetailFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="@dimen/h1Size"
+        android:padding="@dimen/padding"
+        android:hint="Title"
+        android:id="@+id/discover_detail_title"
+        android:textColor="@color/colorBlack"/>
+
+    <GridView
+        android:id="@+id/discover_detail_grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:columnWidth="100dp"
+        android:numColumns="2"
+        />
+
+</LinearLayout>
