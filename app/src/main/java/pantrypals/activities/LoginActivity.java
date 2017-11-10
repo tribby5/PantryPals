@@ -25,7 +25,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import pantrypals.models.User;
 
 
 /**
@@ -38,6 +41,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class LoginActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference mDatabase;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -59,6 +63,7 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -199,8 +204,10 @@ public class LoginActivity extends AppCompatActivity{
                                 Toast.makeText(LoginActivity.this, R.string.auth_failed,
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                 Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
-                                 startActivity(mainIntent);
+                                FirebaseUser user = task.getResult().getUser();
+                                writeNewUser(user.getUid(), user.getDisplayName(), user.getEmail());
+                                Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                                startActivity(mainIntent);
                             }
                         }
                     });
@@ -246,6 +253,13 @@ public class LoginActivity extends AppCompatActivity{
         });
 
         builder.show();
+    }
+
+    private void writeNewUser(String userId, String name, String email) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        mDatabase.child("userAccounts").child(userId).setValue(user);
     }
 
     private void sendResetEmail(String address){
