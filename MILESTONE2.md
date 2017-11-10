@@ -2,7 +2,9 @@ PantryPals - Milestone 2
 ===================
 
 ### Table of contents
-[TOC]
+1. [Example](#New Assumptions)
+2. [Example2](#Data Model)
+3. [Third Example](#Features)
 
 
 New Assumptions
