@@ -44,15 +44,6 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '22.0-android'
 }
 
-
-
-
-
-
-
-
-
-
 dependencies {
     implementation 'com.android.support:support-v4:26.+'
 }
