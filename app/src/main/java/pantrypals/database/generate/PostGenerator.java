@@ -1,4 +1,4 @@
-package pantrypals.datagenerator;
+package pantrypals.database.generate;
 
 /**
  * PostGenerator reads a JSON array from the local system and generates a Post object that can

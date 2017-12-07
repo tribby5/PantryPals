@@ -1,9 +1,10 @@
 package pantrypals.models;
 
+import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Hunter Lee on 11/8/2017.
+ * Created by adityasrinivasan on 12/7/2017.
  */
 
 public class Group {

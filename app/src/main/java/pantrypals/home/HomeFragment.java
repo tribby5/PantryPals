@@ -1,15 +1,11 @@
 package pantrypals.home;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -18,7 +14,6 @@ import android.widget.Toast;
 import com.android.databaes.pantrypals.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,13 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import pantrypals.activities.HomeActivity;
-import pantrypals.datagenerator.PostGenerator;
-import pantrypals.datagenerator.RecipeGenerator;
+import pantrypals.database.generate.RecipeGenerator;
 import pantrypals.models.Post;
 import pantrypals.models.Recipe;
 
 public class HomeFragment extends Fragment {
+
+    private static final String TAG = "HomeFragment";
+
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference ref;
     private FirebaseAuth mAuth;
@@ -70,7 +66,7 @@ public class HomeFragment extends Fragment {
                     String postId = snapshot.getKey();
                     feedList.add(post);
                     tempList.add(postId);
-                    Log.e("Retrieved postId: ", postId);
+                    Log.d(TAG, "Retrieved postId: " + postId);
                 }
             }
 

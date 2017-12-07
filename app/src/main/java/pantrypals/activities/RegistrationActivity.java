@@ -16,6 +16,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.UUID;
+
+import pantrypals.models.User;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -61,7 +66,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 newUserPasswordConfirm.setError(null);
 
 
-                String email = newUserEmail.getText().toString();
+                final String email = UUID.randomUUID().toString().substring(0, 10) + "@gmail.com";
                 String password = newUserPassword.getText().toString();
 
                 Boolean cancel = false;
@@ -100,11 +105,11 @@ public class RegistrationActivity extends AppCompatActivity {
                                     // If sign in fails, display a message to the user. If sign in succeeds
                                     // the auth state listener will be notified and logic to handle the
                                     // signed in user can be handled in the listener.
-                                    if (!task.isSuccessful()) {
-                                        Toast.makeText(RegistrationActivity.this, R.string.auth_failed,
-                                                Toast.LENGTH_LONG).show();
-                                    }
-                                    else{
+//                                    if (!task.isSuccessful()) {
+//                                        Toast.makeText(RegistrationActivity.this, R.string.auth_failed,
+//                                                Toast.LENGTH_LONG).show();
+//                                    }
+//                                    else{
                                         // Set DisplayName as name
                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                         String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
@@ -121,11 +126,19 @@ public class RegistrationActivity extends AppCompatActivity {
                                                     }
                                                 });
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
-                                    }
+                                        writeNewUser(user.getUid(), displayName, email);
+//                                      }
                                 }
                             });
                 }
             }
         });
+    }
+
+    private void writeNewUser(String userId, String name, String email) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
     }
 }

@@ -1,4 +1,4 @@
-package pantrypals.datagenerator;
+package pantrypals.database.generate;
 
 import com.google.firebase.database.DatabaseReference;
 
