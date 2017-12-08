@@ -13,12 +13,14 @@ import android.widget.Toast;
 import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Map;
 import java.util.UUID;
 
 import pantrypals.models.User;
@@ -35,6 +37,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText newUserEmail;
     private EditText newUserPassword;
     private EditText newUserPasswordConfirm;
+    private EditText newUserBio;
+    private EditText newUserPreferences;
+    private EditText newUserRestrictions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,9 @@ public class RegistrationActivity extends AppCompatActivity {
         newUserEmail = (EditText)findViewById(R.id.TFemail);
         newUserPassword = (EditText)findViewById(R.id.TFpassword);
         newUserPasswordConfirm = (EditText) findViewById(R.id.TFpasswordConfirm);
+        newUserBio = (EditText) findViewById(R.id.TFbio);
+        newUserPreferences = (EditText) findViewById(R.id.TFpreferences);
+        newUserRestrictions = (EditText) findViewById(R.id.TFrestrictions);
 
         mAuth= FirebaseAuth.getInstance();
     }
@@ -66,6 +74,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 newUserEmail.setError(null);
                 newUserPassword.setError(null);
                 newUserPasswordConfirm.setError(null);
+                newUserBio.setError(null);
+                newUserPreferences.setError(null);
+                newUserRestrictions.setError(null);
 
 
                 final String email = UUID.randomUUID().toString().substring(0, 10) + "@gmail.com";
@@ -115,6 +126,9 @@ public class RegistrationActivity extends AppCompatActivity {
                                         // Set DisplayName as name
                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                         String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
+                                        String bio = newUserBio.getText().toString();
+                                        Map<String, Boolean> preferences = extractFields(newUserPreferences.getText().toString());
+                                        Map<String, Boolean> restrictions = extractFields(newUserRestrictions.getText().toString());
                                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
                                         user.updateProfile(profileUpdates);
 
@@ -128,7 +142,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                     }
                                                 });
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
-                                        writeNewUser(user.getUid(), displayName, email);
+                                        writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions);
 //                                      }
                                 }
                             });
@@ -137,10 +151,22 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    private void writeNewUser(String userId, String name, String email) {
+    private Map<String, Boolean> extractFields(String input) {
+        Map<String, Boolean> map = Maps.newHashMap();
+        for (String s : input.split(",")) {
+            String trimmed = s.trim();
+            map.put(trimmed, true);
+        }
+        return map;
+    }
+
+    private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
+        user.setBio(bio);
+        user.setPreferences(preferences);
+        user.setRestrictions(restrictions);
         FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
     }
 

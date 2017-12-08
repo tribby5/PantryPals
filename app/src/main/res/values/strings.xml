@@ -23,7 +23,7 @@
     <!-- Registration page-->
     <string name="error_invalid_password_confirm">Passwords do not match</string>
     <string name="reg_title">Registration</string>
-    <string name="reg_description">Please fill out this form to register for a PantryPals account</string>
+    <string name="reg_description">Please fill out this form to register for a PantryPals account.</string>
     <string name="reg_name_first">First Name</string>
     <string name="reg_name_last">Last Name</string>
     <string name="reg_email">Email</string>
@@ -84,4 +84,8 @@
     <string name="discover_list_moods">Moods</string>
     <string name="discover_list_cuisines">Cuisines</string>
     <string name="discover_list_communities">Communities</string>
+    <string name="login_identity_title">Identity</string>
+    <string name="reg_bio">About yourself...</string>
+    <string name="reg_preferences">Preferences...</string>
+    <string name="reg_restrictions">Restrictions...</string>
 </resources>
