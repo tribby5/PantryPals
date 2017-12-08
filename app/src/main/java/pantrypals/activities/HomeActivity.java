@@ -1,5 +1,6 @@
 package pantrypals.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.android.databaes.pantrypals.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.discover.DiscoverFragment;
@@ -17,6 +19,7 @@ import pantrypals.home.HomeFragment;
 import pantrypals.notifications.NotificationsFragment;
 import pantrypals.pantry.PantryFragment;
 import pantrypals.profile.ProfileFragment;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class HomeActivity extends AppCompatActivity implements DiscoverItemClickListener {
 
@@ -44,7 +47,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
                                 selectedFragment = PantryFragment.newInstance();
                                 break;
                             case R.id.nav_profile:
-                                selectedFragment = ProfileFragment.newInstance();
+                                selectedFragment = ProfileFragment.newFragment(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 break;
                             case R.id.nav_notifications:
                                 selectedFragment = NotificationsFragment.newInstance();
@@ -68,5 +71,10 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
     private void setFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_layout, fragment).commit();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

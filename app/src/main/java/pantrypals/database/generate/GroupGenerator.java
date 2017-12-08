@@ -15,22 +15,20 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import pantrypals.database.query.QueryMaker;
 import pantrypals.models.Group;
-import pantrypals.models.User;
 
 /**
  * Created by adityasrinivasan on 07/12/17.
  */
 
-public class GroupGenerator {
+public class GroupGenerator implements Generator {
 
     private static final String TAG = "GroupGenerator";
 
     private static Random r = new Random();
     private static DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
-    public static void gen() {
+    public void gen() {
         Log.d(TAG, "Generating groups...");
         final List<String> names = Lists.newArrayList(
                 "Dessert Junkies",

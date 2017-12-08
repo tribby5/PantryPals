@@ -1,6 +1,7 @@
 package pantrypals.activities;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,8 +28,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
-import pantrypals.database.generate.GroupGenerator;
-import pantrypals.database.query.QueryMaker;
+import pantrypals.database.generate.FollowGenerator;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 /**
@@ -101,8 +102,6 @@ public class LoginActivity extends AppCompatActivity{
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
-        // TODO: temp
     }
 
 
@@ -257,6 +256,11 @@ public class LoginActivity extends AppCompatActivity{
         FirebaseAuth auth = FirebaseAuth.getInstance();
         auth.sendPasswordResetEmail(address);
         Toast.makeText(LoginActivity.this, getResources().getString(R.string.reset_email_confirm) + address, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
 }

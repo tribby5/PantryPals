@@ -1,5 +1,6 @@
 package pantrypals.activities;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.UUID;
 
 import pantrypals.models.User;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -140,5 +142,10 @@ public class RegistrationActivity extends AppCompatActivity {
         user.setName(name);
         user.setEmail(email);
         FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }
