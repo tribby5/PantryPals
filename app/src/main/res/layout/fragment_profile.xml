@@ -5,17 +5,16 @@
     android:layout_height="match_parent"
     tools:context="pantrypals.profile.ProfileFragment">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar"
+        android:layout_height="100dp"
+        android:layout_width="100dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="35dp"
         android:layout_marginTop="25dp"
-        android:adjustViewBounds="false"
-        android:cropToPadding="false"
-        android:src="@mipmap/ic_launcher" />
+        app:civ_border_color="@color/colorAccentAlt"
+        app:civ_border_width="2dp" />
 
     <TextView
         android:id="@+id/profile_bio"
@@ -30,7 +29,7 @@
         android:id="@+id/profile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/imageView"
+        android:layout_alignStart="@+id/avatar"
         android:layout_below="@+id/profile_following_num"
         android:layout_marginTop="13dp"
         android:text="Name"
@@ -41,8 +40,9 @@
         android:id="@+id/profile_following_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignBottom="@+id/avatar"
         android:layout_alignStart="@+id/profile_following_text"
+        android:textSize="@dimen/h4Size"
         android:text="234"
         android:textAlignment="center"
         android:textStyle="bold" />
@@ -54,6 +54,7 @@
         android:layout_alignBaseline="@+id/profile_following_num"
         android:layout_alignBottom="@+id/profile_following_num"
         android:layout_alignStart="@+id/profile_followers_text"
+        android:textSize="@dimen/h4Size"
         android:text="60"
         android:textAlignment="center"
         android:textStyle="bold" />
@@ -65,6 +66,7 @@
         android:layout_above="@+id/profile_following_num"
         android:layout_marginStart="32dp"
         android:layout_toEndOf="@+id/profile_name"
+        android:textSize="@dimen/h4Size"
         android:text="Following"
         android:textAlignment="center" />
 
@@ -75,6 +77,7 @@
         android:layout_above="@+id/profile_followers_num"
         android:layout_marginStart="47dp"
         android:layout_toEndOf="@+id/profile_following_text"
+        android:textSize="@dimen/h4Size"
         android:text="Followers"
         android:textAlignment="center" />
 
@@ -92,5 +95,14 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/profile_tab_layout" />
+
+    <ImageView
+        android:id="@+id/verifiedIcon"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginLeft="@dimen/padding"
+        android:layout_toRightOf="@+id/profile_name"
+        android:layout_alignTop="@+id/profile_name"
+        android:src="@drawable/verified" />
 
 </RelativeLayout>

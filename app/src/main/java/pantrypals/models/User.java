@@ -13,6 +13,8 @@ public class User {
     private String name;
     private String email;
     private String bio;
+    private String avatar;
+    private boolean verified;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
     private Map<String, Boolean> groups;
@@ -122,5 +124,21 @@ public class User {
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
     }
 }

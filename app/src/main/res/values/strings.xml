@@ -11,13 +11,14 @@
     <string name="reset_password_button">Reset Password</string>
     <string name="reset_email_confirm">Reset email sent to: </string>
     <string name="reset_email">Email of Account</string>
-    <string name="reset_password">Reset Password</string>
+    <string name="reset_password">Forgot Password?</string>
     <string name="emptystring"></string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="sign_in">Sign in</string>
     <string name="register">Register</string>
+    <string name="app_display_name">pantry pals</string>
 
     <!-- Registration page-->
     <string name="error_invalid_password_confirm">Passwords do not match</string>

@@ -16,7 +16,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                .setDefaultFontPath("fonts/Lato-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );

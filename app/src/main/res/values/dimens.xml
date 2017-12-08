@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding">15dp</dimen>
+    <dimen name="extraPadding">60dp</dimen>
     <dimen name="h1Size">32sp</dimen>
     <dimen name="h2Size">24sp</dimen>
     <dimen name="h3Size">18sp</dimen>
+    <dimen name="h4Size">14sp</dimen>
 </resources>

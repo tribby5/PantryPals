@@ -1,14 +1,18 @@
 package pantrypals.profile;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
@@ -18,11 +22,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.URL;
+
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.models.User;
+import pantrypals.util.DownloadImageTask;
 
 
 public class ProfileFragment extends Fragment {
+
+    private static final String TAG = "ProfileFragment";
 
     private static final String ARG_ID = "ID";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -68,13 +77,19 @@ public class ProfileFragment extends Fragment {
         return view;
     }
 
-    private void setProfileHeader(View view) {
+    private void setProfileHeader(final View view) {
         final TextView name = view.findViewById(R.id.profile_name);
         mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 name.setText(user.getName());
+
+                new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
+                        .execute(user.getAvatar());
+
+                ImageView verifiedImage = view.findViewById(R.id.verifiedIcon);
+                verifiedImage.setVisibility(user.isVerified() ? View.VISIBLE : View.INVISIBLE);
             }
 
             @Override
