@@ -79,7 +79,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 newUserRestrictions.setError(null);
 
 
-                final String email = UUID.randomUUID().toString().substring(0, 10) + "@gmail.com";
+                final String email = newUserEmail.getText().toString();
                 String password = newUserPassword.getText().toString();
 
                 Boolean cancel = false;
