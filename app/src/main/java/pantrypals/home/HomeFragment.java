@@ -86,6 +86,7 @@ public class HomeFragment extends Fragment {
                         String tempRecipeId = snapshot.getKey();
                         // Remove this line
                         recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
+                        recipe.setId(tempRecipeId);
                         //feedList.add(recipe);
                         if (meetsCondition(recipe)) {
                             adapter.add(recipe);
@@ -144,6 +145,7 @@ public class HomeFragment extends Fragment {
                                             TempRecipe recipe = snapshot.getValue(TempRecipe.class);
                                             // Take out this line if url is there
                                             recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
+                                            recipe.setId(tempRecipeId);
                                             //feedList.add(recipe);
                                             if (meetsCondition(recipe)) {
                                                 adapter.add(recipe);

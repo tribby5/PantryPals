@@ -81,6 +81,16 @@ public class TempRecipe {
     private String name;
     private String rating;
     private String submitter;
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     private ArrayList<String> ingredients;
     private ArrayList<String> instructions;
 
