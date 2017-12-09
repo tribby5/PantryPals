@@ -6,8 +6,7 @@
 
     <!-- pantries-->
     <string name="pantriesData">pantries</string>
-
-    <!-- pantries in general-->
     <string name="items">items</string>
+    <string name="jointPantriesAttribute">jointPantries</string>
 
 </resources>

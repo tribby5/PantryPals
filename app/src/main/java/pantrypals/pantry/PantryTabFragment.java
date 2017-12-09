@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -109,34 +110,38 @@ public class PantryTabFragment extends Fragment {
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+               // joint = new ArrayList<>();
                 User user = dataSnapshot.getValue(User.class);
                 Map<String, Boolean> jointID = user.getJointPantries();
 
-                for(String pantryID : jointID.keySet()){
-                    DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
-                    jointRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                if(jointID != null) {
 
-                            HashMap<String, String> values = new HashMap<>();
+                    for (String pantryID : jointID.keySet()) {
+                        DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
+                        jointRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                            String key = dataSnapshot.getKey();
+                                HashMap<String, String> values = new HashMap<>();
 
-                            JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
-                            String title = pantry.getTitle();
+                                String key = dataSnapshot.getKey();
 
-                            values.put(JointPantryAdapter.KEY, key);
-                            values.put(JointPantryAdapter.TITLE, title);
+                                JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
+                                String title = pantry.getTitle();
 
-                            joint.add(values);
-                            jointAdapter.notifyDataSetChanged();
-                        }
+                                values.put(JointPantryAdapter.KEY, key);
+                                values.put(JointPantryAdapter.TITLE, title);
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                                joint.add(values);
+                                jointAdapter.notifyDataSetChanged();
+                            }
 
-                        }
-                    });
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
                 }
             }
 
@@ -208,7 +213,7 @@ public class PantryTabFragment extends Fragment {
 
             Query result = usersRef.orderByChild(getResources().getString(R.string.email)).equalTo(email);
             if(result != null){
-                result.addValueEventListener(new ValueEventListener() {
+                result.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for(DataSnapshot snapshot : dataSnapshot.getChildren()){
@@ -239,7 +244,36 @@ public class PantryTabFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String key = database.getReference(getResources().getString(R.string.pantriesData)).push().getKey();
         database.getReference().child(getResources().getString(R.string.pantriesData)).child(key).setValue(pantry);
+        storeJointPantryRefInUsers(uids, key);
     }
+
+    private void storeJointPantryRefInUsers(ArrayList<String> uids, String pantryKey){
+        final String key = pantryKey;
+        uids.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        final DatabaseReference parentRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
+        for(final String uid : uids){
+            Log.d("WORKS", uid);
+            parentRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User user = dataSnapshot.getValue(User.class);
+                    Map<String, Boolean> jointPantries = user.getJointPantries();
+                    if(jointPantries == null){
+                        jointPantries = new HashMap<String, Boolean>();
+                    }
+                    jointPantries.put(key, true);
+                    user.setJointPantries(jointPantries);
+                    parentRef.child(uid).setValue(user);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
 
 
 }
