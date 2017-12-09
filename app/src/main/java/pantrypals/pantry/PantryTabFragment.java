@@ -107,7 +107,7 @@ public class PantryTabFragment extends Fragment {
 
         ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
         ref = ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                // joint = new ArrayList<>();
@@ -244,6 +244,16 @@ public class PantryTabFragment extends Fragment {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         String key = database.getReference(getResources().getString(R.string.pantriesData)).push().getKey();
         database.getReference().child(getResources().getString(R.string.pantriesData)).child(key).setValue(pantry);
+
+
+        //Reflect Change in UI
+        HashMap<String, String> values = new HashMap<>();
+        values.put(JointPantryAdapter.KEY, key);
+        values.put(JointPantryAdapter.TITLE, pantry.getTitle());
+        joint.add(values);
+        jointAdapter.notifyDataSetChanged();
+
+        //Update UserAccounts jointPantries references
         storeJointPantryRefInUsers(uids, key);
     }
 
