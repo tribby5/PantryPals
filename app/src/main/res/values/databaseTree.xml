@@ -2,4 +2,5 @@
 <resources>
     <string name="userAccounts">userAccounts</string>
     <string name="jointPantriesData">jointPantries</string>
+    <string name="email">email</string>
 </resources>

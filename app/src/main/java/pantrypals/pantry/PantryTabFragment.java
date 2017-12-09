@@ -1,15 +1,17 @@
 package pantrypals.pantry;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.android.databaes.pantrypals.R;
@@ -18,10 +20,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pantrypals.models.JointPantry;
@@ -116,6 +121,7 @@ public class PantryTabFragment extends Fragment {
                             HashMap<String, String> values = new HashMap<>();
 
                             String key = dataSnapshot.getKey();
+
                             JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
                             String title = pantry.getTitle();
 
@@ -143,6 +149,31 @@ public class PantryTabFragment extends Fragment {
     }
 
     private void addJointButtonClick(View v){
+        //builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.add_new_joint_pantry));
+
+        //https://stackoverflow.com/questions/18371883/how-to-create-modal-dialog-box-in-android
+        LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
+
+        final View dialogView = inflater.inflate(R.layout.modal_add_joint_pantry, null);
+
+        builder.setView(dialogView);
+        final EditText titleInput = dialogView.findViewById(R.id.titleInput);
+        final EditText shareInput = dialogView.findViewById(R.id.shareInput);
+
+
+        builder.setPositiveButton(R.string.create, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //https://stackoverflow.com/questions/41953388/java-split-and-trim-in-one-shot
+                List<String> emails = Arrays.asList(shareInput.getText().toString().trim().split("\\s*,\\s*"));
+
+                createNewJointPantry(titleInput.getText().toString(), emails);
+            }
+        });
+
+        builder.show();
 
     }
 
@@ -162,6 +193,51 @@ public class PantryTabFragment extends Fragment {
         transaction.replace(getId(), this).addToBackStack(null); // so that back button works
         transaction.replace(R.id.frame_layout, jointPantry);
         transaction.commit();
+    }
+
+    private void createNewJointPantry(String title, List<String> emails){
+        DatabaseReference homeRef = FirebaseDatabase.getInstance().getReference();
+        
+        DatabaseReference usersRef = homeRef.child(getResources().getString(R.string.userAccounts));
+        final JointPantry pantry = new JointPantry();
+        pantry.setTitle(title);
+
+        final ArrayList<String> uids = new ArrayList<>();
+        for(String email : emails){
+
+            Query result = usersRef.orderByChild(getResources().getString(R.string.email)).equalTo(email);
+            if(result != null){
+                result.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            uids.add(snapshot.getKey());
+                        }
+                        storeNewPantryData(pantry, uids);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+        }
+
+    }
+
+    private void storeNewPantryData(JointPantry pantry, ArrayList<String> uids){
+        HashMap<String, Boolean> sharedWith = new HashMap<>();
+        for(String uid : uids){
+            sharedWith.put(uid, true);
+        }
+        sharedWith.put(FirebaseAuth.getInstance().getCurrentUser().getUid(), true);
+        pantry.setOwnedBy(sharedWith);
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        String key = database.getReference(getResources().getString(R.string.jointPantriesData)).push().getKey();
+        database.getReference().child(getResources().getString(R.string.jointPantriesData)).child(key).setValue(pantry);
     }
 
 

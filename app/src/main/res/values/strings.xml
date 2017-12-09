@@ -77,8 +77,10 @@
     <!-- Joint Pantry -->
     <string name="joint_pantry">Joint Pantry</string>
     <string name="add_item_from_pantry">Add Item from My Pantry</string>
-
-
+    <string name="new_joint_pantry_title">Title:</string>
+    <string name="share_with_users">Share with: \n(emails)</string>
+    <string name="new_joint_instructions">Name your joint pantry and then put comma-separated emails for who you wish to share the pantry with</string>
+    <string name="create">create</string>
 
     <string name="discover_list_trending">Trending</string>
     <string name="discover_list_moods">Moods</string>
