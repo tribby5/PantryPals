@@ -126,7 +126,7 @@ public class RecipeGenerator {
                 recipe.setTitle(title);
                 recipe.setText(text);
                 recipe.setRequiredIngredients(requiredIngredients);
-                recipe.setTimestamp(recipe.generateTimestamp());
+                //recipe.setTimestamp(recipe.generateTimestamp());
                 result.add(recipe);
             }
         } catch (Exception e) {

@@ -81,6 +81,17 @@ public class TempRecipe {
     private String name;
     private String rating;
     private String submitter;
+
+    public String getDbKey() {
+        return dbKey;
+    }
+
+    public void setDbKey(String dbKey) {
+        this.dbKey = dbKey;
+    }
+
+    private String dbKey;
+
     private ArrayList<String> ingredients;
     private ArrayList<String> instructions;
 

@@ -13,11 +13,54 @@ public class Recipe {
     private String title;
     private String text;
 
-    public void setTimestamp(Map timestamp) {
-        this.timestamp = timestamp;
+    public String getDbKey() {
+        return dbKey;
     }
 
-    private Map timestamp;
+    public void setDbKey(String dbKey) {
+        this.dbKey = dbKey;
+    }
+
+    private String dbKey;
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    private String caption;
+
+    public String getImgURL() {
+        return imgURL;
+    }
+
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
+    }
+
+    private String imgURL;
+
+
+//    public void setTimestamp(Map timestamp) {
+//        this.timestamp = timestamp;
+//    }
+
+//    private Map timestamp;
+
+    // Just using string for timeposted. Make this randomly generated.
+    private String timePosted;
+
+    public String getTimePosted() {
+        return timePosted;
+    }
+
+    public void setTimePosted(String timePosted) {
+        this.timePosted = timePosted;
+    }
+
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;

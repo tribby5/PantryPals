@@ -8,15 +8,14 @@ tools:context="pantrypals.home.HomeFragment">
         android:id="@+id/newPostButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:text="Create New Post" />
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="New Recipe" />
 
     <ListView
         android:id="@+id/feedListView"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/newPostButton" />
+        android:layout_above="@+id/newPostButton" />
 
 </RelativeLayout>

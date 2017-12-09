@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="spinnerValues">
+        <item>Not following</item>
+        <item>Following all</item>
+        <item>Following relevant</item>
+    </string-array>
+</resources>
