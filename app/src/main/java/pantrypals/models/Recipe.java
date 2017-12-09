@@ -2,6 +2,7 @@ package pantrypals.models;
 
 import com.google.firebase.database.ServerValue;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,6 +13,27 @@ public class Recipe {
 
     private String title;
     private String text;
+    private String caption;
+
+    private Map<String, Comment> comments;
+    private Map<String, Boolean> likedBy;
+    private Map<String, Boolean> postedBy;
+    private Map<String, Integer> ratings;
+
+
+
+    private List<Ingredient> requiredIngredients;
+    private double averageRating;
+    private String dbKey;
+
+
+    public List<Ingredient> getRequiredIngredients() {
+        return requiredIngredients;
+    }
+
+    public void setRequiredIngredients(List<Ingredient> requiredIngredients) {
+        this.requiredIngredients = requiredIngredients;
+    }
 
     public String getDbKey() {
         return dbKey;
@@ -21,7 +43,6 @@ public class Recipe {
         this.dbKey = dbKey;
     }
 
-    private String dbKey;
 
     public String getCaption() {
         return caption;
@@ -31,7 +52,6 @@ public class Recipe {
         this.caption = caption;
     }
 
-    private String caption;
 
     public String getImgURL() {
         return imgURL;
@@ -61,21 +81,8 @@ public class Recipe {
         this.timePosted = timePosted;
     }
 
-    private Map<String, Comment> comments;
-    private Map<String, Boolean> likedBy;
-    private Map<String, Boolean> postedBy;
-    private Map<String, Integer> ratings;
-    private Map<String, Ingredient> requiredIngredients;
-    private double averageRating;
 
 
-    public Map<String, Ingredient> getRequiredIngredients() {
-        return requiredIngredients;
-    }
-
-    public void setRequiredIngredients(Map<String, Ingredient> requiredIngredients) {
-        this.requiredIngredients = requiredIngredients;
-    }
 
 
     public String getTitle() {
