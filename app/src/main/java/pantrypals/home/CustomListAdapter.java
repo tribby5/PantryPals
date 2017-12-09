@@ -99,6 +99,7 @@ public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
                 holder.title = (TextView) convertView.findViewById(R.id.cardTitle);
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
+                holder.setLikeButton(key);
                 holder.likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
                 holder.likeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -222,5 +223,37 @@ public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
         ImageView image;
         ProgressBar dialog;
         ImageButton likeButton;
+        DatabaseReference mDatabaseLike = FirebaseDatabase.getInstance().getReference("/recipes");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        private ViewHolder() {
+            mDatabaseLike.keepSynced(true);
+
+        }
+        private void setLikeButton(final String dbKey) {
+            mDatabaseLike.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String userId = mAuth.getCurrentUser().getUid();
+                    if (dataSnapshot.child(dbKey).hasChild("likedBy")) {
+                        if (dataSnapshot.child(dbKey).child("likedBy").hasChild(userId)) {
+                            //Already liked
+                            likeButton.setImageResource(R.drawable.like_pink);
+                        } else {
+                            //Not liked yet
+                            likeButton.setImageResource(R.drawable.like_gray);
+                        }
+                    } else {
+                        // doesn't have likedBy yet
+                        likeButton.setImageResource(R.drawable.like_gray);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }
