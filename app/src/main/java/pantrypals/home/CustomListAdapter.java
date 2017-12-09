@@ -61,10 +61,12 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
+        Log.d(TAG, "Constructor called");
 
         if (!ImageLoader.getInstance().isInited()) {
             //sets up the image loader library
             setupImageLoader();
+            Log.d(TAG, "Initialized");
         }
     }
 
@@ -74,16 +76,10 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
 
         //get the persons information
         String name = getItem(position).getName();
-
         String imgUrl = getItem(position).getImgURL();
-        if (imgUrl == null) {
-            System.out.println("NULLLLL");
-        }
+        Log.d(TAG, "getView called");
 
         try{
-            //create the view result for showing the animation
-            final View result;
-
             //ViewHolder object
             final ViewHolder holder;
 
@@ -95,13 +91,10 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
 
-                result = convertView;
-
                 convertView.setTag(holder);
             }
             else{
                 holder = (ViewHolder) convertView.getTag();
-                result = convertView;
             }
 
             lastPosition = position;
@@ -115,8 +108,8 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
 
             //create display options
             DisplayImageOptions options = new DisplayImageOptions.Builder()
-                    //.cacheInMemory(true)
-                    //.cacheOnDisk(true).resetViewBeforeLoading(true)
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true).resetViewBeforeLoading(true)
                     .showImageForEmptyUri(defaultImage)
                     .showImageOnFail(defaultImage)
                     .showImageOnLoading(defaultImage).build();
@@ -141,7 +134,7 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
                 }}
 
             );
-
+            Log.d(TAG, "returnimg convertView");
             return convertView;
         }catch (IllegalArgumentException e){
             Log.e(TAG, "getView: IllegalArgumentException: " + e.getMessage() );
@@ -156,15 +149,15 @@ public class CustomListAdapter  extends ArrayAdapter<TempRecipe> {
     private void setupImageLoader(){
         // UNIVERSAL IMAGE LOADER SETUP
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                //.cacheOnDisk(true).cacheInMemory(true)
+                .cacheOnDisk(true).cacheInMemory(true)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .displayer(new FadeInBitmapDisplayer(300)).build();
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
                 mContext)
-                .defaultDisplayImageOptions(defaultOptions).build();
-                //.memoryCache(new WeakMemoryCache())
-                //.diskCacheSize(100 * 1024 * 1024)
+                .defaultDisplayImageOptions(defaultOptions)
+                .memoryCache(new WeakMemoryCache())
+                .diskCacheSize(100 * 1024 * 1024).build();
 
         ImageLoader.getInstance().init(config);
         // END - UNIVERSAL IMAGE LOADER SETUP

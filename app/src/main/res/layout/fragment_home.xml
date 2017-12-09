@@ -15,7 +15,7 @@ tools:context="pantrypals.home.HomeFragment">
     <ListView
         android:id="@+id/feedListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/newPostButton" />
 
