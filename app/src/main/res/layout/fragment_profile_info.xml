@@ -5,11 +5,118 @@
     tools:context="pantrypals.profile.ProfileInfoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Info Fragment"
-        android:gravity="center"
-        android:textSize="@dimen/h1Size"/>
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Preferences"
+                android:textSize="@dimen/h3Size"
+                android:textStyle="bold"/>
+
+            <com.wefika.flowlayout.FlowLayout
+                android:id="@+id/prefs_container"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start|top"
+                android:paddingTop="@dimen/padding"
+                android:paddingBottom="@dimen/padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="pref1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+            </com.wefika.flowlayout.FlowLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Restrictions"
+                android:textSize="@dimen/h3Size"
+                android:textStyle="bold"/>
+
+            <com.wefika.flowlayout.FlowLayout
+                android:id="@+id/restrictions_container"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start|top"
+                android:paddingTop="@dimen/padding"
+                android:paddingBottom="@dimen/padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restriction1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restriction1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restriction1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="restriction1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+            </com.wefika.flowlayout.FlowLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

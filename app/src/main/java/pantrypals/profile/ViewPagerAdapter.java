@@ -1,8 +1,10 @@
 package pantrypals.profile;
 
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.google.common.collect.Lists;
 
@@ -12,7 +14,7 @@ import java.util.List;
  * Created by adityasrinivasan on 07/11/17.
  */
 
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     List<Fragment> fragments = Lists.newArrayList();
     List<String> tabNames = Lists.newArrayList();
@@ -39,5 +41,11 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return tabNames.get(position);
+    }
+
+    @Override
+    public Parcelable saveState()
+    {
+        return null;
     }
 }
