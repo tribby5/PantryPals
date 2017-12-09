@@ -15,15 +15,8 @@ tools:context="pantrypals.home.HomeFragment">
     <ListView
         android:id="@+id/feedListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/newPostButton" />
 
-    <Button
-        android:id="@+id/generatePostButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:text="GENERATE POST FROM JSON" />
 </RelativeLayout>
