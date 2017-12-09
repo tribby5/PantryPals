@@ -83,7 +83,7 @@ public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
         //get the persons information
         String name = getItem(position).getName();
         String imgUrl = getItem(position).getImgURL();
-        final String key = getItem(position).getId();
+        final String key = getItem(position).getDbKey();
 
 
         Log.d(TAG, "getView called");
