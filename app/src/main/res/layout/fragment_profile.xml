@@ -121,8 +121,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/profile_following_text"
                 android:layout_alignTop="@+id/avatar"
-                android:entries="@array/spinnerValues"
-                android:prompt="@string/amount"
                 android:layout_marginTop="17dp" />
 
         </RelativeLayout>

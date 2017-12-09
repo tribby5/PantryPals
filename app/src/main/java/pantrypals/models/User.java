@@ -21,6 +21,7 @@ public class User {
     private Map<String, Boolean> likedPosts;
     private Map<String, Boolean> likedRecipes;
     private Map<String, Boolean> savedPosts;
+    private Map<String, Boolean> notifications;
 
     public String getName() {
         return name;
@@ -140,5 +141,13 @@ public class User {
 
     public void setVerified(boolean verified) {
         this.verified = verified;
+    }
+
+    public Map<String, Boolean> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(Map<String, Boolean> notifications) {
+        this.notifications = notifications;
     }
 }
