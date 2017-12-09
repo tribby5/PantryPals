@@ -86,8 +86,10 @@ public class HomeFragment extends Fragment {
                         String tempRecipeId = snapshot.getKey();
                         // Remove this line
                         recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
-                        //hl130feedList.add(recipe);
-                        adapter.add(recipe);
+                        //feedList.add(recipe);
+                        if (meetsCondition(recipe)) {
+                            adapter.add(recipe);
+                        }
                         Log.d(TAG, "Retrieved Id: " + tempRecipeId);
                     }
                 }
@@ -143,7 +145,9 @@ public class HomeFragment extends Fragment {
                                             // Take out this line if url is there
                                             recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
                                             //feedList.add(recipe);
-                                            adapter.add(recipe);
+                                            if (meetsCondition(recipe)) {
+                                                adapter.add(recipe);
+                                            }
                                             Log.d(TAG, "Retrieved Id on Scroll: " + tempRecipeId);
                                         }
                                     }
@@ -171,6 +175,15 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Add logic for intelligent feed filtering
+     *
+     * @param recipe
+     * @return
+     */
+    private boolean meetsCondition(TempRecipe recipe) {
+        return true;
+    }
 
     private void toastMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
