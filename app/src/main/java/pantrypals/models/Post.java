@@ -11,8 +11,10 @@ import java.util.Map;
 
 /**
  * Created by Hunter Lee on 11/7/2017.
+ * For now we're only going to use Recipe.java
  */
 
+@Deprecated
 @IgnoreExtraProperties
 public class Post {
 
