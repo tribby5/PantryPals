@@ -78,8 +78,8 @@
     <string name="joint_pantry">Joint Pantry</string>
     <string name="add_item_from_pantry">Add Item from My Pantry</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
     <string name="discover_list_trending">Trending</string>
     <string name="discover_list_moods">Moods</string>
     <string name="discover_list_cuisines">Cuisines</string>
