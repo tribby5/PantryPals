@@ -113,7 +113,7 @@ public class PantryTabFragment extends Fragment {
                 Map<String, Boolean> jointID = user.getJointPantries();
 
                 for(String pantryID : jointID.keySet()){
-                    DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.jointPantriesData)).child(pantryID);
+                    DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
                     jointRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -197,10 +197,11 @@ public class PantryTabFragment extends Fragment {
 
     private void createNewJointPantry(String title, List<String> emails){
         DatabaseReference homeRef = FirebaseDatabase.getInstance().getReference();
-        
+
         DatabaseReference usersRef = homeRef.child(getResources().getString(R.string.userAccounts));
         final JointPantry pantry = new JointPantry();
         pantry.setTitle(title);
+        pantry.setShared(true);
 
         final ArrayList<String> uids = new ArrayList<>();
         for(String email : emails){
@@ -236,8 +237,8 @@ public class PantryTabFragment extends Fragment {
         pantry.setOwnedBy(sharedWith);
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        String key = database.getReference(getResources().getString(R.string.jointPantriesData)).push().getKey();
-        database.getReference().child(getResources().getString(R.string.jointPantriesData)).child(key).setValue(pantry);
+        String key = database.getReference(getResources().getString(R.string.pantriesData)).push().getKey();
+        database.getReference().child(getResources().getString(R.string.pantriesData)).child(key).setValue(pantry);
     }
 
 
