@@ -68,7 +68,7 @@ public class ProfileFragment extends Fragment {
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
         adapter.addTab(new ProfilePostsFragment(), "Posts");
-        adapter.addTab(new ProfileInfoFragment(), "Info");
+        adapter.addTab(ProfileInfoFragment.newFragment(getArguments().getCharSequence(ARG_ID)), "Info");
 
         viewPager.setAdapter(adapter);
 
@@ -79,11 +79,13 @@ public class ProfileFragment extends Fragment {
 
     private void setProfileHeader(final View view) {
         final TextView name = view.findViewById(R.id.profile_name);
+        final TextView bio = view.findViewById(R.id.profile_bio);
         mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 name.setText(user.getName());
+                bio.setText(user.getBio());
 
                 new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
                         .execute(user.getAvatar());

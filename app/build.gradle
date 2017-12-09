@@ -36,6 +36,7 @@ dependencies {
     compile 'com.googlecode.json-simple:json-simple:1.1'
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'de.hdodenhof:circleimageview:2.2.0'
+    compile 'com.wefika:flowlayout:0.4.1'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'junit:junit:4.12'
 }
@@ -52,4 +53,10 @@ dependencies {
     implementation 'com.android.support:support-v4:26.+'
 }
 
+dependencies {
+    implementation 'com.android.support:support-v4:26.+'
+}
+dependencies {
+    implementation 'com.android.support:support-v4:26.+'
+}
 apply plugin: 'com.google.gms.google-services'
