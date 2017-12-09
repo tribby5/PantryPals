@@ -52,6 +52,7 @@ public class FollowGenerator implements Generator {
         final double celebrityFollowsCelebrityProbability = 0.6;
         final double normalFollowsCelebrityProbability = 0.9;
         final double normalFollowsNormalProbability = 0.3;
+        final double followType = 0.5;
 
         mDatabase.child("/userAccounts").addValueEventListener(new ValueEventListener() {
             @Override
@@ -68,21 +69,45 @@ public class FollowGenerator implements Generator {
                         if(celebrities.contains(followerName)) {
                             if(celebrities.contains(followeeName)) {
                                 if(sample < celebrityFollowsCelebrityProbability) {
-                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(true);
+                                    String type;
+                                    if(r.nextDouble() < followType) {
+                                        type = "all";
+                                    } else {
+                                        type = "relevant";
+                                    }
+                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(type);
                                 }
                             } else {
                                 if(sample < celebrityFollowsNormalProbability) {
-                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(true);
+                                    String type;
+                                    if(r.nextDouble() < followType) {
+                                        type = "all";
+                                    } else {
+                                        type = "relevant";
+                                    }
+                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(type);
                                 }
                             }
                         } else {
                             if(celebrities.contains(followeeName)) {
                                 if(sample < normalFollowsCelebrityProbability) {
-                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(true);
+                                    String type;
+                                    if(r.nextDouble() < followType) {
+                                        type = "all";
+                                    } else {
+                                        type = "relevant";
+                                    }
+                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(type);
                                 }
                             } else {
                                 if(sample < normalFollowsNormalProbability) {
-                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(true);
+                                    String type;
+                                    if(r.nextDouble() < followType) {
+                                        type = "all";
+                                    } else {
+                                        type = "relevant";
+                                    }
+                                    mDatabase.child("/follows").child(follower.getKey()).child(followee.getKey()).setValue(type);
                                 }
                             }
                         }

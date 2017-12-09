@@ -5,7 +5,7 @@
     tools:context="pantrypals.profile.ProfileInfoFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/padding">
@@ -116,7 +116,77 @@
 
             </com.wefika.flowlayout.FlowLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Groups"
+                android:textSize="@dimen/h3Size"
+                android:textStyle="bold"/>
+
+            <com.wefika.flowlayout.FlowLayout
+                android:id="@+id/groups_container"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start|top"
+                android:paddingTop="@dimen/padding"
+                android:paddingBottom="@dimen/padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="group1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="group1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="group1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="group1"
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner"
+                    android:textColor="@color/colorWhite"
+                    />
+
+            </com.wefika.flowlayout.FlowLayout>
+
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>

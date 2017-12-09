@@ -19,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wefika.flowlayout.FlowLayout;
 
+import pantrypals.models.Group;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -95,6 +97,36 @@ public class ProfileInfoFragment extends Fragment {
 
                     restrictionText.setLayoutParams(params);
                     restrictionLayout.addView(restrictionText);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase.child("/groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                FlowLayout groupLayout = view.findViewById(R.id.groups_container);
+                groupLayout.removeAllViews();
+                for(DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
+                    Group group = groupSnapshot.getValue(Group.class);
+                    if(group.getMembers().keySet().contains(getArguments().getCharSequence(ARG_ID))) {
+                        TextView groupText = new TextView(getContext());
+                        groupText.setText(group.getName());
+                        groupText.setTextSize(14);
+                        groupText.setPadding(25, 15, 25, 15);
+                        groupText.setTextColor(getResources().getColor(R.color.colorWhite));
+                        groupText.setBackground(getResources().getDrawable(R.drawable.rounded_corner));
+
+                        FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(10,0,10,0);
+
+                        groupText.setLayoutParams(params);
+                        groupLayout.addView(groupText);
+                    }
                 }
             }
 

@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import pantrypals.database.generate.FollowGenerator;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 

@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
@@ -20,9 +22,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ValueEventListener;
 
 import java.net.URL;
+import java.util.Map;
 
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.models.User;
@@ -100,12 +104,71 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+        final Spinner spinner = view.findViewById(R.id.profile_follow_spinner);
+
+        mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int follow = 0;
+                for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
+                    if (followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
+                        follow = (((String) followingSnapshot.getValue(String.class)).equals("all") ? 1 : 2);
+                        break;
+                    }
+                }
+                spinner.setSelection(follow);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
+                if(i == 0) {            // not following
+                    mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
+                                if (spinner.getSelectedItemPosition() == 0 && followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
+                                    Log.d(TAG, "unfollowing");
+                                    mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + followingSnapshot.getKey()).removeValue();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else if (i == 1) {
+                    mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("all");
+                } else if (i == 2) {    // following relevant
+                    mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("relevant");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(getArguments().get(ARG_ID))) {
+            spinner.setVisibility(View.INVISIBLE);
+        }
+
         final TextView numFollowing = view.findViewById(R.id.profile_following_num);
         mDatabase.child("/follows/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int num = 0;
-                for(DataSnapshot ignored : dataSnapshot.getChildren()) {
+                for (DataSnapshot ignored : dataSnapshot.getChildren()) {
                     num++;
                 }
                 numFollowing.setText(Integer.toString(num));
@@ -122,9 +185,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int num = 0;
-                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    for(DataSnapshot followingSnapshot : userSnapshot.getChildren()) {
-                        if(followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    for (DataSnapshot followingSnapshot : userSnapshot.getChildren()) {
+                        if (followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
                             num++;
                         }
                     }
@@ -137,6 +200,7 @@ public class ProfileFragment extends Fragment {
 
             }
         });
+
     }
 
 
