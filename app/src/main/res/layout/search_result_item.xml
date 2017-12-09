@@ -16,7 +16,7 @@
         android:id="@+id/search_result_person_avatar" />
 
     <TextView
-        android:id="@+id/search_result_person_name"
+        android:id="@+id/search_result_primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/search_result_person_avatar"
@@ -26,20 +26,20 @@
         android:text="Name" />
 
     <TextView
-        android:id="@+id/search_result_person_bio"
+        android:id="@+id/search_result_secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/search_result_person_avatar"
-        android:layout_alignStart="@+id/search_result_person_name"
+        android:layout_alignStart="@+id/search_result_primary"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="Bio" />
 
     <ImageView
-        android:id="@+id/search_result_person_verified"
+        android:id="@+id/search_result_verified"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_toEndOf="@+id/search_result_person_name"
+        android:layout_toEndOf="@+id/search_result_primary"
         android:layout_marginStart="@dimen/padding"
         app:srcCompat="@drawable/verified" />
 

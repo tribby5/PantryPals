@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment {
                 bio.setText(user.getBio());
 
                 new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
-                        .execute(user.getAvatar());
+                        .execute("https://vignette.wikia.nocookie.net/mrbean/images/4/4b/Mr_beans_holiday_ver2.jpg/revision/latest/scale-to-width-down/250?cb=20100424114324");
 
                 ImageView verifiedImage = view.findViewById(R.id.verifiedIcon);
                 verifiedImage.setVisibility(user.isVerified() ? View.VISIBLE : View.INVISIBLE);

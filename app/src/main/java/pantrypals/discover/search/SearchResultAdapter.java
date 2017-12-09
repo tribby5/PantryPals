@@ -1,6 +1,9 @@
 package pantrypals.discover.search;
 
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +16,10 @@ import com.android.databaes.pantrypals.R;
 
 import java.util.List;
 
-import pantrypals.discover.SquareLayout;
 import pantrypals.models.Group;
 import pantrypals.models.Post;
 import pantrypals.models.User;
+import pantrypals.profile.ProfileFragment;
 
 /**
  * Created by adityasrinivasan on 08/12/17.
@@ -26,10 +29,12 @@ public class SearchResultAdapter extends BaseAdapter {
 
     private final Context mContext;
     private final List<SearchResult> items;
+    private FragmentManager fm;
 
-    SearchResultAdapter(Context mContext, List<SearchResult> items) {
+    SearchResultAdapter(Context mContext, List<SearchResult> items, FragmentManager fm) {
         this.mContext = mContext;
         this.items = items;
+        this.fm = fm;
     }
 
     @Override
@@ -63,7 +68,7 @@ public class SearchResultAdapter extends BaseAdapter {
             } else if(result.getInfo() instanceof Post) {
                 return getPostView(result, layoutInflater);
             } else {
-                view = layoutInflater.inflate(R.layout.search_result_person_item, null);
+                view = layoutInflater.inflate(R.layout.search_result_item, null);
                 RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
                 return rl;
             }
@@ -72,36 +77,67 @@ public class SearchResultAdapter extends BaseAdapter {
         } else if(result.getType() == SearchType.POSTS) {
             return getPostView(result, layoutInflater);
         }
-        view = layoutInflater.inflate(R.layout.search_result_person_item, null);
+        view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
         return rl;
     }
 
-    private View getPersonView(SearchResult result, LayoutInflater layoutInflater) {
-        View view = layoutInflater.inflate(R.layout.search_result_person_item, null);
+    private View getPersonView(final SearchResult result, LayoutInflater layoutInflater) {
+        View view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
 
         User user = (User) result.getInfo();
 
-        TextView nameTV = view.findViewById(R.id.search_result_person_name);
+        TextView nameTV = view.findViewById(R.id.search_result_primary);
         nameTV.setText(user.getName());
-        TextView bioTV = view.findViewById(R.id.search_result_person_bio);
+        TextView bioTV = view.findViewById(R.id.search_result_secondary);
         bioTV.setText(user.getBio());
-        ImageView verifiedImg = view.findViewById(R.id.search_result_person_verified);
+        ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
         verifiedImg.setVisibility(user.isVerified() ? View.VISIBLE : View.INVISIBLE);
+
+        rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentTransaction transaction = fm.beginTransaction();
+                transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(result.getId()));
+                transaction.commit();
+            }
+        });
 
         return rl;
     }
 
     private View getGroupView(SearchResult result, LayoutInflater layoutInflater) {
-        View view = layoutInflater.inflate(R.layout.search_result_person_item, null);
+        View view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
+
+        Group group = (Group) result.getInfo();
+
+        TextView nameTV = view.findViewById(R.id.search_result_primary);
+        nameTV.setText(group.getName());
+        TextView bioTV = view.findViewById(R.id.search_result_secondary);
+        bioTV.setText(Integer.toString(group.getMembers().size()) + " members");
+
+        ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
+        verifiedImg.setVisibility(View.INVISIBLE);
+
         return rl;
     }
 
     private View getPostView(SearchResult result, LayoutInflater layoutInflater) {
-        View view = layoutInflater.inflate(R.layout.search_result_person_item, null);
+        View view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
+
+        Post post = (Post) result.getInfo();
+
+        TextView nameTV = view.findViewById(R.id.search_result_primary);
+        nameTV.setText(post.getTitle());
+        TextView bioTV = view.findViewById(R.id.search_result_secondary);
+        bioTV.setText(post.getText());
+
+        ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
+        verifiedImg.setVisibility(View.INVISIBLE);
+
         return rl;
     }
 
