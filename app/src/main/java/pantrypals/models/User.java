@@ -22,6 +22,7 @@ public class User {
     private Map<String, Boolean> likedRecipes;
     private Map<String, Boolean> savedPosts;
     private Map<String, Boolean> notifications;
+    private Map<String, Boolean> jointPantries;
 
     public String getName() {
         return name;
@@ -101,6 +102,14 @@ public class User {
 
     public void setPantries(Map<String, Boolean> pantries) {
         this.pantries = pantries;
+    }
+
+    public Map<String, Boolean> getJointPantries() {
+        return jointPantries;
+    }
+
+    public void setJointPantries(Map<String, Boolean> jointPantries) {
+        this.jointPantries = jointPantries;
     }
 
     public Map<String, Boolean> getPreferences() {

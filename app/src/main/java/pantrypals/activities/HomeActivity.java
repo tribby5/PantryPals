@@ -17,7 +17,7 @@ import pantrypals.discover.DiscoverFragment;
 import pantrypals.discover.DiscoverItemClickListener;
 import pantrypals.home.HomeFragment;
 import pantrypals.notifications.NotificationsFragment;
-import pantrypals.pantry.PantryFragment;
+import pantrypals.pantry.PantryTabFragment;
 import pantrypals.profile.ProfileFragment;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -44,7 +44,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
                                 selectedFragment = DiscoverFragment.newInstance();
                                 break;
                             case R.id.nav_pantry:
-                                selectedFragment = PantryFragment.newInstance();
+                                selectedFragment = PantryTabFragment.newInstance();
                                 break;
                             case R.id.nav_profile:
                                 selectedFragment = ProfileFragment.newFragment(FirebaseAuth.getInstance().getCurrentUser().getUid());

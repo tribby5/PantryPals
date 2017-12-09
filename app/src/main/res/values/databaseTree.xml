@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- userAccounts-->
+    <string name="userAccounts">userAccounts</string>
+    <string name="email">email</string>
+
+    <!-- pantries-->
+    <string name="pantriesData">pantries</string>
+    <string name="items">items</string>
+    <string name="jointPantriesAttribute">jointPantries</string>
+
+</resources>
