@@ -1,65 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="25dp">
 
     <TextView
         android:id="@+id/edit_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="20dp"
         android:text="@string/edit_item_pantry"
         android:textAlignment="center"
+        android:layout_gravity="center"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
 
 
     <EditText
         android:id="@+id/itemName"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
-        android:ems="10"
         android:hint="@string/item_name"
         android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_title" />
+        android:layout_gravity="center"
+        />
 
     <EditText
         android:id="@+id/amount"
-        android:layout_width="131dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:ems="10"
-        android:hint="@string/amount"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/itemName" />
-
-    <Spinner
-        android:id="@+id/measurement_unit"
-        android:layout_width="75dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/amount" />
+        android:hint="@string/amount"
+        android:inputType="number"
+        android:layout_gravity="center"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginTop="30dp">
+        <TextView
+            android:id="@+id/units"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/units"
+            android:layout_marginEnd="20dp"
+            android:textAlignment="center"
+            android:textSize="18dp"
+            />
+
+        <Spinner
+            android:id="@+id/measurement_unit"
+            android:layout_width="75dp"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="30dp">
+        <TextView
+            android:id="@+id/expirationDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/expiration_date"
+            android:textAlignment="center"
+            android:textSize="18dp"
+            />
+
+        <EditText
+            android:id="@+id/expirationDate"
+            android:layout_width="109dp"
+            android:layout_height="39dp"
+            android:layout_marginEnd="60dp"
+            android:inputType="date"
+            />
+    </LinearLayout>
 
 
-</android.support.constraint.ConstraintLayout>
+
+
+</LinearLayout>
