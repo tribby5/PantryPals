@@ -18,11 +18,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
+import pantrypals.models.Pantry;
 import pantrypals.models.User;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -80,7 +82,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
                 final String email = newUserEmail.getText().toString();
-                String password = newUserPassword.getText().toString();
+                final String password = newUserPassword.getText().toString();
 
                 Boolean cancel = false;
                 View focusView = null;
@@ -106,24 +108,18 @@ public class RegistrationActivity extends AppCompatActivity {
                 if(cancel){
                     focusView.requestFocus();
                 }
-
+                Log.d("EMAIL", email);
 
                 if(!cancel) {
+
                     mAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     Log.d("createCredentials", "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                                    // If sign in fails, display a message to the user. If sign in succeeds
-                                    // the auth state listener will be notified and logic to handle the
-                                    // signed in user can be handled in the listener.
-//                                    if (!task.isSuccessful()) {
-//                                        Toast.makeText(RegistrationActivity.this, R.string.auth_failed,
-//                                                Toast.LENGTH_LONG).show();
-//                                    }
-//                                    else{
-                                        // Set DisplayName as name
+                                    if(task.isSuccessful()) {
+
                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                         String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
                                         String bio = newUserBio.getText().toString();
@@ -132,6 +128,8 @@ public class RegistrationActivity extends AppCompatActivity {
                                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
                                         user.updateProfile(profileUpdates);
 
+
+                                        //Verification email
                                         FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                     @Override
@@ -144,6 +142,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
                                         writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions);
 //                                      }
+                                    }
                                 }
                             });
                 }
@@ -167,7 +166,29 @@ public class RegistrationActivity extends AppCompatActivity {
         user.setBio(bio);
         user.setPreferences(preferences);
         user.setRestrictions(restrictions);
+
+        //Creates personal pantry and return keys to store it with
+        String pantryKey = createPersonalPantry();
+        user.setPersonalPantry(pantryKey);
+        
         FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
+
+    }
+
+    private String createPersonalPantry(){
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //Create entry for a personal pantry:
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+        Pantry newPantry = new Pantry();
+        HashMap<String, Boolean> ownedBy = new HashMap<>();
+        ownedBy.put(uid, true);
+        newPantry.setOwnedBy(ownedBy);
+        newPantry.setShared(false);
+        String key = FirebaseDatabase.getInstance().getReference(getResources().getString(R.string.pantriesData)).push().getKey();
+        ref.child(key).setValue(newPantry);
+
+        //Returns pantry key
+        return key;
     }
 
     @Override
