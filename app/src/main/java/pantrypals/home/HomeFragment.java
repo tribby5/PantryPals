@@ -24,9 +24,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import pantrypals.activities.NewRecipeActivity;
@@ -48,10 +52,10 @@ public class HomeFragment extends Fragment {
     private String userId;
 
     private ListView feedListView;
-    private ArrayList<TempRecipe> feedList = new ArrayList<>();
+    private ArrayList<Recipe> feedList = new ArrayList<>();
     // getActivity for fragment
     private CustomListAdapter adapter;
-    private String oldestPostId;
+    private long oldestRecipeNegTimestamp;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -77,23 +81,51 @@ public class HomeFragment extends Fragment {
         // Retrieve data from Firebase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.limitToFirst(2).addValueEventListener(new ValueEventListener() {
+
+//        //TEMP CODE TO ADD NEGTIMESTAMP FIELD TO ALL RECIPE ENTRIES
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Recipe r = snapshot.getValue(Recipe.class);
+//                    String rid = snapshot.getKey();
+//                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+//                    long negts = 0;
+//                    try {
+//                        Date dt = dateFormat.parse(r.getTimePosted());
+//                        negts = dt.getTime() * -1;
+//                    } catch (ParseException e) {
+//                        e.printStackTrace();
+//                    }
+//                    ref.child(rid).child("negTimestamp").setValue(negts);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+        ref.orderByChild("negTimestamp").limitToFirst(4).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.getKey().equals(oldestPostId)) {
-                        oldestPostId = snapshot.getKey();
-                        dataSnapshot.getChildrenCount();
-                        TempRecipe recipe = snapshot.getValue(TempRecipe.class);
-                        String tempRecipeId = snapshot.getKey();
+                    Recipe recipe = snapshot.getValue(Recipe.class);
+                    if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
+                        oldestRecipeNegTimestamp = recipe.getNegTimestamp();
+                        //dataSnapshot.getChildrenCount();
+
+                        String recipeId = snapshot.getKey();
                         // Remove this line
-                        recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
-                        recipe.setDbKey(tempRecipeId);
+                        //recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
+                        recipe.setDbKey(recipeId);
                         //feedList.add(recipe);
                         if (meetsCondition(recipe)) {
                             adapter.add(recipe);
                         }
-                        Log.d(TAG, "Retrieved Id: " + tempRecipeId);
+                        Log.d(TAG, "Retrieved Id: " + recipeId);
                     }
                 }
             }
@@ -146,23 +178,23 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByKey().startAt(oldestPostId).limitToFirst(2)
+                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(4)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        if (!snapshot.getKey().equals(oldestPostId)) {
-                                            oldestPostId = snapshot.getKey();
-                                            String tempRecipeId = snapshot.getKey();
-                                            TempRecipe recipe = snapshot.getValue(TempRecipe.class);
+                                        Recipe recipe = snapshot.getValue(Recipe.class);
+                                        if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
+                                            oldestRecipeNegTimestamp = recipe.getNegTimestamp();
+                                            String recipeId = snapshot.getKey();
                                             // Take out this line if url is there
-                                            recipe.setImgURL(TEMP_IMAGE);
-                                            recipe.setDbKey(tempRecipeId);
+                                            //recipe.setImgURL(TEMP_IMAGE);
+                                            recipe.setDbKey(recipeId);
                                             //feedList.add(recipe);
                                             if (meetsCondition(recipe)) {
                                                 adapter.add(recipe);
                                             }
-                                            Log.d(TAG, "Retrieved Id on Scroll: " + tempRecipeId);
+                                            Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
                                         }
                                     }
                                 }
@@ -184,7 +216,7 @@ public class HomeFragment extends Fragment {
      * @param recipe
      * @return
      */
-    private boolean meetsCondition(TempRecipe recipe) {
+    private boolean meetsCondition(Recipe recipe) {
         return true;
     }
 
