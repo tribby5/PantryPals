@@ -48,7 +48,7 @@ public class HomeFragment extends Fragment {
     private String userId;
 
     private ListView feedListView;
-    private ArrayList<TempRecipe> feedList = new ArrayList<>();
+    private ArrayList<Recipe> feedList = new ArrayList<>();
     // getActivity for fragment
     private CustomListAdapter adapter;
     private String oldestPostId;
@@ -85,16 +85,16 @@ public class HomeFragment extends Fragment {
                     if (!snapshot.getKey().equals(oldestPostId)) {
                         oldestPostId = snapshot.getKey();
                         dataSnapshot.getChildrenCount();
-                        TempRecipe recipe = snapshot.getValue(TempRecipe.class);
-                        String tempRecipeId = snapshot.getKey();
+                        Recipe recipe = snapshot.getValue(Recipe.class);
+                        String recipeId = snapshot.getKey();
                         // Remove this line
-                        recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
-                        recipe.setDbKey(tempRecipeId);
+                        //recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
+                        recipe.setDbKey(recipeId);
                         //feedList.add(recipe);
                         if (meetsCondition(recipe)) {
                             adapter.add(recipe);
                         }
-                        Log.d(TAG, "Retrieved Id: " + tempRecipeId);
+                        Log.d(TAG, "Retrieved Id: " + recipeId);
                     }
                 }
             }
@@ -154,16 +154,16 @@ public class HomeFragment extends Fragment {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                                         if (!snapshot.getKey().equals(oldestPostId)) {
                                             oldestPostId = snapshot.getKey();
-                                            String tempRecipeId = snapshot.getKey();
-                                            TempRecipe recipe = snapshot.getValue(TempRecipe.class);
+                                            String recipeId = snapshot.getKey();
+                                            Recipe recipe = snapshot.getValue(Recipe.class);
                                             // Take out this line if url is there
-                                            recipe.setImgURL(TEMP_IMAGE);
-                                            recipe.setDbKey(tempRecipeId);
+                                            //recipe.setImgURL(TEMP_IMAGE);
+                                            recipe.setDbKey(recipeId);
                                             //feedList.add(recipe);
                                             if (meetsCondition(recipe)) {
                                                 adapter.add(recipe);
                                             }
-                                            Log.d(TAG, "Retrieved Id on Scroll: " + tempRecipeId);
+                                            Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
                                         }
                                     }
                                 }
@@ -185,7 +185,7 @@ public class HomeFragment extends Fragment {
      * @param recipe
      * @return
      */
-    private boolean meetsCondition(TempRecipe recipe) {
+    private boolean meetsCondition(Recipe recipe) {
         return true;
     }
 

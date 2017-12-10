@@ -123,7 +123,7 @@ public class RecipeGenerator {
                     requiredIngredients.put(name, ingredient);
                 }
 
-                recipe.setTitle(title);
+                recipe.setName(title);
                 recipe.setText(text);
                 //recipe.setRequiredIngredients(requiredIngredients);
                 //recipe.setTimestamp(recipe.generateTimestamp());

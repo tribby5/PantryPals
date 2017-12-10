@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Recipe {
 
-    private String title;
+    private String name;
     private String text;
     private String caption;
 
@@ -20,79 +20,23 @@ public class Recipe {
     private Map<String, Boolean> postedBy;
     private Map<String, Integer> ratings;
 
+    private List<Ingredient> ingredients;
+    private List<String> instructions;
+    private List<String> tags;
 
-
-    private List<Ingredient> requiredIngredients;
-
-
-    private double averageRating;
+    private String averageRating;
     private String dbKey;
-
-
-    public List<Ingredient> getRequiredIngredients() {
-        return requiredIngredients;
-    }
-
-    public void setRequiredIngredients(List<Ingredient> requiredIngredients) {
-        this.requiredIngredients = requiredIngredients;
-    }
-
-    public String getDbKey() {
-        return dbKey;
-    }
-
-    public void setDbKey(String dbKey) {
-        this.dbKey = dbKey;
-    }
-
-
-    public String getCaption() {
-        return caption;
-    }
-
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
-
-
-    public String getImgURL() {
-        return imgURL;
-    }
-
-    public void setImgURL(String imgURL) {
-        this.imgURL = imgURL;
-    }
-
-    private String imgURL;
-
-
-//    public void setTimestamp(Map timestamp) {
-//        this.timestamp = timestamp;
-//    }
-
-//    private Map timestamp;
-
-    // Just using string for timeposted. Make this randomly generated.
     private String timePosted;
+    private String imageURL;
 
-    public String getTimePosted() {
-        return timePosted;
+
+
+    public String getName() {
+        return name;
     }
 
-    public void setTimePosted(String timePosted) {
-        this.timePosted = timePosted;
-    }
-
-
-
-
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getText() {
@@ -103,17 +47,12 @@ public class Recipe {
         this.text = text;
     }
 
-
-    public Map<String, String> generateTimestamp() {
-        return ServerValue.TIMESTAMP;
+    public String getCaption() {
+        return caption;
     }
 
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
-    }
-
-    public double getAverageRating() {
-        return averageRating;
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public Map<String, Comment> getComments() {
@@ -128,14 +67,6 @@ public class Recipe {
         return likedBy;
     }
 
-    public Map<String, Integer> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(Map<String, Integer> ratings) {
-        this.ratings = ratings;
-    }
-
     public void setLikedBy(Map<String, Boolean> likedBy) {
         this.likedBy = likedBy;
     }
@@ -146,6 +77,89 @@ public class Recipe {
 
     public void setPostedBy(Map<String, Boolean> postedBy) {
         this.postedBy = postedBy;
+    }
+
+    public Map<String, Integer> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(Map<String, Integer> ratings) {
+        this.ratings = ratings;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public List<String> getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(List<String> instructions) {
+        this.instructions = instructions;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public String getAverageRating() {
+        return averageRating;
+    }
+
+    public String getDbKey() {
+        return dbKey;
+    }
+
+    public void setDbKey(String dbKey) {
+        this.dbKey = dbKey;
+    }
+
+    public String getTimePosted() {
+        return timePosted;
+    }
+
+    public void setTimePosted(String timePosted) {
+        this.timePosted = timePosted;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+
+
+
+//    public void setTimestamp(Map timestamp) {
+//        this.timestamp = timestamp;
+//    }
+
+//    private Map timestamp;
+
+    // Just using string for timeposted. Make this randomly generated.
+
+    public Map<String, String> generateTimestamp() {
+        return ServerValue.TIMESTAMP;
+    }
+
+//    public void setAverageRating(double averageRating) {
+//        this.averageRating = averageRating;
+//    }
+
+    public void setAverageRating(String averageRating) {
+        this.averageRating = averageRating;
     }
 
     public Recipe() {

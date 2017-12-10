@@ -37,6 +37,7 @@ public class NewRecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
+        //TODO: When this is finished, change the string inside getReference to /recipes
         mDatabase = FirebaseDatabase.getInstance().getReference("/TESTRECIPES");
         final String mRecipe_key = mDatabase.push().getKey();
 
@@ -49,11 +50,13 @@ public class NewRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                EditText titleView = (EditText) findViewById(R.id.newRecipeTitle);
+                EditText nameView = (EditText) findViewById(R.id.newRecipeTitle);
                 EditText captionView = (EditText) findViewById(R.id.newRecipeCaption);
-                EditText textView = (EditText) findViewById(R.id.newRecipeText);
-                String title = titleView.getText().toString();
+                String name = nameView.getText().toString();
                 String caption = captionView.getText().toString();
+
+                //TODO: Change the following two lines so that instead of text, we get list of instructions
+                EditText textView = (EditText) findViewById(R.id.newRecipeText);
                 String text = textView.getText().toString();
 
                 List<Recipe.Ingredient> ingredients = new ArrayList<>();
@@ -62,7 +65,7 @@ public class NewRecipeActivity extends AppCompatActivity {
                     View tableRow = ingredientTableView.getChildAt(i);
                     if (tableRow instanceof TableRow) {
                         TableRow row = (TableRow) tableRow;
-                        String name = null;
+                        String ingName = null;
                         Double amount = 0.0;
                         String unit = null;
                         for (int x = 0; x < row.getChildCount(); x++) {
@@ -70,7 +73,7 @@ public class NewRecipeActivity extends AppCompatActivity {
                             if (ingredientElem instanceof EditText) {
                                 EditText data = (EditText) ingredientElem;
                                 if (x == 0) {
-                                    name = data.getText().toString();
+                                    ingName = data.getText().toString();
                                 } else if (x == 1) {
                                     amount = Double.parseDouble(data.getText().toString());
                                 } else if (x == 2) {
@@ -79,7 +82,7 @@ public class NewRecipeActivity extends AppCompatActivity {
                             }
                         }
                         Recipe.Ingredient ingredientInstance = new Recipe.Ingredient();
-                        ingredientInstance.setName(name);
+                        ingredientInstance.setName(ingName);
                         ingredientInstance.setAmount(amount);
                         ingredientInstance.setUnit(unit);
                         ingredients.add(ingredientInstance);
@@ -89,17 +92,19 @@ public class NewRecipeActivity extends AppCompatActivity {
                 String timePosted = dateFormat.format(new Date()); // Find todays date
 
                 Recipe newRecipe = new Recipe();
-                newRecipe.setTitle(title);
+                newRecipe.setName(name);
                 newRecipe.setCaption(caption);
-                newRecipe.setText(text);
-                newRecipe.setRequiredIngredients(ingredients);
+                newRecipe.setIngredients(ingredients);
+                newRecipe.setTimePosted(timePosted);
+                //TODO: set Instructions
+                //newRecipe.setInstructions();
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
 //                recipesToSendToFirebase.put(mRecipe_key, newRecipe);
 
                 mDatabase.child(mRecipe_key).setValue(newRecipe);
 
-                toastMessage("New Recipe " + title + " has been successfully created");
+                toastMessage("New Recipe " + name + " has been successfully created");
                 finish();
             }
         });

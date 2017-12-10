@@ -38,10 +38,11 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
+import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
 
 
-public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
+public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
     private static final String TAG = "CustomListAdapter";
 
@@ -60,7 +61,7 @@ public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
      * @param resource
      * @param objects
      */
-    public CustomListAdapter(Context context, int resource, ArrayList<TempRecipe> objects) {
+    public CustomListAdapter(Context context, int resource, ArrayList<Recipe> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
@@ -80,9 +81,9 @@ public class CustomListAdapter extends ArrayAdapter<TempRecipe> {
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        //get the persons information
+        //get the recipe
         String name = getItem(position).getName();
-        String imgUrl = getItem(position).getImgURL();
+        String imgUrl = getItem(position).getImageURL();
         final String key = getItem(position).getDbKey();
 
 
