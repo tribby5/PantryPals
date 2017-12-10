@@ -15,6 +15,7 @@ public class User {
     private String bio;
     private String avatar;
     private boolean verified;
+    private String personalPantry;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
     private Map<String, Boolean> groups;
@@ -23,6 +24,14 @@ public class User {
     private Map<String, Boolean> savedPosts;
     private Map<String, Boolean> notifications;
     private Map<String, Boolean> jointPantries;
+
+    public Map<String, Boolean> preferences;
+    public Map<String, Boolean> restrictions;
+
+    public User() {
+        // Default constructor required for calls to DataSnapshot.getValue(User.class)
+    }
+
 
     public String getName() {
         return name;
@@ -96,12 +105,12 @@ public class User {
         this.savedPosts = savedPosts;
     }
 
-    public Map<String, Boolean> getPantries() {
-        return pantries;
+    public void setPersonalPantry(String pantryKey){
+        this.personalPantry = pantryKey;
     }
 
-    public void setPantries(Map<String, Boolean> pantries) {
-        this.pantries = pantries;
+    public String getPersonalPantry(){
+        return personalPantry;
     }
 
     public Map<String, Boolean> getJointPantries() {
@@ -126,14 +135,6 @@ public class User {
 
     public void setRestrictions(Map<String, Boolean> restrictions) {
         this.restrictions = restrictions;
-    }
-
-    public Map<String, Boolean> pantries;
-    public Map<String, Boolean> preferences;
-    public Map<String, Boolean> restrictions;
-
-    public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
     public String getAvatar() {
