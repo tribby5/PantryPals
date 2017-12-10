@@ -1,85 +1,79 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pantrypals.pantry.PantryTabFragment">
+    tools:context="pantrypals.pantry.PantryTabFragment"
+    android:background="@color/colorPrimaryDark"
+    android:orientation="vertical"
+    >
 
     <TextView
         android:id="@+id/pantry_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:text="@string/pantries"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textSize="36sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="0dp" />
+        android:textColor="@color/colorWhite"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+       />
 
     <Button
         android:id="@+id/my_pantry"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:shadowColor="#00FF00"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorAccentAlt"
         android:text="@string/my_pantry"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_title" />
+        android:layout_gravity="center"
+        android:layout_marginBottom="30dp"
+        android:padding="10dp"
+        />
 
     <TextView
         android:id="@+id/joint_pantries"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="124dp"
         android:text="@string/joint_pantries"
         android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pantry_title"
-        app:layout_constraintVertical_bias="1.0" />
+        android:textColor="@color/colorWhite"
+        android:layout_marginStart="56dp"
+        android:layout_marginBottom="15dp"
+     />
 
     <ListView
         android:id="@+id/jointPantriesListView"
         android:layout_width="268dp"
-        android:layout_height="236dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginTop="50dp"
-        android:background="@drawable/border_ui"
-        android:divider="#000"
+        android:layout_height="210dp"
+        android:divider="#FFF"
         android:dividerHeight="2dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.851"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintTop_creator="1"></ListView>
+        android:background="@color/colorPrimaryDark"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+      ></ListView>
+    <!-- android:background="@drawable/border_ui" -->
 
     <Button
         android:id="@+id/addJointPantry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:text="@string/add_new_joint_pantry"
         android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorAccentAlt"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        />
 
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
