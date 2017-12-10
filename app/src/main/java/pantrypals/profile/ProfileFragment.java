@@ -13,11 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,9 +29,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ValueEventListener;
 
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.Map;
+import java.util.UUID;
 
 import pantrypals.discover.DiscoverDetailFragment;
+import pantrypals.models.Notification;
 import pantrypals.models.User;
 import pantrypals.util.DownloadImageTask;
 
@@ -106,6 +112,8 @@ public class ProfileFragment extends Fragment {
 
 
         final Spinner spinner = view.findViewById(R.id.profile_follow_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_layout, Lists.newArrayList("Not following", "Following all", "Following relevant"));
+        spinner.setAdapter(adapter);
 
         mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -118,6 +126,11 @@ public class ProfileFragment extends Fragment {
                     }
                 }
                 spinner.setSelection(follow);
+                if(follow == 0) {
+                    spinner.setBackgroundColor(getResources().getColor(R.color.colorLightGray));
+                } else {
+                    spinner.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+                }
             }
 
             @Override
@@ -130,12 +143,12 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
                 if(i == 0) {            // not following
+                    sendUnfollowNotif();
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
                                 if (spinner.getSelectedItemPosition() == 0 && followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
-                                    Log.d(TAG, "unfollowing");
                                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/" + followingSnapshot.getKey()).removeValue();
                                 }
                             }
@@ -147,8 +160,10 @@ public class ProfileFragment extends Fragment {
                         }
                     });
                 } else if (i == 1) {
+                    sendFollowNotif("all");
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("all");
                 } else if (i == 2) {    // following relevant
+                    sendFollowNotif("relevant");
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("relevant");
                 }
             }
@@ -201,6 +216,64 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+    }
+
+    private void sendUnfollowNotif() {
+
+    }
+
+    private void sendFollowNotif(final String type) {
+        // send notif if not already following in capacity specified by type
+        mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean sendNotif = true;
+                for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
+                    if(followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
+                        if(((String) followingSnapshot.getValue(String.class)).equals(type)) {
+                            sendNotif = false;
+                        }
+                    }
+                }
+                if(sendNotif) {
+                    final String notifID = UUID.randomUUID().toString().substring(0, 32).replace("-", "");
+                    Notification notif = new Notification();
+                    notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
+                    notif.setLinkType("user");
+                    notif.setLinkID(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    if(type.equals("all")) {
+                        notif.setMessage("This user has followed all of your posts.");
+                    } else {
+                        notif.setMessage("This user has followed your relevant posts.");
+                    }
+                    notif.setOriginator("Placeholder name");
+                    mDatabase.child("/notifications/" + notifID).setValue(notif);
+                    mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = (User) dataSnapshot.getValue(User.class);
+                            Map<String, Boolean> notifs = user.getNotifications();
+                            if(notifs == null) {
+                                notifs = Maps.newHashMap();
+                            }
+                            notifs.put(notifID, true);
+                            user.setNotifications(notifs);
+                            mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).setValue(user);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 

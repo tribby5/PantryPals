@@ -30,6 +30,8 @@ public class PersonalPantryFragment extends Fragment {
     public static final String THIRD_COLUMN = "unit";
     public static final String FOURTH_COLUMN = "expiration";
 
+    private ArrayList<HashMap<String, String>> items;
+    private PantryItemsAdapter adapter;
 
 
     public PersonalPantryFragment() {
@@ -56,42 +58,22 @@ public class PersonalPantryFragment extends Fragment {
 
         setupItemListView(view);
 
-
-
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void setupItemListView(View view){
         ListView itemListView = (ListView) view.findViewById(R.id.itemListView);
-
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 editModal(view);
             }
         });
-        ArrayList<HashMap<String, String>> items = new ArrayList<HashMap<String, String>>();
-
-        //TODO remove dummy data
-        HashMap<String, String> testItem = new HashMap<>();
-        testItem.put(FIRST_COLUMN, "chicken");
-        testItem.put(SECOND_COLUMN, "6");
-        testItem.put(THIRD_COLUMN, "lb");
-        testItem.put(FOURTH_COLUMN, "11/18/17");
-
-        HashMap<String, String> testItem2 = new HashMap<>();
-        testItem2.put(FIRST_COLUMN, "butter");
-        testItem2.put(SECOND_COLUMN, "2");
-        testItem2.put(THIRD_COLUMN, "tbsp");
-        testItem2.put(FOURTH_COLUMN, "11/10/17");
-
-
-        items.add(testItem);
-        items.add(testItem2);
-
-        PantryItemsAdapter adapter = new PantryItemsAdapter(getActivity(), items);
-
+        items = new ArrayList<HashMap<String, String>>();
+        adapter = new PantryItemsAdapter(getActivity(), items);
         itemListView.setAdapter(adapter);
+
+
     }
 
     private void addButtonClick(View v){

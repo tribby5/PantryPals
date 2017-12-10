@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding"
+    android:background="@drawable/border_top_down"
+    android:id="@+id/notification_layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@mipmap/ic_launcher"
+        app:civ_border_color="@color/colorAccentAlt"
+        app:civ_border_width="2dp"
+        android:id="@+id/notification_img" />
+
+    <TextView
+        android:id="@+id/notification_primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/notification_img"
+        android:layout_marginStart="21dp"
+        android:layout_toEndOf="@+id/notification_img"
+        android:textSize="@dimen/h3Size"
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/notification_secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/notification_img"
+        android:layout_alignStart="@+id/notification_primary"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="Bio" />
+
+    <TextView
+        android:id="@+id/notification_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/notification_primary"
+        android:layout_alignParentEnd="true"
+        android:textSize="@dimen/h4Size"
+        android:text="Date" />
+
+</RelativeLayout>
