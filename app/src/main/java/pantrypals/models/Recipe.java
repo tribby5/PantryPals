@@ -23,6 +23,8 @@ public class Recipe {
 
 
     private List<Ingredient> requiredIngredients;
+
+
     private double averageRating;
     private String dbKey;
 
@@ -110,6 +112,10 @@ public class Recipe {
         this.averageRating = averageRating;
     }
 
+    public double getAverageRating() {
+        return averageRating;
+    }
+
     public Map<String, Comment> getComments() {
         return comments;
     }
@@ -128,14 +134,6 @@ public class Recipe {
 
     public void setRatings(Map<String, Integer> ratings) {
         this.ratings = ratings;
-    }
-
-    public double getAverageRating() {
-        return averageRating;
-    }
-
-    public void setAverageRating(float averageRating) {
-        this.averageRating = averageRating;
     }
 
     public void setLikedBy(Map<String, Boolean> likedBy) {
