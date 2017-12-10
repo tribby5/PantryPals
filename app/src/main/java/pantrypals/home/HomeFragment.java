@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
     private ArrayList<Recipe> feedList = new ArrayList<>();
     // getActivity for fragment
     private CustomListAdapter adapter;
-    private String oldestPostId;
+    private long oldestRecipeNegTimestamp;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -83,40 +83,41 @@ public class HomeFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
 
-        //TEMP
-        ref.addValueEventListener(new ValueEventListener() {
+//        //TEMP CODE TO ADD NEGTIMESTAMP FIELD TO ALL RECIPE ENTRIES
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Recipe r = snapshot.getValue(Recipe.class);
+//                    String rid = snapshot.getKey();
+//                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+//                    long negts = 0;
+//                    try {
+//                        Date dt = dateFormat.parse(r.getTimePosted());
+//                        negts = dt.getTime() * -1;
+//                    } catch (ParseException e) {
+//                        e.printStackTrace();
+//                    }
+//                    ref.child(rid).child("negTimestamp").setValue(negts);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+        ref.orderByChild("negTimestamp").limitToFirst(4).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Recipe r = snapshot.getValue(Recipe.class);
-                    String rid = snapshot.getKey();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                    long negts = 0;
-                    try {
-                        Date dt = dateFormat.parse(r.getTimePosted());
-                        negts = dt.getTime() * -1;
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    ref.child(rid).child("negTimestamp").setValue(negts);
-                }
-            }
+                    Recipe recipe = snapshot.getValue(Recipe.class);
+                    if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
+                        oldestRecipeNegTimestamp = recipe.getNegTimestamp();
+                        //dataSnapshot.getChildrenCount();
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-        ref.orderByChild("timePosted").limitToLast(2).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.getKey().equals(oldestPostId)) {
-                        oldestPostId = snapshot.getKey();
-                        dataSnapshot.getChildrenCount();
-                        Recipe recipe = snapshot.getValue(Recipe.class);
                         String recipeId = snapshot.getKey();
                         // Remove this line
                         //recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
@@ -178,15 +179,15 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByChild("timePosted").startAt(oldestPostId).limitToLast(2)
+                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(4)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        if (!snapshot.getKey().equals(oldestPostId)) {
-                                            oldestPostId = snapshot.getKey();
+                                        Recipe recipe = snapshot.getValue(Recipe.class);
+                                        if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
+                                            oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                                             String recipeId = snapshot.getKey();
-                                            Recipe recipe = snapshot.getValue(Recipe.class);
                                             // Take out this line if url is there
                                             //recipe.setImgURL(TEMP_IMAGE);
                                             recipe.setDbKey(recipeId);
