@@ -24,9 +24,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import pantrypals.activities.NewRecipeActivity;
@@ -80,19 +84,29 @@ public class HomeFragment extends Fragment {
         ref = mFirebaseDatabase.getReference("/recipes");
 
         //TEMP
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Recipe r = snapshot.getValue()
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Recipe r = snapshot.getValue(Recipe.class);
+                    String rid = snapshot.getKey();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    long negts = 0;
+                    try {
+                        Date dt = dateFormat.parse(r.getTimePosted());
+                        negts = dt.getTime() * -1;
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    ref.child(rid).child("negTimestamp").setValue(negts);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         ref.orderByChild("timePosted").limitToLast(2).addValueEventListener(new ValueEventListener() {
