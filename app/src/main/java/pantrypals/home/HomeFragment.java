@@ -39,6 +39,7 @@ import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TEMP_IMAGE = "https://metrouk2.files.wordpress.com/2017/10/523733805-e1508406361613.jpg";
     private static final String TAG = "HomeFragment";
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -156,7 +157,7 @@ public class HomeFragment extends Fragment {
                                             String tempRecipeId = snapshot.getKey();
                                             TempRecipe recipe = snapshot.getValue(TempRecipe.class);
                                             // Take out this line if url is there
-                                            recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
+                                            recipe.setImgURL(TEMP_IMAGE);
                                             recipe.setDbKey(tempRecipeId);
                                             //feedList.add(recipe);
                                             if (meetsCondition(recipe)) {
