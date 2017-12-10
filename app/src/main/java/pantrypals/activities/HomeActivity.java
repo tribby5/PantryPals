@@ -27,6 +27,7 @@ import pantrypals.models.User;
 import pantrypals.notifications.NotificationsFragment;
 import pantrypals.pantry.PantryTabFragment;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.AuthUserInfo;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -61,7 +62,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
                                 selectedFragment = ProfileFragment.newFragment(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 break;
                             case R.id.nav_notifications:
-                                selectedFragment = NotificationsFragment.newInstance();
+                                selectedFragment = RecipeFragment.newFragment("004e0c9d-369c-44ae-bc2d-fa9aad66b377");
                                 break;
                         }
 
