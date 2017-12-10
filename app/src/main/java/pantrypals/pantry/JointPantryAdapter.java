@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.android.databaes.pantrypals.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,6 +38,7 @@ public class JointPantryAdapter extends BaseAdapter{
             view=inflater.inflate(android.R.layout.simple_list_item_1, null);
             title = view.findViewById(android.R.id.text1);
             title.setText(jointPantries.get(i).get(TITLE));
+            title.setTextColor(activity.getResources().getColor(R.color.colorWhite));
 
         }
         return view;
