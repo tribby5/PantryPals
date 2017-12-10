@@ -71,7 +71,7 @@ public class NotificationsFragment extends Fragment {
                                 notifs.add(notif);
                             }
                         }
-                        NotificationAdapter adapter = new NotificationAdapter(getActivity(), notifs);
+                        NotificationAdapter adapter = new NotificationAdapter(getActivity(), notifs, getActivity().getSupportFragmentManager());
                         lv.setAdapter(adapter);
 
                         if(notifs.size() == 0) {

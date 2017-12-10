@@ -1,6 +1,7 @@
 package pantrypals.discover.search;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -16,6 +17,7 @@ import com.android.databaes.pantrypals.R;
 
 import java.util.List;
 
+import pantrypals.groups.GroupFragment;
 import pantrypals.models.Group;
 import pantrypals.models.Post;
 import pantrypals.models.User;
@@ -31,10 +33,12 @@ public class SearchResultAdapter extends BaseAdapter {
     private final List<SearchResult> items;
     private FragmentManager fm;
 
-    SearchResultAdapter(Context mContext, List<SearchResult> items, FragmentManager fm) {
+    SearchResultAdapter(Context mContext, List<SearchResult> items) {
         this.mContext = mContext;
         this.items = items;
-        this.fm = fm;
+        if(mContext != null) {
+            this.fm = ((FragmentActivity) mContext).getSupportFragmentManager();
+        }
     }
 
     @Override
@@ -98,16 +102,18 @@ public class SearchResultAdapter extends BaseAdapter {
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(result.getId()));
-                transaction.commit();
+                if(fm != null) {
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(result.getId()));
+                    transaction.commit();
+                }
             }
         });
 
         return rl;
     }
 
-    private View getGroupView(SearchResult result, LayoutInflater layoutInflater) {
+    private View getGroupView(final SearchResult result, LayoutInflater layoutInflater) {
         View view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
 
@@ -120,6 +126,17 @@ public class SearchResultAdapter extends BaseAdapter {
 
         ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
         verifiedImg.setVisibility(View.INVISIBLE);
+
+        rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fm != null) {
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, GroupFragment.newFragment(result.getId()));
+                    transaction.commit();
+                }
+            }
+        });
 
         return rl;
     }

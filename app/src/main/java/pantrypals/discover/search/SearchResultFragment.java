@@ -87,7 +87,7 @@ public class SearchResultFragment extends Fragment {
                             results.add(new SearchResult(type, user, userSnapshot.getKey()));
                         }
                     }
-                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results, getActivity().getSupportFragmentManager()));
+                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
                 }
 
                 @Override
@@ -106,7 +106,7 @@ public class SearchResultFragment extends Fragment {
                             results.add(new SearchResult(type, group, groupSnapshot.getKey()));
                         }
                     }
-                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results, getActivity().getSupportFragmentManager()));
+                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
                 }
 
                 @Override
@@ -125,7 +125,7 @@ public class SearchResultFragment extends Fragment {
                             results.add(new SearchResult(type, post, postSnapshot.getKey()));
                         }
                     }
-                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results, getActivity().getSupportFragmentManager()));
+                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
                 }
 
                 @Override
@@ -162,7 +162,7 @@ public class SearchResultFragment extends Fragment {
                                             results.add(new SearchResult(type, post, postSnapshot.getKey()));
                                         }
                                     }
-                                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results, getActivity().getSupportFragmentManager()));
+                                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
                                 }
 
                                 @Override

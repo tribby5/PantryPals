@@ -10,15 +10,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+
+import java.util.Map;
 
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.discover.DiscoverFragment;
 import pantrypals.discover.DiscoverItemClickListener;
 import pantrypals.home.HomeFragment;
+import pantrypals.models.User;
 import pantrypals.notifications.NotificationsFragment;
 import pantrypals.pantry.PantryTabFragment;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.util.AuthUserInfo;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class HomeActivity extends AppCompatActivity implements DiscoverItemClickListener {
@@ -27,6 +36,8 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        loadUserInfo();
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.navigation);
@@ -61,6 +72,21 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
 
         //Manually displaying the first fragment - one time only
        setFragment(HomeFragment.newInstance());
+    }
+
+    private void loadUserInfo() {
+        FirebaseDatabase.getInstance().getReference().child("/userAccounts/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = (User) dataSnapshot.getValue(User.class);
+                AuthUserInfo.INSTANCE.setUser(user);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

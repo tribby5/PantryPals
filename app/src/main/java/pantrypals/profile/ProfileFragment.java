@@ -36,6 +36,7 @@ import java.util.UUID;
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.models.Notification;
 import pantrypals.models.User;
+import pantrypals.util.AuthUserInfo;
 import pantrypals.util.DownloadImageTask;
 
 
@@ -45,6 +46,9 @@ public class ProfileFragment extends Fragment {
 
     private static final String ARG_ID = "ID";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+    private int prevSelected = -1;
+    private int follow;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -118,13 +122,48 @@ public class ProfileFragment extends Fragment {
         mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                int follow = 0;
+                follow = 0;
                 for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
                     if (followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
                         follow = (((String) followingSnapshot.getValue(String.class)).equals("all") ? 1 : 2);
                         break;
                     }
                 }
+                final String notifID = UUID.randomUUID().toString().substring(0, 32).replace("-", "");
+                final Notification notif = new Notification();
+                notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
+                notif.setLinkType("user");
+                notif.setLinkID(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                if(follow == 0) {
+                    notif.setMessage("This user has unfollowed you.");
+                } else if (follow == 1) {
+                    notif.setMessage("This user has followed all your posts.");
+                } else {
+                    notif.setMessage("This user has followed your relevant posts.");
+                }
+                notif.setOriginator(AuthUserInfo.INSTANCE.getUser().getName());
+                mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(prevSelected != -1 && follow != prevSelected) {
+                            mDatabase.child("/notifications/" + notifID).setValue(notif);
+                            User user = (User) dataSnapshot.getValue(User.class);
+                            Map<String, Boolean> notifs = user.getNotifications();
+                            if (notifs == null) {
+                                notifs = Maps.newHashMap();
+                            }
+                            notifs.put(notifID, true);
+                            user.setNotifications(notifs);
+                            mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).setValue(user);
+                        }
+                        prevSelected = follow;
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 spinner.setSelection(follow);
                 if(follow == 0) {
                     spinner.setBackgroundColor(getResources().getColor(R.color.colorLightGray));
@@ -143,7 +182,6 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
                 if(i == 0) {            // not following
-                    sendUnfollowNotif();
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -160,10 +198,8 @@ public class ProfileFragment extends Fragment {
                         }
                     });
                 } else if (i == 1) {
-                    sendFollowNotif("all");
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("all");
                 } else if (i == 2) {    // following relevant
-                    sendFollowNotif("relevant");
                     mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).child(getArguments().get(ARG_ID).toString()).setValue("relevant");
                 }
             }
@@ -216,64 +252,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-    }
-
-    private void sendUnfollowNotif() {
-
-    }
-
-    private void sendFollowNotif(final String type) {
-        // send notif if not already following in capacity specified by type
-        mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean sendNotif = true;
-                for (DataSnapshot followingSnapshot : dataSnapshot.getChildren()) {
-                    if(followingSnapshot.getKey().equals(getArguments().get(ARG_ID))) {
-                        if(((String) followingSnapshot.getValue(String.class)).equals(type)) {
-                            sendNotif = false;
-                        }
-                    }
-                }
-                if(sendNotif) {
-                    final String notifID = UUID.randomUUID().toString().substring(0, 32).replace("-", "");
-                    Notification notif = new Notification();
-                    notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
-                    notif.setLinkType("user");
-                    notif.setLinkID(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    if(type.equals("all")) {
-                        notif.setMessage("This user has followed all of your posts.");
-                    } else {
-                        notif.setMessage("This user has followed your relevant posts.");
-                    }
-                    notif.setOriginator("Placeholder name");
-                    mDatabase.child("/notifications/" + notifID).setValue(notif);
-                    mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User user = (User) dataSnapshot.getValue(User.class);
-                            Map<String, Boolean> notifs = user.getNotifications();
-                            if(notifs == null) {
-                                notifs = Maps.newHashMap();
-                            }
-                            notifs.put(notifID, true);
-                            user.setNotifications(notifs);
-                            mDatabase.child("/userAccounts/" + getArguments().get(ARG_ID)).setValue(user);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
 
