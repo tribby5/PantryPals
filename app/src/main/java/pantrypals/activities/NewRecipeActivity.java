@@ -89,13 +89,15 @@ public class NewRecipeActivity extends AppCompatActivity {
                     }
                 }
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                String timePosted = dateFormat.format(new Date()); // Find todays date
+                Date d = new Date();
+                String timePosted = dateFormat.format(d); // Find todays date
 
                 Recipe newRecipe = new Recipe();
                 newRecipe.setName(name);
                 newRecipe.setCaption(caption);
                 newRecipe.setIngredients(ingredients);
                 newRecipe.setTimePosted(timePosted);
+                newRecipe.setNegTimestamp(d.getTime() * -1); // for sorting in Firebase
                 //TODO: set Instructions
                 //newRecipe.setInstructions();
 

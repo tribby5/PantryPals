@@ -78,7 +78,24 @@ public class HomeFragment extends Fragment {
         // Retrieve data from Firebase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.limitToFirst(2).addValueEventListener(new ValueEventListener() {
+
+        //TEMP
+//        ref.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Recipe r = snapshot.getValue()
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+
+
+        ref.orderByChild("timePosted").limitToLast(2).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -147,7 +164,7 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByKey().startAt(oldestPostId).limitToFirst(2)
+                    ref.orderByChild("timePosted").startAt(oldestPostId).limitToLast(2)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {

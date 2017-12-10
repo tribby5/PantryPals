@@ -28,8 +28,16 @@ public class Recipe {
     private String dbKey;
     private String timePosted;
     private String imageURL;
+    private long negTimestamp;
 
 
+    public long getNegTimestamp() {
+        return negTimestamp;
+    }
+
+    public void setNegTimestamp(long negTimestamp) {
+        this.negTimestamp = negTimestamp;
+    }
 
     public String getName() {
         return name;
