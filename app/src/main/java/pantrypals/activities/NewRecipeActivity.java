@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Table;
@@ -20,29 +21,34 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import pantrypals.models.Recipe;
+import pantrypals.models.User;
 
 public class NewRecipeActivity extends AppCompatActivity {
 
-    private String mRecipe_key = null;
     private DatabaseReference mDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_recipe);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference("/TESTrecipes");
-        mRecipe_key = mDatabase.push().getKey();
+        mDatabase = FirebaseDatabase.getInstance().getReference("/TESTRECIPES");
+        final String mRecipe_key = mDatabase.push().getKey();
 
-        // Setonclicklistener on addrow button
+        // Setonclicklistener on addRow button
+
+        // SetOnClickListener for uploading image
 
         Button createNewRecipeButton = (Button) findViewById(R.id.createRecipeButton);
         createNewRecipeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 EditText titleView = (EditText) findViewById(R.id.newRecipeTitle);
                 EditText captionView = (EditText) findViewById(R.id.newRecipeCaption);
                 EditText textView = (EditText) findViewById(R.id.newRecipeText);
@@ -79,19 +85,30 @@ public class NewRecipeActivity extends AppCompatActivity {
                         ingredients.add(ingredientInstance);
                     }
                 }
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                String timePosted = dateFormat.format(new Date()); // Find todays date
+
+                Recipe newRecipe = new Recipe();
+                newRecipe.setTitle(title);
+                newRecipe.setCaption(caption);
+                newRecipe.setText(text);
+                newRecipe.setRequiredIngredients(ingredients);
+
+//                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
+//                recipesToSendToFirebase.put(mRecipe_key, newRecipe);
+
+                mDatabase.child(mRecipe_key).setValue(newRecipe);
+
+                toastMessage("New Recipe " + title + " has been successfully created");
+                finish();
             }
         });
 
     }
 
 
+    private void toastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
-//    try {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-//        return dateFormat.format(new Date()); // Find todays date
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//
-//        return null;
-//    }
 }

@@ -1,5 +1,6 @@
 package pantrypals.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pantrypals.activities.NewRecipeActivity;
 import pantrypals.database.generate.RecipeGenerator;
 import pantrypals.models.Post;
 import pantrypals.models.Recipe;
@@ -45,7 +47,6 @@ public class HomeFragment extends Fragment {
     private String userId;
 
     private ListView feedListView;
-    //private ArrayList<Post> feedList = new ArrayList<>();
     private ArrayList<TempRecipe> feedList = new ArrayList<>();
     // getActivity for fragment
     private CustomListAdapter adapter;
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // TODO: Use the following current user information for more intelligent feed later on
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
@@ -104,6 +106,16 @@ public class HomeFragment extends Fragment {
 
         // Inflate the recipe_layout first
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        // newPostButton
+        Button newPostButton = (Button) view.findViewById(R.id.newPostButton);
+        newPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent postIntent = new Intent(getActivity(), NewRecipeActivity.class);
+                startActivity(postIntent);
+            }
+        });
 
         feedListView = (ListView) view.findViewById(R.id.feedListView);
         adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList);
@@ -163,17 +175,6 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-
-
-        // Define click actions
-//        feedListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                if (position == 0) {
-//
-//                }
-//            }
-//        });
         return view;
     }
 
