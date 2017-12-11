@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +44,10 @@ public class NewRecipeActivity extends AppCompatActivity {
     private EditText prevIngAmtField;
     private EditText prevIngUnitField;
 
+    private EditText prevInstr;
+
+    private int stepNumber = 1;
+
     private DatabaseReference mDatabase;
     private Context mContext;
 
@@ -58,8 +63,10 @@ public class NewRecipeActivity extends AppCompatActivity {
         prevIngNameField = (EditText) findViewById(R.id.ingredientName);
         prevIngAmtField = (EditText) findViewById(R.id.ingredientAmount);
         prevIngUnitField = (EditText) findViewById(R.id.ingredientUnit);
+        prevInstr = (EditText) findViewById(R.id.instructionText);
 
         final TableLayout ingredientTableView = (TableLayout) findViewById(R.id.newRecipeIngredientTable);
+        final TableLayout instructionTableView = (TableLayout) findViewById(R.id.newRecipeInstructionTable);
 
         // Setonclicklistener on addRow button
         Button addIngredientButton = (Button) findViewById(R.id.addIngredientButton);
@@ -84,11 +91,11 @@ public class NewRecipeActivity extends AppCompatActivity {
                     ingUnitField.setWidth(50);
 
                     ingNameField.setTextColor(getResources().getColor(R.color.colorWhite));
-                    ingNameField.setHintTextColor(getResources().getColor(R.color.colorHint));
+                    ingNameField.setHintTextColor(getResources().getColor(R.color.colorHintDark));
                     ingAmtField.setTextColor(getResources().getColor(R.color.colorWhite));
-                    ingAmtField.setHintTextColor(getResources().getColor(R.color.colorHint));
+                    ingAmtField.setHintTextColor(getResources().getColor(R.color.colorHintDark));
                     ingUnitField.setTextColor(getResources().getColor(R.color.colorWhite));
-                    ingUnitField.setHintTextColor(getResources().getColor(R.color.colorHint));
+                    ingUnitField.setHintTextColor(getResources().getColor(R.color.colorHintDark));
 
                     ingNameField.setHint("ingredient");
                     ingAmtField.setHint("amt");
@@ -116,6 +123,44 @@ public class NewRecipeActivity extends AppCompatActivity {
             }
         });
 
+        Button addInstructionButton = (Button) findViewById(R.id.addInstructionButton);
+        addInstructionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(prevInstr.getText().toString().isEmpty()) {
+                    underlineRed(prevInstr);
+                } else {
+                    stepNumber++;
+                    prevInstr.clearFocus();
+                    prevInstr.getBackground().clearColorFilter();
+
+                    TextView numTV = new TextView(NewRecipeActivity.this);
+                    numTV.setTextAppearance(NewRecipeActivity.this, R.style.AppTheme_TextAppearance_Bold);
+                    numTV.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                    numTV.setTextColor(getResources().getColor(R.color.colorWhite));
+                    numTV.setText(stepNumber + ". ");
+
+                    TableRow newRow = new TableRow(NewRecipeActivity.this);
+                    EditText instrField = new EditText(NewRecipeActivity.this);
+
+                    instrField.setTextColor(getResources().getColor(R.color.colorWhite));
+                    instrField.setHintTextColor(getResources().getColor(R.color.colorHintDark));
+
+                    instrField.setHint("instruction");
+
+                    instrField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+
+                    prevInstr = instrField;
+
+                    instrField.requestFocus();
+
+                    newRow.addView(numTV);
+                    newRow.addView(instrField);
+                    instructionTableView.addView(newRow);
+                }
+            }
+        });
+
         // SetOnClickListener for uploading image
 
         Button createNewRecipeButton = (Button) findViewById(R.id.createRecipeButton);
@@ -127,10 +172,6 @@ public class NewRecipeActivity extends AppCompatActivity {
                 EditText captionView = (EditText) findViewById(R.id.newRecipeCaption);
                 String name = nameView.getText().toString();
                 String caption = captionView.getText().toString();
-
-                //TODO: Change the following two lines so that instead of text, we get list of instructions
-                EditText textView = (EditText) findViewById(R.id.newRecipeText);
-                String text = textView.getText().toString();
 
                 List<Recipe.Ingredient> ingredients = new ArrayList<>();
                 for (int i = 0, j = ingredientTableView.getChildCount(); i < j; i++) {
@@ -172,14 +213,28 @@ public class NewRecipeActivity extends AppCompatActivity {
                 Date d = new Date();
                 String timePosted = dateFormat.format(d); // Find todays date
 
+                List<String> instructions = Lists.newArrayList();
+                for (int i = 0, j = instructionTableView.getChildCount(); i < j; i++) {
+                    View tableRow = instructionTableView.getChildAt(i);
+                    if (tableRow instanceof TableRow) {
+                        TableRow row = (TableRow) tableRow;
+                        for (int x = 0; x < row.getChildCount(); x++) {
+                            View elem = row.getChildAt(x);
+                            if (elem instanceof EditText) {
+                                EditText data = (EditText) elem;
+                                instructions.add(data.getText().toString());
+                            }
+                        }
+                    }
+                }
+
                 Recipe newRecipe = new Recipe();
                 newRecipe.setName(name);
                 newRecipe.setCaption(caption);
                 newRecipe.setIngredients(ingredients);
                 newRecipe.setTimePosted(timePosted);
                 newRecipe.setNegTimestamp(d.getTime() * -1); // for sorting in Firebase
-                //TODO: set instructions and image
-                //newRecipe.setInstructions();
+                newRecipe.setInstructions(instructions);
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
 //                recipesToSendToFirebase.put(mRecipe_key, newRecipe);
