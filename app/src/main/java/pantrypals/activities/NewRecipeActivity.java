@@ -65,6 +65,8 @@ public class NewRecipeActivity extends AppCompatActivity {
     private Context mContext;
     private ProgressDialog mProgressDialog;
 
+    private Button uploadImageButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,7 +178,7 @@ public class NewRecipeActivity extends AppCompatActivity {
         });
 
         // SetOnClickListener for uploading image
-        Button uploadImageButton = (Button) findViewById(R.id.uploadImageButton);
+        uploadImageButton = (Button) findViewById(R.id.uploadImageButton);
         mStorage = FirebaseStorage.getInstance().getReference();
         mProgressDialog = new ProgressDialog(this);
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
@@ -313,6 +315,9 @@ public class NewRecipeActivity extends AppCompatActivity {
                     uploadedImagePath = taskSnapshot.getDownloadUrl().toString();
                     toastMessage("Image upload succeeded.");
                     mProgressDialog.dismiss();
+
+                    // change the button text to uploaded
+                    changeUploadButtonText();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -322,6 +327,10 @@ public class NewRecipeActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void changeUploadButtonText() {
+        uploadImageButton.setText("IMAGE UPLOADED");
     }
 
     private void toastMessage(String message) {
