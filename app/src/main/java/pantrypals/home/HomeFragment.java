@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import pantrypals.activities.NewRecipeActivity;
 import pantrypals.database.generate.RecipeGenerator;
@@ -45,6 +46,16 @@ public class HomeFragment extends Fragment {
 
     private static final String TEMP_IMAGE = "https://metrouk2.files.wordpress.com/2017/10/523733805-e1508406361613.jpg";
     private static final String TAG = "HomeFragment";
+
+    public boolean getBool() {
+        return bool;
+    }
+
+    public void setBool(boolean bool) {
+        this.bool = bool;
+    }
+
+    private boolean bool = false;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference ref;
@@ -217,7 +228,35 @@ public class HomeFragment extends Fragment {
      * @return
      */
     private boolean meetsCondition(Recipe recipe) {
-        return true;
+
+
+
+        // filter based on whether i follow this person or not
+        final String currUserId = mAuth.getCurrentUser().getUid();
+        Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
+        final String postedBy = recipePostedBySet.iterator().next();
+        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
+        mFollow.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                boolean mybool = dataSnapshot.child(currUserId).hasChild(postedBy);
+                if (mybool) {
+                    // TODO: Find out whether I have the ingredients here
+                    setBool(true);
+                } else {
+                    setBool(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        Boolean bb = getBool();
+
+        return getBool();
     }
 
     private void toastMessage(String message) {
