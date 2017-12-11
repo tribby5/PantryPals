@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.recipe.RecipeFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -26,15 +27,16 @@
 
             <TextView
                 android:id="@+id/recipe_name"
-                android:layout_width="130dp"
+                android:layout_width="180dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/recipe_image"
                 android:layout_marginStart="19dp"
                 android:layout_marginTop="13dp"
+                android:textColor="@color/colorWhite"
                 android:text="Name"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textSize="18dp"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black" />
 
             <TextView
                 android:id="@+id/recipe_caption"
@@ -43,6 +45,9 @@
                 android:layout_alignStart="@+id/recipe_name"
                 android:layout_below="@+id/recipe_name"
                 android:layout_marginTop="10dp"
+                android:textColor="@color/colorHint"
+                android:lineSpacingExtra="3dp"
+                android:layout_marginRight="@dimen/padding"
                 android:text="Caption"
                 android:textSize="14dp" />
 
@@ -52,6 +57,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/recipe_caption"
                 android:layout_below="@+id/recipe_caption"
+                android:textAppearance="@style/AppTheme.TextAppearance.Italic"
+                android:textColor="#7c7c7c"
                 android:layout_marginTop="@dimen/padding"
                 android:text="Date"
                 android:textSize="12dp"
@@ -63,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/recipe_date"
                 android:layout_below="@id/recipe_date"
+                android:textColor="@color/colorHint"
                 android:layout_marginTop="@dimen/padding"
                 android:text="by"
                 android:textSize="12dp" />
@@ -132,9 +140,11 @@
                     android:id="@+id/recipe_sec1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+                    android:textColor="@color/colorWhite"
                     android:text="Ingredients"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="@dimen/padding"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -150,9 +160,11 @@
                     android:id="@+id/recipe_sec2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/colorWhite"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Bold"
                     android:text="Instructions"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="@dimen/padding"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -166,7 +178,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
+                    android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="14sp"
                     android:text="Tags"/>
 
                 <com.wefika.flowlayout.FlowLayout
@@ -183,7 +197,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="tag1"
-                        android:textSize="@dimen/h4Size"
+                        android:textSize="10sp"
                         android:paddingLeft="@dimen/padding"
                         android:paddingRight="@dimen/padding"
                         android:paddingTop="@dimen/smallPadding"

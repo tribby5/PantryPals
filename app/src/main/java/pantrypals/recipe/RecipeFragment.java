@@ -144,6 +144,7 @@ public class RecipeFragment extends Fragment {
                         } else {
                             ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
                         }
+                        ingTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
                         ingTV.setPadding(0, 20, 0, 20);
                         ingredientsLayout.addView(ingTV);
                     }
@@ -155,6 +156,7 @@ public class RecipeFragment extends Fragment {
                     if(isAdded()) {
                         TextView instrTV = new TextView(getContext());
                         instrTV.setText(String.format(Locale.US, "%d. %s", i, instructions.get(i - 1)));
+                        instrTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
                         instrTV.setPadding(0, 20, 0, 20);
                         instructionsLayout.addView(instrTV);
                     }

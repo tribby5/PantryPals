@@ -63,7 +63,7 @@ public class ProfileInfoFragment extends Fragment {
                     prefText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
 
                     FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(10,0,10,0);
+                    params.setMargins(10,10,10,10);
 
                     prefText.setLayoutParams(params);
                     prefLayout.addView(prefText);
@@ -90,7 +90,7 @@ public class ProfileInfoFragment extends Fragment {
                     restrictionText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
 
                     FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(10,0,10,0);
+                    params.setMargins(10,10,10,10);
 
                     restrictionText.setLayoutParams(params);
                     restrictionLayout.addView(restrictionText);
@@ -119,7 +119,7 @@ public class ProfileInfoFragment extends Fragment {
                         groupText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
 
                         FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                        params.setMargins(10,0,10,0);
+                        params.setMargins(10,10,10,10);
 
                         groupText.setLayoutParams(params);
                         groupLayout.addView(groupText);
