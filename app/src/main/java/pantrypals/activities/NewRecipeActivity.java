@@ -1,8 +1,12 @@
 package pantrypals.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +32,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +49,9 @@ import pantrypals.models.User;
 
 public class NewRecipeActivity extends AppCompatActivity {
 
+    private static final int GALLERY_INTENT = 2;
+    private String uploadedImagePath = null;
+
     private EditText prevIngNameField;
     private EditText prevIngAmtField;
     private EditText prevIngUnitField;
@@ -49,7 +61,9 @@ public class NewRecipeActivity extends AppCompatActivity {
     private int stepNumber = 1;
 
     private DatabaseReference mDatabase;
+    private StorageReference mStorage;
     private Context mContext;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +176,20 @@ public class NewRecipeActivity extends AppCompatActivity {
         });
 
         // SetOnClickListener for uploading image
+        Button uploadImageButton = (Button) findViewById(R.id.uploadImageButton);
+        mStorage = FirebaseStorage.getInstance().getReference();
+        mProgressDialog = new ProgressDialog(this);
+        uploadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, GALLERY_INTENT);
+            }
+        });
+
+
+
 
         Button createNewRecipeButton = (Button) findViewById(R.id.createRecipeButton);
         createNewRecipeButton.setOnClickListener(new View.OnClickListener() {
@@ -234,6 +262,8 @@ public class NewRecipeActivity extends AppCompatActivity {
                 newRecipe.setIngredients(ingredients);
                 newRecipe.setTimePosted(timePosted);
                 newRecipe.setNegTimestamp(d.getTime() * -1); // for sorting in Firebase
+                newRecipe.setImageURL(uploadedImagePath);
+                //newRecipe.setInstructions();
                 newRecipe.setInstructions(instructions);
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
@@ -241,7 +271,7 @@ public class NewRecipeActivity extends AppCompatActivity {
 
                 mDatabase.child(mRecipe_key).setValue(newRecipe);
 
-                toastMessage("New Recipe " + name + " has been successfully created");
+                toastMessage("New Recipe " + name + " has been successfully created.");
                 finish();
             }
         });
@@ -267,6 +297,31 @@ public class NewRecipeActivity extends AppCompatActivity {
 
     private void underlineRed(final EditText et) {
         et.getBackground().setColorFilter(getResources().getColor(R.color.colorRed), PorterDuff.Mode.SRC_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
+            mProgressDialog.setMessage("Uploading image...");
+            mProgressDialog.show();
+            Uri uri = data.getData();
+            StorageReference filepath = mStorage.child("RecipeImages").child(uri.getLastPathSegment());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    uploadedImagePath = taskSnapshot.getDownloadUrl().toString();
+                    toastMessage("Image upload succeeded.");
+                    mProgressDialog.dismiss();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    toastMessage("Image upload failed. Please try again.");
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
     }
 
     private void toastMessage(String message) {
