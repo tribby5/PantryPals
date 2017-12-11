@@ -228,30 +228,34 @@ public class HomeFragment extends Fragment {
                                             Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                                             final String postedBy = recipePostedBySet.iterator().next();
                                             DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-                                            boolean isFollowed = false;
-                                            mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
-                                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
-                                                        adapter.add(recipe);
+                                            //boolean isFollowed = false;
+
+                                            // If recipe is written by me (my recipe) then show
+                                            if (currUserId.equals(postedBy)) {
+                                                adapter.add(recipe);
+                                            } else {
+                                                // this recipe is not written by me - check if i follow this person
+                                                mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        //boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
+                                                        if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                                            adapter.add(recipe);
+                                                        }
                                                     }
-                                                }
 
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
 
-                                                }
-                                            });
+                                                    }
+                                                });
 
-
-
+                                            }
 
                                             Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
                                         }
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
 
