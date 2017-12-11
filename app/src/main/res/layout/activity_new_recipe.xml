@@ -62,20 +62,8 @@
                 android:textColor="@color/colorHint"
                 android:textSize="14dp"/>
 
-            <EditText
-                android:id="@+id/newRecipeText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/newRecipeCaption"
-                android:textColorHint="#bdbdbd"
-                android:textColor="@color/colorWhite"
-                android:textSize="@dimen/h4Size"
-                android:hint="Instructions"
-                android:inputType="text"/>
-
             <TableLayout
-                android:layout_below="@+id/newRecipeText"
+                android:layout_below="@+id/newRecipeCaption"
                 android:id="@+id/newRecipeIngredientTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +78,7 @@
                         android:layout_height="50dp"
                         android:id="@+id/ingredientName"
                         android:textSize="@dimen/h4Size"
-                        android:textColorHint="@color/colorHint"
+                        android:textColorHint="@color/colorHintDark"
                         android:textColor="@color/colorWhite"
                         android:inputType="text"
                         android:layout_width="150dp"
@@ -101,7 +89,7 @@
                         android:layout_height="50dp"
                         android:id="@+id/ingredientAmount"
                         android:textSize="@dimen/h4Size"
-                        android:textColorHint="@color/colorHint"
+                        android:textColorHint="@color/colorHintDark"
                         android:textColor="@color/colorWhite"
                         android:inputType="numberDecimal"
                         android:layout_width="60dp"
@@ -112,7 +100,7 @@
                         android:layout_height="50dp"
                         android:id="@+id/ingredientUnit"
                         android:textSize="@dimen/h4Size"
-                        android:textColorHint="@color/colorHint"
+                        android:textColorHint="@color/colorHintDark"
                         android:textColor="@color/colorWhite"
                         android:inputType="text"
                         android:layout_width="50dp"
@@ -141,6 +129,59 @@
                 android:textSize="12sp"
                 android:layout_alignBaseline="@id/addIngredientButton"
                 android:text="Add another ingredient"/>
+
+            <TableLayout
+                android:layout_below="@+id/addIngredientButton"
+                android:id="@+id/newRecipeInstructionTable"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/extraPadding"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="@dimen/h4Size"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+                        android:text="1. "/>
+                    <EditText
+                        android:hint="enter the next step"
+                        android:layout_width="match_parent"
+                        android:width="300dp"
+                        android:id="@+id/instructionText"
+                        android:textSize="@dimen/h4Size"
+                        android:textColorHint="@color/colorHintDark"
+                        android:textColor="@color/colorWhite"
+                        android:inputType="text">
+                    </EditText>
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/addInstructionButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/padding"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/rounded_corner_purple"
+                android:layout_below="@id/newRecipeInstructionTable"
+                android:text="+" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#888"
+                android:layout_toEndOf="@id/addInstructionButton"
+                android:layout_marginLeft="@dimen/padding"
+                android:textSize="12sp"
+                android:layout_alignBaseline="@id/addInstructionButton"
+                android:text="Add another instruction"/>
 
         </RelativeLayout>
 
