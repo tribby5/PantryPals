@@ -165,10 +165,12 @@ public class ProfileFragment extends Fragment {
                     }
                 });
                 spinner.setSelection(follow);
-                if(follow == 0) {
-                    spinner.setBackgroundColor(getResources().getColor(R.color.colorLightGray));
-                } else {
-                    spinner.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+                if(isAdded()) {
+                    if (follow == 0) {
+                        spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorLightGray));
+                    } else {
+                        spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorGreen));
+                    }
                 }
             }
 
