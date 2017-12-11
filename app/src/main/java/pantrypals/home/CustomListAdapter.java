@@ -113,6 +113,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
                 holder.setLikeButton(key);
+                holder.setSaveButton(key);
                 holder.likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
                 holder.likeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -282,6 +283,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         ImageButton likeButton;
         ImageButton saveForLaterButton;
         DatabaseReference mDatabaseLike = FirebaseDatabase.getInstance().getReference("/recipes");
+        DatabaseReference mDatabaseSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         private ViewHolder() {
@@ -304,6 +306,32 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     } else {
                         // doesn't have likedBy yet
                         likeButton.setImageResource(R.drawable.like_gray);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        private void setSaveButton(final String dbKey) {
+            mDatabaseSave.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String userId = mAuth.getCurrentUser().getUid();
+                    if (dataSnapshot.child(userId).hasChild("savedForLater")) {
+                        if (dataSnapshot.child(userId).child("savedForLater").hasChild(dbKey)) {
+                            //Already liked
+                            saveForLaterButton.setImageResource(R.drawable.saved);
+                        } else {
+                            //Not liked yet
+                            saveForLaterButton.setImageResource(R.drawable.save);
+                        }
+                    } else {
+                        // doesn't have likedBy yet
+                        saveForLaterButton.setImageResource(R.drawable.save);
                     }
                 }
 
