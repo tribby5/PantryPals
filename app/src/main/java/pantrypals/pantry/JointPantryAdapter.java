@@ -1,6 +1,7 @@
 package pantrypals.pantry;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import com.android.databaes.pantrypals.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import pantrypals.models.Item;
 
 /**
  * Created by mtribby on 12/9/17.

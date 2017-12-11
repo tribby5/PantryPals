@@ -5,12 +5,17 @@ package pantrypals.models;
  */
 
 public class Item {
+    private String databaseID;
     private double amount;
     private String expiration;
     private String name;
     private String unit;
 
     public Item() {}
+
+    public Item(String databaseID) {
+        this.databaseID = databaseID;
+    }
 
     public double getAmount() {
         return amount;

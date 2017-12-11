@@ -9,8 +9,12 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import pantrypals.models.Item;
 
 /**
  * Created by mtribby on 11/9/17.
@@ -19,45 +23,71 @@ import java.util.HashMap;
 public class PantryItemsAdapter extends BaseAdapter{
 
     private Activity activity;
-    private ArrayList<HashMap<String, String>> items;
-    private TextView name;
-    private TextView amount;
-    private TextView units;
-    private TextView expirationDate;
+    private ArrayList<Item> items;
 
 
-    public PantryItemsAdapter(Activity activity, ArrayList<HashMap<String, String>> list){
+    public PantryItemsAdapter(Activity activity, ArrayList<Item> items){
         super();
         this.activity=activity;
-        this.items=list;
+        this.items=items;
+    }
+
+    void refresh(ArrayList<Item> items) {
+        this.items = new ArrayList<>(items);
+        notifyDataSetChanged();
+    }
+
+    String getItemNameFromDataSource(int position) {
+        return items.get(position).getName();
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int position, View rowView, ViewGroup viewGroup) {
         LayoutInflater inflater=activity.getLayoutInflater();
+        PantryItemHolder holder;
 
-        if(view == null){
+        if(rowView == null){
+            rowView=inflater.inflate(R.layout.item_row, null);
+            holder = new PantryItemHolder();
 
-            view=inflater.inflate(R.layout.item_row, null);
+            holder.name =(TextView) rowView.findViewById(R.id.item_name);
+            holder.amount =(TextView) rowView.findViewById(R.id.item_amount);
+            holder.unit =(TextView) rowView.findViewById(R.id.item_unit);
+            holder.expirationDate=(TextView) rowView.findViewById(R.id.item_expiration);
 
-            name =(TextView) view.findViewById(R.id.name);
-            amount =(TextView) view.findViewById(R.id.amount);
-            units =(TextView) view.findViewById(R.id.unit);
-            expirationDate=(TextView) view.findViewById(R.id.expiration);
-
+            rowView.setTag(holder);
+        } else {
+            holder = (PantryItemHolder) rowView.getTag();
         }
 
-        HashMap<String, String> map=items.get(i);
-        name.setText(map.get(PersonalPantryFragment.FIRST_COLUMN));
-        name.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-        amount.setText(map.get(PersonalPantryFragment.SECOND_COLUMN));
-        amount.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-        units.setText(map.get(PersonalPantryFragment.THIRD_COLUMN));
-        units.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-        expirationDate.setText(map.get(PersonalPantryFragment.FOURTH_COLUMN));
+        TextView nameTV = holder.name;
+        TextView amountTV = holder.amount;
+        TextView unitTV = holder.unit;
+        TextView expirationDate = holder.expirationDate;
+
+        Item result = (Item) getItem(position);
+
+        nameTV.setText(result.getName());
+        nameTV.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+        amountTV.setText(Double.toString(result.getAmount()));
+        amountTV.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+        unitTV.setText(result.getUnit());
+        unitTV.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+        expirationDate.setText(result.getExpiration());
         expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
 
-        return view;
+
+//        HashMap<String, String> map=items.get(i);
+//        name.setText(map.get(PersonalPantryFragment.FIRST_COLUMN));
+//        name.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+//        amount.setText(map.get(PersonalPantryFragment.SECOND_COLUMN));
+//        amount.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+//        units.setText(map.get(PersonalPantryFragment.THIRD_COLUMN));
+//        units.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+//        expirationDate.setText(map.get(PersonalPantryFragment.FOURTH_COLUMN));
+//        expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+
+        return rowView;
     }
 
     @Override
@@ -66,12 +96,19 @@ public class PantryItemsAdapter extends BaseAdapter{
     }
 
     @Override
-    public HashMap<String, String> getItem(int i) {
+    public Item getItem(int i) {
         return items.get(i);
     }
 
     @Override
     public long getItemId(int i) {
         return i;
+    }
+
+    private static class PantryItemHolder {
+        TextView name;
+        TextView amount;
+        TextView unit;
+        TextView expirationDate;
     }
 }

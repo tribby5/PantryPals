@@ -21,16 +21,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import pantrypals.models.Item;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PersonalPantryFragment extends Fragment {
-    public static final String FIRST_COLUMN = "name";
-    public static final String SECOND_COLUMN = "amount";
-    public static final String THIRD_COLUMN = "unit";
-    public static final String FOURTH_COLUMN = "expiration";
 
-    private ArrayList<HashMap<String, String>> items;
+    private ArrayList<Item> items;
     private PantryItemsAdapter adapter;
 
 
@@ -69,7 +67,7 @@ public class PersonalPantryFragment extends Fragment {
                 editModal(view);
             }
         });
-        items = new ArrayList<HashMap<String, String>>();
+        items = new ArrayList<Item>();
         adapter = new PantryItemsAdapter(getActivity(), items);
         itemListView.setAdapter(adapter);
 
