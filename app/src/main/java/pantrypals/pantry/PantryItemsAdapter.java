@@ -12,7 +12,9 @@ import com.android.databaes.pantrypals.R;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import pantrypals.models.Item;
 
@@ -23,13 +25,13 @@ import pantrypals.models.Item;
 public class PantryItemsAdapter extends BaseAdapter{
 
     private Activity activity;
-    private ArrayList<Item> items;
+    private List<Item> items;
 
 
-    public PantryItemsAdapter(Activity activity, ArrayList<Item> items){
+    public PantryItemsAdapter(Activity activity, Collection<Item> items){
         super();
         this.activity=activity;
-        this.items=items;
+        this.items = new ArrayList<>(items);
     }
 
     void refresh(ArrayList<Item> items) {

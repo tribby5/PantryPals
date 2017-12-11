@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.android.databaes.pantrypals.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,15 +31,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
+import pantrypals.models.Pantry;
 import pantrypals.models.User;
 
 
 public class PantryTabFragment extends Fragment {
-    private ArrayList<HashMap<String, String>> joint;
     private JointPantryAdapter jointAdapter;
-    private ListView jointPantries;
-    private DatabaseReference ref;
+    private ListView jointPantriesLV;
+
+    private Map<String, JointPantry> jointPantries;
+    private DatabaseReference databaseRef;
+    private String masterTable = "pantry-pals";
+    private String pantriesTable = "pantries";
+    private ChildEventListener pantryListener;
+
+    Map<String, Item> items;
 
     public PantryTabFragment() {
         // Required empty public constructor
@@ -51,8 +60,8 @@ public class PantryTabFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        jointPantries = new HashMap<>();
     }
 
     @Override
@@ -80,6 +89,10 @@ public class PantryTabFragment extends Fragment {
             }
         });
 
+        initDatabase();
+
+        jointAdapter = new JointPantryAdapter(getActivity(), jointPantries.values());
+
         setupJointPantryLV(view);
 
 
@@ -89,23 +102,61 @@ public class PantryTabFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        databaseRef.child(pantriesTable).removeEventListener(pantryListener);
+    }
+
+    public boolean initDatabase () {
+
+        pantryListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
+                jointPantries.put(pantry.getDatabaseID(), pantry);
+                jointAdapter.refresh(jointPantries.values());
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {
+                onChildAdded(dataSnapshot, prevChildKey);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
+                jointPantries.remove(pantry.getDatabaseID());
+                jointAdapter.refresh(jointPantries.values());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        databaseRef = FirebaseDatabase.getInstance().getReference().child(masterTable);
+        databaseRef.child(pantriesTable).addChildEventListener(pantryListener);
+
+        return true;
     }
 
     private void setupJointPantryLV(View view){
         //JOINT PANTRY
-        joint = new ArrayList<HashMap<String, String>>();
-        jointPantries = (ListView) view.findViewById(R.id.jointPantriesListView);
-        jointAdapter = new JointPantryAdapter(getActivity(), joint);
-        jointPantries.setAdapter(jointAdapter);
+        jointPantriesLV = (ListView) view.findViewById(R.id.jointPantriesListView);
+        jointPantriesLV.setAdapter(jointAdapter);
 
-        jointPantries.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        jointPantriesLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                switchToJointPantry(view);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                switchToJointPantry(view, position);
             }
         });
 
-        ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
         ref = ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -113,27 +164,28 @@ public class PantryTabFragment extends Fragment {
                // joint = new ArrayList<>();
                 User user = dataSnapshot.getValue(User.class);
                 Map<String, Boolean> jointID = user.getJointPantries();
-
+                System.out.println("PRINT: jointID.keySet.size = "+jointID.size());
                 if(jointID != null) {
 
-                    for (String pantryID : jointID.keySet()) {
-                        DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
+                    for (final String pantryID : jointID.keySet()) {
+                        System.out.println("PRINT: pantryID = "+pantryID);
+                        final DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
+
                         jointRef.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                HashMap<String, String> values = new HashMap<>();
-
-                                String key = dataSnapshot.getKey();
-
                                 JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
-                                String title = pantry.getTitle();
 
-                                values.put(JointPantryAdapter.KEY, key);
-                                values.put(JointPantryAdapter.TITLE, title);
+                                if (pantry != null) {
+                                    System.out.println("PRINT: pantry title = "+pantry.getTitle());
+                                    jointPantries.put(pantryID, pantry);
+                                    jointAdapter.refresh(jointPantries.values());
 
-                                joint.add(values);
-                                jointAdapter.notifyDataSetChanged();
+                                }
+
+
+
                             }
 
                             @Override
@@ -191,12 +243,16 @@ public class PantryTabFragment extends Fragment {
         transaction.commit();
     }
 
-    private void switchToJointPantry(View view){
-        JointPantryFragment jointPantry = new JointPantryFragment();
-
+    private void switchToJointPantry(View view, int position){
+        JointPantryFragment jointFrag = new JointPantryFragment();
+        String pantryID = jointAdapter.getPantryIdFromDataSource(position);
+        Bundle args = new Bundle();
+        System.out.println("PRINT: adding to bundle = "+pantryID);
+        args.putString("pantryID", pantryID);
+        jointFrag.setArguments(args);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(getId(), this).addToBackStack(null); // so that back button works
-        transaction.replace(R.id.frame_layout, jointPantry);
+        transaction.replace(R.id.frame_layout, jointFrag);
         transaction.commit();
     }
 
@@ -247,11 +303,8 @@ public class PantryTabFragment extends Fragment {
 
 
         //Reflect Change in UI
-        HashMap<String, String> values = new HashMap<>();
-        values.put(JointPantryAdapter.KEY, key);
-        values.put(JointPantryAdapter.TITLE, pantry.getTitle());
-        joint.add(values);
-        jointAdapter.notifyDataSetChanged();
+        jointPantries.put(pantry.getDatabaseID(), pantry);
+        jointAdapter.refresh(jointPantries.values());
 
         //Update UserAccounts jointPantries references
         storeJointPantryRefInUsers(uids, key);

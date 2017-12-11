@@ -8,6 +8,7 @@ import java.util.Map;
 
 import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
+import pantrypals.models.User;
 
 /**
  * Created by AlisonHuang on 12/10/17.
@@ -60,7 +61,7 @@ public class DummyDataGenerator {
         itemsRecords.setValue(sugar);
 
         DatabaseReference pantriesRecords = database.child(pantriesTable).push();
-        JointPantry brownDorm = new JointPantry();
+        JointPantry brownDorm = new JointPantry(pantriesRecords.getKey());
         brownDorm.setTitle("Brown Dorm");
         brownDorm.setShared(true);
         Map<String, Item> items = new HashMap<>();
@@ -69,6 +70,10 @@ public class DummyDataGenerator {
         items.put("beef", beef);
         items.put("sugar", sugar);
         brownDorm.setItems(items);
+        Map<String, Boolean> owners = new HashMap<>();
+        owners.put("uSpIdTWNnWcZxv5wGBWGYyoT6Tv1", true);
+        brownDorm.setOwnedBy(owners);
         pantriesRecords.setValue(brownDorm);
+
     }
 }

@@ -49,4 +49,12 @@ public class Item {
         this.unit = unit;
     }
 
+    public String getDatabaseId() {
+        return this.databaseID;
+    }
+
+    public void setDatabaseId(String databaseId) {
+        this.databaseID = databaseId;
+    }
+
 }
