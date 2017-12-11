@@ -138,7 +138,7 @@ public class RecipeFragment extends Fragment {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
                     Date dt;
                     dt = dateFormat.parse(recipe.getTimePosted());
-                    SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm aaa");
+                    SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy,  hh:mm aaa");
                     date = newFormat.format(dt);
                     // below: NOT UNIX TIMESTAMP!!
                     //date = unixToDate(recipe.getNegTimestamp());
