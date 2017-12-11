@@ -8,4 +8,32 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.TextAppearance" parent="android:TextAppearance">
+        <item name="fontPath">fonts/Lato-Regular.ttf</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Bold" parent="AppTheme.TextAppearance">
+        <item name="fontPath">fonts/Lato-Bold.ttf</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Black" parent="AppTheme.TextAppearance">
+        <item name="fontPath">fonts/Lato-Black.ttf</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Italic" parent="AppTheme.TextAppearance">
+        <item name="fontPath">fonts/Lato-Italic.ttf</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Hairline" parent="AppTheme.TextAppearance">
+        <item name="fontPath">fonts/Lato-Hairline.ttf</item>
+    </style>
+
+    <style name="AppTheme.TextAppearance.Light" parent="AppTheme.TextAppearance">
+        <item name="fontPath">fonts/Lato-Light.ttf</item>
+    </style>
+
+
 </resources>

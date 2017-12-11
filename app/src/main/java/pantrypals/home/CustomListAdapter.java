@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,10 +36,19 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import java.util.ArrayList;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
+
+import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
+import pantrypals.recipe.RecipeFragment;
+import pantrypals.util.AuthUserInfo;
 
 
 public class CustomListAdapter extends ArrayAdapter<Recipe> {
@@ -49,8 +59,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private int mResource;
     private int lastPosition = -1;
     private boolean mProcessLike = false;
-    private DatabaseReference ref;
+    private boolean mProcessSave = false;
+    private boolean mAddLikeNotifToUser = false;
+    private boolean mAddLikeNotifToNotif = false;
+    private DatabaseReference refLike;
+    private DatabaseReference refSave;
     private FirebaseAuth mAuth;
+    private FragmentManager fm;
 
 
     /**
@@ -64,8 +79,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
-        ref = FirebaseDatabase.getInstance().getReference("/recipes");
+        refLike = FirebaseDatabase.getInstance().getReference("/recipes");
+        refSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         mAuth = FirebaseAuth.getInstance();
+        if(context != null) {
+            this.fm = ((FragmentActivity) context).getSupportFragmentManager();
+        }
+        this.fm = fm;
 
         Log.d(TAG, "Constructor called");
 
@@ -81,8 +101,9 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         //get the recipe
-        String name = getItem(position).getName();
+        final String name = getItem(position).getName();
         String imgUrl = getItem(position).getImageURL();
+        final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
         final String key = getItem(position).getDbKey();
 
 
@@ -100,12 +121,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
                 holder.setLikeButton(key);
+                holder.setSaveButton(key);
                 holder.likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
                 holder.likeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         mProcessLike = true;
-                        ref.addValueEventListener(new ValueEventListener() {
+                        refLike.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessLike) {
@@ -113,16 +135,18 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                     if (dataSnapshot.child(key).hasChild("likedBy")) {
                                         if (dataSnapshot.child(key).child("likedBy").hasChild(userId)) {
                                             //Already liked
-                                            ref.child(key).child("likedBy").child(userId).removeValue();
+                                            refLike.child(key).child("likedBy").child(userId).removeValue();
                                             mProcessLike = false;
                                         } else {
                                             //Not liked yet
-                                            ref.child(key).child("likedBy").child(userId).setValue(true);
+                                            refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                            sendLikeNotif(name, key, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
-                                        ref.child(key).child("likedBy").child(userId).setValue(true);
+                                        refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                        sendLikeNotif(name, key, posterId);
                                         mProcessLike = false;
                                     }
                                 }
@@ -136,6 +160,42 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     }
                 });
                 //holder.description = (TextView) convertView.findViewById(R.id.cardDescription);
+
+                holder.saveForLaterButton = (ImageButton) convertView.findViewById(R.id.saveButton);
+                holder.saveForLaterButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mProcessSave = true;
+                        refSave.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if (mProcessSave) {
+                                    String userId = mAuth.getCurrentUser().getUid();
+                                    if (dataSnapshot.child(userId).hasChild("savedForLater")) {
+                                        if (dataSnapshot.child(userId).child("savedForLater").hasChild(key)) {
+                                            //Already liked
+                                            refSave.child(userId).child("savedForLater").child(key).removeValue();
+                                            mProcessSave = false;
+                                        } else {
+                                            //Not liked yet
+                                            refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                            mProcessSave = false;
+                                        }
+                                    } else {
+                                        // doesn't have likedBy yet
+                                        refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                        mProcessSave = false;
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                });
 
                 convertView.setTag(holder);
             } else {
@@ -186,12 +246,54 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
             );
             Log.d(TAG, "returnimg convertView");
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction t = fm.beginTransaction();
+                    t.replace(R.id.frame_layout, RecipeFragment.newFragment(getItem(position).getDbKey()));
+                    t.commit();
+                }
+            });
             return convertView;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "getView: IllegalArgumentException: " + e.getMessage());
             return convertView;
         }
 
+    }
+
+    private void sendLikeNotif(String recipeName, String recipeId, final String destId) {
+        mAddLikeNotifToNotif = true;
+        mAddLikeNotifToUser = true;
+        Notification notif = new Notification();
+        final String notifId = UUID.randomUUID().toString().substring(0, 30).replace("-", "");
+        notif.setMessage(AuthUserInfo.INSTANCE.getUser().getName() + " has liked this recipe.");
+        notif.setOriginator(recipeName);
+        notif.setLinkID(recipeId);
+        notif.setLinkType("recipe");
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(mAddLikeNotifToUser) {
+                    Map<String, Boolean> map = dataSnapshot.getValue(Map.class);
+                    if(map == null) {
+                        map = Maps.newHashMap();
+                    }
+                    map.put(notifId, true);
+                    ref.child("userAccounts").child(destId).child("notifications").setValue(map);
+                    mAddLikeNotifToUser = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ref.child("notifications").child(notifId).setValue(notif);
     }
 
     /**
@@ -223,7 +325,9 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         ImageView image;
         ProgressBar dialog;
         ImageButton likeButton;
+        ImageButton saveForLaterButton;
         DatabaseReference mDatabaseLike = FirebaseDatabase.getInstance().getReference("/recipes");
+        DatabaseReference mDatabaseSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         private ViewHolder() {
@@ -246,6 +350,32 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     } else {
                         // doesn't have likedBy yet
                         likeButton.setImageResource(R.drawable.like_gray);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
+        private void setSaveButton(final String dbKey) {
+            mDatabaseSave.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    String userId = mAuth.getCurrentUser().getUid();
+                    if (dataSnapshot.child(userId).hasChild("savedForLater")) {
+                        if (dataSnapshot.child(userId).child("savedForLater").hasChild(dbKey)) {
+                            //Already liked
+                            saveForLaterButton.setImageResource(R.drawable.saved);
+                        } else {
+                            //Not liked yet
+                            saveForLaterButton.setImageResource(R.drawable.save);
+                        }
+                    } else {
+                        // doesn't have likedBy yet
+                        saveForLaterButton.setImageResource(R.drawable.save);
                     }
                 }
 
