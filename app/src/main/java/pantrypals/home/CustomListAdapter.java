@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,10 +41,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.UUID;
 
+import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
 import pantrypals.recipe.RecipeFragment;
+import pantrypals.util.AuthUserInfo;
 
 
 public class CustomListAdapter extends ArrayAdapter<Recipe> {
@@ -55,6 +60,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private int lastPosition = -1;
     private boolean mProcessLike = false;
     private boolean mProcessSave = false;
+    private boolean mAddLikeNotifToUser = false;
+    private boolean mAddLikeNotifToNotif = false;
     private DatabaseReference refLike;
     private DatabaseReference refSave;
     private FirebaseAuth mAuth;
@@ -94,8 +101,9 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         //get the recipe
-        String name = getItem(position).getName();
+        final String name = getItem(position).getName();
         String imgUrl = getItem(position).getImageURL();
+        final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
         final String key = getItem(position).getDbKey();
 
 
@@ -132,11 +140,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         } else {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                            sendLikeNotif(name, key, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                        sendLikeNotif(name, key, posterId);
                                         mProcessLike = false;
                                     }
                                 }
@@ -250,6 +260,40 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             return convertView;
         }
 
+    }
+
+    private void sendLikeNotif(String recipeName, String recipeId, final String destId) {
+        mAddLikeNotifToNotif = true;
+        mAddLikeNotifToUser = true;
+        Notification notif = new Notification();
+        final String notifId = UUID.randomUUID().toString().substring(0, 30).replace("-", "");
+        notif.setMessage(AuthUserInfo.INSTANCE.getUser().getName() + " has liked this recipe.");
+        notif.setOriginator(recipeName);
+        notif.setLinkID(recipeId);
+        notif.setLinkType("recipe");
+
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(mAddLikeNotifToUser) {
+                    Map<String, Boolean> map = dataSnapshot.getValue(Map.class);
+                    if(map == null) {
+                        map = Maps.newHashMap();
+                    }
+                    map.put(notifId, true);
+                    ref.child("userAccounts").child(destId).child("notifications").setValue(map);
+                    mAddLikeNotifToUser = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ref.child("notifications").child(notifId).setValue(notif);
     }
 
     /**
