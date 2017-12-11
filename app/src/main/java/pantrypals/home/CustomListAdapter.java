@@ -35,10 +35,15 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 import java.util.ArrayList;
 
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
+import pantrypals.recipe.RecipeFragment;
 
 
 public class CustomListAdapter extends ArrayAdapter<Recipe> {
@@ -51,6 +56,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private boolean mProcessLike = false;
     private DatabaseReference ref;
     private FirebaseAuth mAuth;
+    private FragmentManager fm;
 
 
     /**
@@ -66,6 +72,10 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         mResource = resource;
         ref = FirebaseDatabase.getInstance().getReference("/recipes");
         mAuth = FirebaseAuth.getInstance();
+        if(context != null) {
+            this.fm = ((FragmentActivity) context).getSupportFragmentManager();
+        }
+        this.fm = fm;
 
         Log.d(TAG, "Constructor called");
 
@@ -186,6 +196,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
             );
             Log.d(TAG, "returnimg convertView");
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction t = fm.beginTransaction();
+                    t.replace(R.id.frame_layout, RecipeFragment.newFragment(getItem(position).getDbKey()));
+                    t.commit();
+                }
+            });
             return convertView;
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "getView: IllegalArgumentException: " + e.getMessage());
