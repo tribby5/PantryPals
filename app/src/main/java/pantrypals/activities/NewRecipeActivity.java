@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,15 +56,17 @@ public class NewRecipeActivity extends AppCompatActivity {
     private EditText prevIngNameField;
     private EditText prevIngAmtField;
     private EditText prevIngUnitField;
-
     private EditText prevInstr;
 
     private int stepNumber = 1;
 
     private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
     private StorageReference mStorage;
     private Context mContext;
     private ProgressDialog mProgressDialog;
+
+    private Button uploadImageButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +74,7 @@ public class NewRecipeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_recipe);
 
         //TODO: When this is finished, change the string inside getReference to /recipes
-        mDatabase = FirebaseDatabase.getInstance().getReference("/TESTRECIPES");
+        mDatabase = FirebaseDatabase.getInstance().getReference("/recipes");
         final String mRecipe_key = mDatabase.push().getKey();
 
         prevIngNameField = (EditText) findViewById(R.id.ingredientName);
@@ -176,7 +179,7 @@ public class NewRecipeActivity extends AppCompatActivity {
         });
 
         // SetOnClickListener for uploading image
-        Button uploadImageButton = (Button) findViewById(R.id.uploadImageButton);
+        uploadImageButton = (Button) findViewById(R.id.uploadImageButton);
         mStorage = FirebaseStorage.getInstance().getReference();
         mProgressDialog = new ProgressDialog(this);
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
@@ -257,6 +260,13 @@ public class NewRecipeActivity extends AppCompatActivity {
                 }
 
                 Recipe newRecipe = new Recipe();
+
+                // set postedBy
+                mAuth = FirebaseAuth.getInstance();
+                Map<String, Boolean> postedBy = new HashMap<>();
+                postedBy.put(mAuth.getCurrentUser().getUid(), true);
+                newRecipe.setPostedBy(postedBy);
+
                 newRecipe.setName(name);
                 newRecipe.setCaption(caption);
                 newRecipe.setIngredients(ingredients);
@@ -313,6 +323,9 @@ public class NewRecipeActivity extends AppCompatActivity {
                     uploadedImagePath = taskSnapshot.getDownloadUrl().toString();
                     toastMessage("Image upload succeeded.");
                     mProgressDialog.dismiss();
+
+                    // change the button text to uploaded
+                    changeUploadButtonText();
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -322,6 +335,10 @@ public class NewRecipeActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void changeUploadButtonText() {
+        uploadImageButton.setText("IMAGE UPLOADED");
     }
 
     private void toastMessage(String message) {

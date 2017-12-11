@@ -22,6 +22,7 @@ import com.wefika.flowlayout.FlowLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -118,7 +119,12 @@ public class RecipeFragment extends Fragment {
                         }
                     });
                 }
-                double rating = Double.parseDouble(recipe.getAverageRating());
+                double rating;
+                try {
+                    rating = Double.parseDouble(recipe.getAverageRating());
+                } catch (NullPointerException e) {
+                    rating = 0.0;
+                }
                 for(int i = 0; i < stars.size(); i++) {
                     if ((rating / (i + 1)) >= 1) {
                         stars.get(i).setImageResource(activeStarID);
@@ -128,7 +134,15 @@ public class RecipeFragment extends Fragment {
                 }
                 String date;
                 try {
-                    date = unixToDate(recipe.getNegTimestamp());
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    Date dt;
+                    dt = dateFormat.parse(recipe.getTimePosted());
+                    SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy,  hh:mm aaa");
+                    date = newFormat.format(dt);
+                    // below: NOT UNIX TIMESTAMP!!
+                    //date = unixToDate(recipe.getNegTimestamp());
+
                 } catch (ParseException pe) {
                     date = "Unknown date";
                 }
@@ -165,25 +179,27 @@ public class RecipeFragment extends Fragment {
                 List<String> tags = recipe.getTags();
 
                 tagLayout.removeAllViews();
+                if (tags != null && tags.size() != 0) {
+                    for(String tag : tags) {
+                        if(isAdded()) {
+                            TextView tagTV = new TextView(getContext());
+                            tagTV.setText(tag);
+                            tagTV.setTextSize(12);
+                            tagTV.setPadding(25, 15, 25, 15);
+                            if (isAdded()) {
+                                tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
+                                tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                            }
 
-                for(String tag : tags) {
-                    if(isAdded()) {
-                        TextView tagTV = new TextView(getContext());
-                        tagTV.setText(tag);
-                        tagTV.setTextSize(12);
-                        tagTV.setPadding(25, 15, 25, 15);
-                        if (isAdded()) {
-                            tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
-                            tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                            FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
+                            params.setMargins(10, 0, 10, 0);
+
+                            tagTV.setLayoutParams(params);
+                            tagLayout.addView(tagTV);
                         }
-
-                        FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                        params.setMargins(10, 0, 10, 0);
-
-                        tagTV.setLayoutParams(params);
-                        tagLayout.addView(tagTV);
                     }
                 }
+
             }
 
             @Override
