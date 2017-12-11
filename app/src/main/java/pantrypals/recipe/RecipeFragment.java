@@ -137,23 +137,27 @@ public class RecipeFragment extends Fragment {
                 List<Recipe.Ingredient> ingredients = recipe.getIngredients();
 
                 for(Recipe.Ingredient ingredient : ingredients) {
-                    TextView ingTV = new TextView(getContext());
-                    if(ingredient.getUnit() != null) {
-                        ingTV.setText(String.format(Locale.US, "• %d %s %s", (int) ingredient.getAmount(), ingredient.getUnit(), ingredient.getName()));
-                    } else {
-                        ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
+                    if(isAdded()) {
+                        TextView ingTV = new TextView(getContext());
+                        if (ingredient.getUnit() != null) {
+                            ingTV.setText(String.format(Locale.US, "• %d %s %s", (int) ingredient.getAmount(), ingredient.getUnit(), ingredient.getName()));
+                        } else {
+                            ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
+                        }
+                        ingTV.setPadding(0, 20, 0, 20);
+                        ingredientsLayout.addView(ingTV);
                     }
-                    ingTV.setPadding(0, 20, 0, 20);
-                    ingredientsLayout.addView(ingTV);
                 }
 
                 List<String> instructions = recipe.getInstructions();
 
                 for(int i = 1; i <= instructions.size(); i++) {
-                    TextView instrTV = new TextView(getContext());
-                    instrTV.setText(String.format(Locale.US, "%d. %s", i, instructions.get(i - 1)));
-                    instrTV.setPadding(0, 20, 0, 20);
-                    instructionsLayout.addView(instrTV);
+                    if(isAdded()) {
+                        TextView instrTV = new TextView(getContext());
+                        instrTV.setText(String.format(Locale.US, "%d. %s", i, instructions.get(i - 1)));
+                        instrTV.setPadding(0, 20, 0, 20);
+                        instructionsLayout.addView(instrTV);
+                    }
                 }
 
                 List<String> tags = recipe.getTags();
@@ -161,20 +165,22 @@ public class RecipeFragment extends Fragment {
                 tagLayout.removeAllViews();
 
                 for(String tag : tags) {
-                    TextView tagTV = new TextView(getContext());
-                    tagTV.setText(tag);
-                    tagTV.setTextSize(12);
-                    tagTV.setPadding(25, 15, 25, 15);
                     if(isAdded()) {
-                        tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
-                        tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                        TextView tagTV = new TextView(getContext());
+                        tagTV.setText(tag);
+                        tagTV.setTextSize(12);
+                        tagTV.setPadding(25, 15, 25, 15);
+                        if (isAdded()) {
+                            tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
+                            tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                        }
+
+                        FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(10, 0, 10, 0);
+
+                        tagTV.setLayoutParams(params);
+                        tagLayout.addView(tagTV);
                     }
-
-                    FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                    params.setMargins(10,0,10,0);
-
-                    tagTV.setLayoutParams(params);
-                    tagLayout.addView(tagTV);
                 }
             }
 
