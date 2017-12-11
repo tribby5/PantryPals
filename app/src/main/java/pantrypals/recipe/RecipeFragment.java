@@ -22,6 +22,7 @@ import com.wefika.flowlayout.FlowLayout;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -133,7 +134,15 @@ public class RecipeFragment extends Fragment {
                 }
                 String date;
                 try {
-                    date = unixToDate(recipe.getNegTimestamp());
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    Date dt;
+                    dt = dateFormat.parse(recipe.getTimePosted());
+                    SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy, hh:mm aaa");
+                    date = newFormat.format(dt);
+                    // below: NOT UNIX TIMESTAMP!!
+                    //date = unixToDate(recipe.getNegTimestamp());
+
                 } catch (ParseException pe) {
                     date = "Unknown date";
                 }
