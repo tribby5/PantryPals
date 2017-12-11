@@ -40,7 +40,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -71,7 +71,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -84,7 +84,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -97,7 +97,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -110,7 +110,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -141,7 +141,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -154,7 +154,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -167,7 +167,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 
@@ -180,7 +180,7 @@
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner"
+                    android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
 

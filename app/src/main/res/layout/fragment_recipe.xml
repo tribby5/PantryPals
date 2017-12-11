@@ -52,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/recipe_caption"
                 android:layout_below="@+id/recipe_caption"
+                android:layout_marginTop="@dimen/padding"
                 android:text="Date"
                 android:textSize="12dp"
                 android:textStyle="italic" />
@@ -62,6 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/recipe_date"
                 android:layout_below="@id/recipe_date"
+                android:layout_marginTop="@dimen/padding"
                 android:text="by"
                 android:textSize="12dp" />
 
@@ -80,52 +82,42 @@
                 android:id="@+id/recipe_star1"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_alignTop="@+id/recipe_name"
-                android:layout_marginStart="86dp"
-                android:layout_toEndOf="@+id/recipe_poster"
+                android:layout_alignBottom="@+id/recipe_name"
+                android:layout_toStartOf="@+id/recipe_star2"
                 android:src="@drawable/star_tint" />
 
             <ImageView
                 android:id="@+id/recipe_star2"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_alignTop="@+id/recipe_star1"
-                android:layout_toEndOf="@+id/recipe_star1"
+                android:layout_alignBottom="@+id/recipe_name"
+                android:layout_toStartOf="@+id/recipe_star3"
                 android:src="@drawable/star_tint" />
 
             <ImageView
                 android:id="@+id/recipe_star3"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_alignTop="@+id/recipe_star2"
-                android:layout_toEndOf="@+id/recipe_star2"
+                android:layout_alignBottom="@+id/recipe_name"
+                android:layout_toStartOf="@+id/recipe_star4"
                 android:src="@drawable/star_tint" />
 
             <ImageView
                 android:id="@+id/recipe_star4"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_alignTop="@+id/recipe_star3"
-                android:layout_toEndOf="@+id/recipe_star3"
+                android:layout_alignBottom="@+id/recipe_name"
+                android:layout_toStartOf="@id/recipe_star5"
                 android:src="@drawable/star_tint" />
 
             <ImageView
                 android:id="@+id/recipe_star5"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:layout_alignTop="@+id/recipe_star4"
-                android:layout_toEndOf="@+id/recipe_star4"
-                android:src="@drawable/star_tint" />
-
-            <TextView
-                android:id="@+id/recipe_score"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/recipe_name"
                 android:layout_alignBottom="@+id/recipe_name"
-                android:layout_marginStart="16dp"
-                android:layout_toEndOf="@+id/recipe_star5"
-                android:text="0.0" />
+                android:layout_marginEnd="@dimen/padding"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/star_tint" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -141,7 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Ingredients"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -159,8 +151,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Instructions"
-                    android:textSize="12sp"
+                    android:textSize="14sp"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/instructionsLayout"
+                android:layout_below="@id/instructionsLayout"
+                android:layout_marginTop="19dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:text="Tags"/>
+
+                <com.wefika.flowlayout.FlowLayout
+                    android:id="@+id/recipe_tags_container"
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/instructionsLayout"
+                    android:layout_marginTop="19dp"
+                    android:paddingBottom="19dp"
+                    android:gravity="start|top">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="tag1"
+                        android:textSize="@dimen/h4Size"
+                        android:paddingLeft="@dimen/padding"
+                        android:paddingRight="@dimen/padding"
+                        android:paddingTop="@dimen/smallPadding"
+                        android:paddingBottom="@dimen/smallPadding"
+                        android:background="@drawable/rounded_corner_blue"
+                        android:textColor="@color/colorWhite"
+                        />
+
+                </com.wefika.flowlayout.FlowLayout>
+
             </LinearLayout>
 
 
