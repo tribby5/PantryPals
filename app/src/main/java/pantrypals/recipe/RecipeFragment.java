@@ -165,8 +165,10 @@ public class RecipeFragment extends Fragment {
                     tagTV.setText(tag);
                     tagTV.setTextSize(12);
                     tagTV.setPadding(25, 15, 25, 15);
-                    tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
-                    tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                    if(isAdded()) {
+                        tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
+                        tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                    }
 
                     FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
                     params.setMargins(10,0,10,0);

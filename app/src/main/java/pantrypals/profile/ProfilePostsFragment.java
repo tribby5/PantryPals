@@ -56,7 +56,6 @@ public class ProfilePostsFragment extends Fragment {
 //                        if (meetsCondition(recipe)) {
 //                            adapter.add(recipe);
 //                        }
-//                        Log.d(TAG, "Retrieved Id: " + recipeId);
 //                    }
 //                }
 //            }
@@ -68,19 +67,9 @@ public class ProfilePostsFragment extends Fragment {
 //        });
 
         // Inflate the recipe_layout first
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile_posts, container, false);
 
-//        // newPostButton
-//        Button newPostButton = (Button) view.findViewById(R.id.newPostButton);
-//        newPostButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent postIntent = new Intent(getActivity(), NewRecipeActivity.class);
-//                startActivity(postIntent);
-//            }
-//        });
-//
-//        feedListView = (ListView) view.findViewById(R.id.feedListView);
+//        ListView feedListView = (ListView) view.findViewById(R.id.feedListView);
 //        adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList);
 //        feedListView.setAdapter(adapter);
 //
