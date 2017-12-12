@@ -9,11 +9,8 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import pantrypals.models.Item;

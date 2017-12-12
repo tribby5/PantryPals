@@ -1,91 +1,107 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="pantrypals.pantry.PantryTabFragment"
-    android:background="@color/colorPrimaryDark"
-    android:orientation="vertical"
-    >
+    android:background="@color/colorPrimaryDark">
 
-    <TextView
-        android:id="@+id/pantry_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pantries"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        android:textColor="@color/colorWhite"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
-       />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/shopping_cart_icon_light"
+        app:backgroundTint="@android:color/white"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="top|right"
+        android:layout_marginEnd="15dp">
+    </android.support.design.widget.FloatingActionButton>
 
-    <Button
-        android:id="@+id/my_pantry"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorAccentAlt"
-        android:text="@string/my_pantry"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textSize="24sp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="25dp"
-        android:padding="10dp"
-        />
 
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="5dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"
-        android:background="#FFF"/>
-
-    <TextView
-        android:id="@+id/joint_pantries"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/joint_pantries"
-        android:textSize="20sp"
-        android:textColor="@color/colorWhite"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="15dp"
-        android:textAlignment="center"
-     />
-
-    <Button
-        android:id="@+id/addJointPantry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_new_joint_pantry"
-        android:textSize="18sp"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorAccentAlt"
-        android:layout_gravity="center"
-        android:padding="10dp"
-        android:textAllCaps="false"
-        android:layout_marginBottom="20dp"
-        />
-
-    <ListView
-        android:id="@+id/jointPantriesListView"
-        android:layout_width="268dp"
-        android:layout_height="210dp"
-        android:divider="#FFF"
-        android:dividerHeight="2dp"
-        android:visibility="visible"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-      ></ListView>
-    <!-- android:background="@drawable/border_ui" -->
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/pantry_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pantries"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+           />
+
+        <Button
+            android:id="@+id/my_pantry"
+            style="@style/Widget.AppCompat.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccentAlt"
+            android:text="@string/my_pantry"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="25dp"
+            android:padding="10dp"
+            />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="5dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="#FFF"/>
+
+        <TextView
+            android:id="@+id/joint_pantries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/joint_pantries"
+            android:textSize="20sp"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="15dp"
+            android:textAlignment="center"
+         />
+
+        <Button
+            android:id="@+id/addJointPantry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_new_joint_pantry"
+            android:textSize="18sp"
+            android:textColor="@color/colorWhite"
+            android:background="@color/colorAccentAlt"
+            android:layout_gravity="center"
+            android:padding="10dp"
+            android:textAllCaps="false"
+            android:layout_marginBottom="20dp"
+            />
+
+        <ListView
+            android:id="@+id/jointPantriesListView"
+            android:layout_width="268dp"
+            android:layout_height="210dp"
+            android:divider="#FFF"
+            android:dividerHeight="2dp"
+            android:visibility="visible"
+            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="center"
+            android:layout_marginBottom="20dp"
+          ></ListView>
+        <!-- android:background="@drawable/border_ui" -->
+
+    </LinearLayout>
 
 
-
-
-</LinearLayout>
+</FrameLayout>

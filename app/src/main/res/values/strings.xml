@@ -74,6 +74,9 @@
     <string name="expiration_date">Expiration Date</string>
     <string name="units">Units</string>
 
+    <!-- Grocery List-->
+    <string name="my_grocery_list">My Grocery List</string>
+
 
     <!-- Joint Pantry -->
     <string name="joint_pantry">Joint Pantry</string>
