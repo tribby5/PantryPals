@@ -9,5 +9,6 @@
     <string name="items">items</string>
     <string name="users">userAccounts</string>
     <string name="jointPantriesAttribute">jointPantries</string>
+    <string name="groceryData">groceryLists</string>
 
 </resources>

@@ -76,6 +76,7 @@
 
     <!-- Grocery List-->
     <string name="my_grocery_list">My Grocery List</string>
+    <string name="add_item_grocery_title">Add item to Grocery List</string>
 
 
     <!-- Joint Pantry -->
