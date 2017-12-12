@@ -6,4 +6,21 @@
     android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.profile.ProfilePostsFragment">
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:id="@+id/profile_posts_scroll_view"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/profile_posts_linear_layout"
+            android:orientation="vertical">
+
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
 </FrameLayout>
