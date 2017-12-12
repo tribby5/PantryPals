@@ -11,4 +11,5 @@
     <color name="colorLightGray">#FBFBFB</color>
     <color name="colorGreen">#43a047</color>
     <color name="colorRed">#d32f2f</color>
+    <color name="colorPurpleFade">#41325b</color>
 </resources>
