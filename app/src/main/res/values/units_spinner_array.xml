@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="units_spinner_array">
+        <item>Units</item>
+        <item>oz</item>
+        <item>lb</item>
+        <item>mL</item>
+        <item>L</item>
+        <item>cup</item>
+        <item>pinch</item>
+    </string-array>
+</resources>

@@ -3,7 +3,6 @@ package pantrypals.models;
 /**
  * Created by AlisonHuang on 12/10/17.
  */
-
 public class Item {
     private String databaseID;
     private double amount;

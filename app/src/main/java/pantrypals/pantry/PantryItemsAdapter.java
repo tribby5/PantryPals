@@ -9,11 +9,8 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import pantrypals.models.Item;
@@ -77,17 +74,6 @@ public class PantryItemsAdapter extends BaseAdapter{
         unitTV.setTextColor(activity.getResources().getColor(R.color.colorWhite));
         expirationDate.setText(result.getExpiration());
         expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-
-
-//        HashMap<String, String> map=items.get(i);
-//        name.setText(map.get(PersonalPantryFragment.FIRST_COLUMN));
-//        name.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        amount.setText(map.get(PersonalPantryFragment.SECOND_COLUMN));
-//        amount.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        units.setText(map.get(PersonalPantryFragment.THIRD_COLUMN));
-//        units.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        expirationDate.setText(map.get(PersonalPantryFragment.FOURTH_COLUMN));
-//        expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
 
         return rowView;
     }

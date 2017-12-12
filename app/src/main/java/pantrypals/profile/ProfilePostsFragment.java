@@ -31,6 +31,10 @@ import pantrypals.home.CustomListAdapter;
 import pantrypals.models.Recipe;
 import pantrypals.util.AuthUserInfo;
 
+import pantrypals.activities.NewRecipeActivity;
+import pantrypals.home.CustomListAdapter;
+import pantrypals.models.Recipe;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -57,6 +61,7 @@ public class ProfilePostsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the recipe_layout first
         View view = inflater.inflate(R.layout.fragment_profile_posts, container, false);
 

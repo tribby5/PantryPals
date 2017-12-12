@@ -8,10 +8,6 @@ import android.graphics.Paint;
 
 public class JointPantry extends Pantry {
 
-    public JointPantry(String id) {
-        this.databaseID = id;
-    }
-
     public JointPantry () {
 
     }

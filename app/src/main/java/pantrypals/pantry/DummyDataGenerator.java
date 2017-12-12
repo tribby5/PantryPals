@@ -61,7 +61,7 @@ public class DummyDataGenerator {
         itemsRecords.setValue(sugar);
 
         DatabaseReference pantriesRecords = database.child(pantriesTable).push();
-        JointPantry brownDorm = new JointPantry(pantriesRecords.getKey());
+        JointPantry brownDorm = new JointPantry();
         brownDorm.setTitle("Brown Dorm");
         brownDorm.setShared(true);
         Map<String, Item> items = new HashMap<>();
@@ -69,7 +69,7 @@ public class DummyDataGenerator {
         items.put("salt", salt);
         items.put("beef", beef);
         items.put("sugar", sugar);
-        brownDorm.setItems(items);
+        //brownDorm.setItems(items);
         Map<String, Boolean> owners = new HashMap<>();
         owners.put("uSpIdTWNnWcZxv5wGBWGYyoT6Tv1", true);
         brownDorm.setOwnedBy(owners);
