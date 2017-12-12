@@ -2,6 +2,7 @@ package pantrypals.pantry;
 
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -11,27 +12,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.android.databaes.pantrypals.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
+
+import pantrypals.models.Item;
+import pantrypals.models.JointPantry;
+import pantrypals.models.Pantry;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PersonalPantryFragment extends Fragment {
-    public static final String FIRST_COLUMN = "name";
-    public static final String SECOND_COLUMN = "amount";
-    public static final String THIRD_COLUMN = "unit";
-    public static final String FOURTH_COLUMN = "expiration";
 
-    private ArrayList<HashMap<String, String>> items;
+    private ArrayList<Item> items;
     private PantryItemsAdapter adapter;
+    private String add_item_name;
+    private double add_item_amount;
+    private String add_item_units;
+    private String add_item_date;
+    private DatabaseReference databaseRef;
+    private String pantryID;
+    private Pantry myPantry;
+    private DatabaseReference pantryRef;
+    private DatabaseReference itemsRef;
+    private PantryItemsAdapter itemsAdapter;
+    private ItemsRetriever itemsRetriever;
 
 
     public PersonalPantryFragment() {
@@ -55,28 +71,85 @@ public class PersonalPantryFragment extends Fragment {
                 addButtonClick(view);
             }
         });
-
+        databaseRef = FirebaseDatabase.getInstance().getReference();
+        pantryID = this.getArguments().getString("pantryID");
+        items = new ArrayList<>();
+        itemsAdapter = new PantryItemsAdapter(getActivity(), items);
+        getMyPantry();
+        itemsRetriever = new ItemsRetriever(pantryID, itemsAdapter);
+        items = itemsRetriever.retrievePantryItems();
+        System.out.println("PRINT: ITEMS FROM THE RETRIEVER "+items.size());
         setupItemListView(view);
 
         super.onViewCreated(view, savedInstanceState);
     }
 
+    private void getMyPantry() {
+        pantryRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+        pantryRef.child(pantryID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                myPantry = dataSnapshot.getValue(Pantry.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
     private void setupItemListView(View view){
-        ListView itemListView = (ListView) view.findViewById(R.id.itemListView);
+        ListView itemListView = (ListView) view.findViewById(R.id.personalPantryItemsLV);
+        itemListView.setAdapter(itemsAdapter);
         itemListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 editModal(view);
             }
         });
-        items = new ArrayList<HashMap<String, String>>();
-        adapter = new PantryItemsAdapter(getActivity(), items);
-        itemListView.setAdapter(adapter);
+
 
 
     }
 
-    private void addButtonClick(View v){
+//    private void retrievePantryItems() {
+//        itemsRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.items));
+//        pantryRef.child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Pantry pantry = dataSnapshot.getValue(JointPantry.class);
+//                for (String itemID : pantry.getItems().keySet()){
+//                    System.out.println("PRINT: itemID = "+itemID);
+//                    itemsRef.child(itemID).addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            Item item = dataSnapshot.getValue(Item.class);
+//                            System.out.println("PRINT: item name = "+item.getName());
+//                            items.add(item);
+//                            System.out.println("PRINT: items.size() = "+items.size());
+//                            itemsAdapter.refresh(items);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//                }
+//                itemsAdapter.refresh(items);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
+
+    private void addButtonClick(final View v){
         //builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getResources().getString(R.string.modal_add_item));
@@ -88,18 +161,61 @@ public class PersonalPantryFragment extends Fragment {
 
         setMeasurementSpinner(dialogView);
         builder.setView(dialogView);
+        builder.setPositiveButton(getResources().getText(R.string.add_item), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                EditText itemName = (EditText) dialogView.findViewById(R.id.add_item_name);
+                EditText itemAmount = (EditText) dialogView.findViewById(R.id.add_item_amount);
+                EditText itemDate = (EditText) dialogView.findViewById(R.id.add_item_date);
+                add_item_name = itemName.getText().toString();
+                add_item_amount = Double.parseDouble(itemAmount.getText().toString());
+                add_item_date = itemDate.getText().toString();
 
+                Map<String,Boolean> myItems = myPantry.getItems();
+
+                DatabaseReference itemsRef = databaseRef.child(getResources().getString(R.string.items));
+                String itemID = itemsRef.push().getKey();
+                Item newItem = new Item();
+                newItem.setName(add_item_name);
+                newItem.setAmount(add_item_amount);
+                newItem.setUnit(add_item_units);
+                newItem.setExpiration(add_item_date);
+                itemsRef.child(itemID).setValue(newItem);
+
+                myItems.put(itemID, true);
+
+                FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData))
+                        .child(pantryID).child(getResources().getString(R.string.items)).setValue(myItems);
+
+
+                items = itemsRetriever.retrievePantryItems();
+                itemsAdapter.refresh(items);
+
+            }
+        });
         builder.show();
     }
 
     private void setMeasurementSpinner(View v){
-        Spinner units = v.findViewById(R.id.measurement_unit);
-        List<String> unitsList = Arrays.asList(getResources().getStringArray(R.array.units));
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, unitsList);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final Spinner unitSpinner = v.findViewById(R.id.add_item_units);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(v.getContext(),
+                R.array.units_spinner_array, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        unitSpinner.setAdapter(spinnerAdapter);
+        unitSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position != 0) {
+                    add_item_units = unitSpinner.getItemAtPosition(position).toString();
+                    unitSpinner.setSelection(position);
+                }
+            }
 
-        units.setAdapter(dataAdapter);
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private void editModal(View v){

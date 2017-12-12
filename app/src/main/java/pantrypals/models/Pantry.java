@@ -7,19 +7,21 @@ import java.util.Map;
  */
 
 public class Pantry {
-    private Map<String, Item> items;
+    private Map<String, Boolean> items;
     private Map<String, Boolean> ownedBy;
     private Boolean shared;
+    protected String databaseID;
 
     public Pantry() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
     }
 
-    public Map<String, Item> getItems() {
+
+    public Map<String, Boolean> getItems() {
         return items;
     }
 
-    public void setItems(Map<String, Item> items) {
+    public void setItems(Map<String, Boolean> items) {
         this.items = items;
     }
 
@@ -39,44 +41,12 @@ public class Pantry {
         this.shared = shared;
     }
 
-    public static class Item {
-        public double getAmount() {
-            return amount;
-        }
-
-        public void setAmount(double amount) {
-            this.amount = amount;
-        }
-
-        public String getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(String expiration) {
-            this.expiration = expiration;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getUnit() {
-            return unit;
-        }
-
-        public void setUnit(String unit) {
-            this.unit = unit;
-        }
-
-        private double amount;
-        private String expiration;
-        private String name;
-        private String unit;
-
-        public Item() {}
+    public String getDatabaseID() {
+        return this.databaseID;
     }
+
+    public void setDatabaseID(String databaseId) {
+        this.databaseID = databaseId;
+    }
+
 }

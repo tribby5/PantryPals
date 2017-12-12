@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
 //        });
 
 
-        ref.orderByChild("negTimestamp").limitToFirst(4).addValueEventListener(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(10).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -139,24 +139,30 @@ public class HomeFragment extends Fragment {
                         Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                         final String postedBy = recipePostedBySet.iterator().next();
                         DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-                        boolean isFollowed = false;
-                        mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
-                                    adapter.add(recipe);
+
+                        if (currUserId.equals(postedBy)) {
+                            adapter.add(recipe);
+                        } else {
+                            mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                        adapter.add(recipe);
+
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                            }
-                        });
-
-
-
+                                }
+                            });
+                        }
                         Log.d(TAG, "Retrieved Id: " + recipeId);
+
+
+
+
                     }
                 }
             }
@@ -191,7 +197,6 @@ public class HomeFragment extends Fragment {
             private int currentScrollState;
             private int currentFirstVisibleItem;
             private int totalItem;
-            private LinearLayout lBelow;
 
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -209,7 +214,7 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(4)
+                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(5)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -228,30 +233,34 @@ public class HomeFragment extends Fragment {
                                             Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                                             final String postedBy = recipePostedBySet.iterator().next();
                                             DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-                                            boolean isFollowed = false;
-                                            mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
-                                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
-                                                        adapter.add(recipe);
+                                            //boolean isFollowed = false;
+
+                                            // If recipe is written by me (my recipe) then show
+                                            if (currUserId.equals(postedBy)) {
+                                                adapter.add(recipe);
+                                            } else {
+                                                // this recipe is not written by me - check if i follow this person
+                                                mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        //boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
+                                                        if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                                            adapter.add(recipe);
+                                                        }
                                                     }
-                                                }
 
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
 
-                                                }
-                                            });
+                                                    }
+                                                });
 
-
-
+                                            }
 
                                             Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
                                         }
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
 

@@ -3,17 +3,27 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/rounded_corner_white"
     android:id="@+id/grid_item_square">
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    <ImageView
+        android:id="@+id/grid_item_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="45dp"/>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/grid_item_text"
-        android:gravity="center"
+        android:gravity="center_horizontal"
         android:textSize="@dimen/h3Size"
-        android:layout_margin="@dimen/padding"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorPrimary"
-        android:hint="Title"
+        android:textColor="@color/colorBlack"
+        android:layout_alignParentBottom="true"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
+        android:text="TITLE"
         android:padding="@dimen/padding">
     </TextView>
 </pantrypals.discover.SquareLayout>

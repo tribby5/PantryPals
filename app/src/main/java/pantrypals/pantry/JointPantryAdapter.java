@@ -10,37 +10,49 @@ import android.widget.TextView;
 import com.android.databaes.pantrypals.R;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.List;
+
+import pantrypals.models.JointPantry;
 
 /**
  * Created by mtribby on 12/9/17.
  */
 
 public class JointPantryAdapter extends BaseAdapter{
-    public static final String KEY = "key";
-    public static final String TITLE = "title";
-    private TextView title;
 
     private Activity activity;
-    private ArrayList<HashMap<String, String>> jointPantries;
+    private List<JointPantry> jointPantries;
 
-    public JointPantryAdapter(Activity activity, ArrayList<HashMap<String, String>> list){
+    public JointPantryAdapter(Activity activity, Collection<JointPantry> pantries){
         super();
         this.activity=activity;
-        this.jointPantries=list;
+        this.jointPantries= new ArrayList<>(pantries);
     }
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         LayoutInflater inflater=activity.getLayoutInflater();
+        PantryHolder holder;
 
         if(view == null){
             view=inflater.inflate(android.R.layout.simple_list_item_1, null);
-            title = view.findViewById(android.R.id.text1);
-            title.setText(jointPantries.get(i).get(TITLE));
-            title.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+            holder = new PantryHolder();
 
+            holder.title = view.findViewById(android.R.id.text1);
+            holder.title.setTextColor(activity.getResources().getColor(R.color.colorWhite));
+
+            view.setTag(holder);
+        } else {
+            holder = (PantryHolder) view.getTag();
         }
+
+        TextView titleTV = holder.title;
+
+        JointPantry result = (JointPantry) getItem(i);
+
+        titleTV.setText(result.getTitle());
+
         return view;
     }
 
@@ -57,6 +69,20 @@ public class JointPantryAdapter extends BaseAdapter{
     @Override
     public int getCount() {
         return jointPantries.size();
+    }
+
+    public void refresh(Collection<JointPantry> pantries) {
+        this.jointPantries = new ArrayList<>(pantries);
+        notifyDataSetChanged();
+    }
+
+    public String getPantryIdFromDataSource(int position) {
+        System.out.println("PRINT: adapter get id = "+jointPantries.get(position).getDatabaseID());
+        return jointPantries.get(position).getDatabaseID();
+    }
+
+    private static class PantryHolder {
+        TextView title;
     }
 
 }
