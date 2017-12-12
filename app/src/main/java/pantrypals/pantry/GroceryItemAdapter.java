@@ -90,10 +90,6 @@ public class GroceryItemAdapter extends BaseAdapter {
 
         data.remove(i);
         refresh(data);
-
-
-
-
     }
 
     public void refresh(List<Map<String, String>> data){

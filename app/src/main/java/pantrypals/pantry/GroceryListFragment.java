@@ -66,13 +66,13 @@ public class GroceryListFragment extends Fragment {
     private void setupListView(View view){
         grocery = view.findViewById(R.id.grocery_lv);
         items = new ArrayList<>();
-        adapter = new GroceryItemAdapter(getActivity(), items);
+
         grocery.setAdapter(adapter);
 
         //Load in data from Firebase
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.groceryData)).child(uid);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 items = new ArrayList<>();
@@ -86,7 +86,8 @@ public class GroceryListFragment extends Fragment {
 
                     items.add(data);
                 }
-                adapter.refresh(items);
+                adapter = new GroceryItemAdapter(getActivity(), items);
+                grocery.setAdapter(adapter);
             }
 
             @Override
