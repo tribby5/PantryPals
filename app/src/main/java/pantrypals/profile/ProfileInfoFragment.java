@@ -59,8 +59,8 @@ public class ProfileInfoFragment extends Fragment {
                     prefText.setText(pref.getKey());
                     prefText.setTextSize(14);
                     prefText.setPadding(25, 15, 25, 15);
-                    prefText.setTextColor(getResources().getColor(R.color.colorWhite));
-                    prefText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
+                    prefText.setTextColor(getResources().getColor(R.color.colorPurpleFade));
+                    prefText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_purple_fade));
 
                     FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
                     params.setMargins(10,10,10,10);
@@ -86,8 +86,8 @@ public class ProfileInfoFragment extends Fragment {
                     restrictionText.setText(restriction.getKey());
                     restrictionText.setTextSize(14);
                     restrictionText.setPadding(25, 15, 25, 15);
-                    restrictionText.setTextColor(getResources().getColor(R.color.colorWhite));
-                    restrictionText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
+                    restrictionText.setTextColor(getResources().getColor(R.color.colorPurpleFade));
+                    restrictionText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_purple_fade));
 
                     FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
                     params.setMargins(10,10,10,10);
@@ -115,8 +115,8 @@ public class ProfileInfoFragment extends Fragment {
                         groupText.setText(group.getName());
                         groupText.setTextSize(14);
                         groupText.setPadding(25, 15, 25, 15);
-                        groupText.setTextColor(getResources().getColor(R.color.colorWhite));
-                        groupText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_pink));
+                        groupText.setTextColor(getResources().getColor(R.color.colorPurpleFade));
+                        groupText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_purple_fade));
 
                         FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
                         params.setMargins(10,10,10,10);

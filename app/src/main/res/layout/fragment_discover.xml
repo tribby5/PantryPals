@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:id="@+id/frame_layout_master"
     android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.discover.DiscoverFragment">
 
     <HorizontalScrollView
