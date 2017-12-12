@@ -1,6 +1,7 @@
 package pantrypals.pantry;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ public class GroceryItemAdapter extends BaseAdapter {
     public final static String GROCERY_TITLE = "TITLE";
     public final static String GROCERY_AMOUNT = "AMOUNT";
     public final static String GROCERY_UNIT = "UNIT";
+    public final static String GROCERY_ITEM_ID = "ID";
 
     private List<Map<String, String>> data;
     private Activity activity;
@@ -77,8 +81,19 @@ public class GroceryItemAdapter extends BaseAdapter {
     }
 
     public void removeItem(int i){
+        Log.d("WORKS", Integer.toString(i));
+        Log.d("WORKS", data.get(i).get(GROCERY_TITLE));
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseDatabase.getInstance().getReference().child(activity.getResources().getString(R.string.groceryData))
+                .child(uid).child(data.get(i).get(GROCERY_ITEM_ID)).removeValue();
+
         data.remove(i);
         refresh(data);
+
+
+
+
     }
 
     public void refresh(List<Map<String, String>> data){
