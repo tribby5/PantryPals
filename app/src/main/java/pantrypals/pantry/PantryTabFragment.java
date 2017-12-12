@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -79,6 +80,15 @@ public class PantryTabFragment extends Fragment {
                switchToPersonalPantry(view);
             }
         });
+
+        FloatingActionButton grocery = (FloatingActionButton) view.findViewById(R.id.fab);
+        grocery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchToGroceryList(view);
+            }
+        });
+
 
         setupJointPantryLV(view);
 
@@ -200,6 +210,15 @@ public class PantryTabFragment extends Fragment {
         transaction.commit();
     }
 
+    private void switchToGroceryList(View view){
+        GroceryListFragment groceryListFragment = new GroceryListFragment();
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(getId(), this).addToBackStack(null); // so that back button works
+        transaction.replace(R.id.frame_layout, groceryListFragment);
+        transaction.commit();
+    }
+
     private void createNewJointPantry(String title, List<String> emails){
         DatabaseReference homeRef = FirebaseDatabase.getInstance().getReference();
 
@@ -283,6 +302,7 @@ public class PantryTabFragment extends Fragment {
             });
         }
     }
+
 
 
 
