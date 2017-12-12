@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment {
         ViewPager viewPager = view.findViewById(R.id.profile_view_pager);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getFragmentManager());
-        adapter.addTab(new ProfilePostsFragment(), "Posts");
+        adapter.addTab(ProfilePostsFragment.newFragment(getArguments().getCharSequence(ARG_ID)), "Posts");
         adapter.addTab(ProfileInfoFragment.newFragment(getArguments().getCharSequence(ARG_ID)), "Info");
 
         viewPager.setAdapter(adapter);

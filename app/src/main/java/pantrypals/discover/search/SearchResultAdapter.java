@@ -22,6 +22,7 @@ import pantrypals.models.Group;
 import pantrypals.models.Post;
 import pantrypals.models.User;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.util.DownloadImageTask;
 
 /**
  * Created by adityasrinivasan on 08/12/17.
@@ -98,6 +99,8 @@ public class SearchResultAdapter extends BaseAdapter {
         bioTV.setText(user.getBio());
         ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
         verifiedImg.setVisibility(user.isVerified() ? View.VISIBLE : View.INVISIBLE);
+        ImageView iv = view.findViewById(R.id.search_result_person_avatar);
+        new DownloadImageTask(iv).execute(user.getAvatar());
 
         rl.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,7 +108,7 @@ public class SearchResultAdapter extends BaseAdapter {
                 if(fm != null) {
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(result.getId()));
-                    transaction.commit();
+                    transaction.addToBackStack(null).commit();
                 }
             }
         });
@@ -133,7 +136,7 @@ public class SearchResultAdapter extends BaseAdapter {
                 if(fm != null) {
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.frame_layout, GroupFragment.newFragment(result.getId()));
-                    transaction.commit();
+                    transaction.addToBackStack(null).commit();
                 }
             }
         });

@@ -130,16 +130,18 @@
                 android:id="@+id/profile_liked_posts_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/avatar"
-                android:layout_toStartOf="@+id/profile_followers_text"
+                android:layout_alignStart="@+id/profile_followers_text"
+                android:layout_alignTop="@+id/profile_follow_spinner"
+                android:background="@android:color/transparent"
                 android:src="@drawable/like_pink" />
 
             <ImageButton
                 android:id="@+id/profile_saved_posts_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignEnd="@+id/profile_followers_num"
+                android:layout_alignEnd="@+id/profile_followers_text"
                 android:layout_alignTop="@+id/profile_liked_posts_btn"
+                android:background="@android:color/transparent"
                 android:src="@drawable/saved" />
 
         </RelativeLayout>
