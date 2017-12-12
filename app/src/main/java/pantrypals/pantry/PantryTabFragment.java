@@ -3,6 +3,7 @@ package pantrypals.pantry;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -46,6 +47,10 @@ public class PantryTabFragment extends Fragment {
     private String masterTable = "pantry-pals";
     private String pantriesTable = "pantries";
     private ChildEventListener pantryListener;
+    private ChildEventListener usersListener;
+
+    private String myUserID;
+    private String personalPantryID;
 
     Map<String, Item> items;
 
@@ -62,6 +67,11 @@ public class PantryTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         jointPantries = new HashMap<>();
+        initDatabase();
+        myUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        getPersonalPantryID();
+        jointAdapter = new JointPantryAdapter(getActivity(), jointPantries.values());
+
     }
 
     @Override
@@ -89,12 +99,10 @@ public class PantryTabFragment extends Fragment {
             }
         });
 
-        initDatabase();
 
         jointAdapter = new JointPantryAdapter(getActivity(), jointPantries.values());
 
         setupJointPantryLV(view);
-
 
         super.onViewCreated(view, savedInstanceState);
     }
@@ -138,8 +146,40 @@ public class PantryTabFragment extends Fragment {
             }
         };
 
+        usersListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                User user = dataSnapshot.getValue(User.class);
+                System.out.println("PRINT: "+dataSnapshot);
+                System.out.println("PRINT: personal pantry ID = "+user.getPersonalPantry());
+                personalPantryID = user.getPersonalPantry();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        };
+
         databaseRef = FirebaseDatabase.getInstance().getReference().child(masterTable);
-        databaseRef.child(pantriesTable).addChildEventListener(pantryListener);
+        databaseRef.child(getResources().getString(R.string.pantries)).addChildEventListener(pantryListener);
+
 
         return true;
     }
@@ -152,6 +192,7 @@ public class PantryTabFragment extends Fragment {
         jointPantriesLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                System.out.println("PRINT: joint pantries listview position = "+position);
                 switchToJointPantry(view, position);
             }
         });
@@ -164,11 +205,11 @@ public class PantryTabFragment extends Fragment {
                // joint = new ArrayList<>();
                 User user = dataSnapshot.getValue(User.class);
                 Map<String, Boolean> jointID = user.getJointPantries();
-                System.out.println("PRINT: jointID.keySet.size = "+jointID.size());
+//                System.out.println("PRINT: jointID.keySet.size = "+jointID.size());
                 if(jointID != null) {
 
                     for (final String pantryID : jointID.keySet()) {
-                        System.out.println("PRINT: pantryID = "+pantryID);
+//                        System.out.println("PRINT: pantryID = "+pantryID);
                         final DatabaseReference jointRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData)).child(pantryID);
 
                         jointRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -178,7 +219,7 @@ public class PantryTabFragment extends Fragment {
                                 JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
 
                                 if (pantry != null) {
-                                    System.out.println("PRINT: pantry title = "+pantry.getTitle());
+                                    pantry.setDatabaseID(pantryID);
                                     jointPantries.put(pantryID, pantry);
                                     jointAdapter.refresh(jointPantries.values());
 
@@ -234,9 +275,31 @@ public class PantryTabFragment extends Fragment {
 
     }
 
+    private void getPersonalPantryID() {
+        DatabaseReference parentRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
+        System.out.println("PRINT: my user ID = "+myUserID);
+        parentRef.child(myUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                System.out.println("PRINT: personal pantry ID = " + user.getPersonalPantry());
+                personalPantryID = user.getPersonalPantry();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void switchToPersonalPantry(View view){
         PersonalPantryFragment personalPantry = new PersonalPantryFragment();
-
+        Bundle args = new Bundle();
+        args.putString("pantryID", personalPantryID);
+        System.out.println("PRINT: putting personal pantry id = "+personalPantryID);
+        personalPantry.setArguments(args);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(getId(), this).addToBackStack(null); // so that back button works
         transaction.replace(R.id.frame_layout, personalPantry);
@@ -247,8 +310,8 @@ public class PantryTabFragment extends Fragment {
         JointPantryFragment jointFrag = new JointPantryFragment();
         String pantryID = jointAdapter.getPantryIdFromDataSource(position);
         Bundle args = new Bundle();
-        System.out.println("PRINT: adding to bundle = "+pantryID);
         args.putString("pantryID", pantryID);
+        System.out.println("PRINT: storing joint pantryID = "+pantryID);
         jointFrag.setArguments(args);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(getId(), this).addToBackStack(null); // so that back button works
@@ -319,6 +382,7 @@ public class PantryTabFragment extends Fragment {
             parentRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
+                    System.out.println("PRINT: working datasnapshot = "+dataSnapshot);
                     User user = dataSnapshot.getValue(User.class);
                     Map<String, Boolean> jointPantries = user.getJointPantries();
                     if(jointPantries == null){

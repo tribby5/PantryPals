@@ -24,15 +24,13 @@
              />
 
         <ListView
-            android:id="@+id/itemListView"
+            android:id="@+id/personalPantryItemsLV"
+            android:layout_marginTop="50dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:divider="#FFF"
-            android:dividerHeight="2dp"
-            android:layout_gravity="center"
+            android:layout_height="402dp"
+            android:layout_marginBottom="30dp"
             android:background="@color/colorPrimaryDark"
-          ></ListView>
+            ></ListView>
 
     </LinearLayout>
 

@@ -63,6 +63,7 @@
     <string name="my_pantry">My Pantry</string>
     <string name="joint_pantries">Joint Pantries</string>
     <string name="add_item_title">Add Item to Pantry</string>
+    <string name="add_item">Add</string>
     <string name="add_new_joint_pantry">Add New Joint Pantry</string>
 
     <!-- My Pantry -->

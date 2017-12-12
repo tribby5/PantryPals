@@ -35,7 +35,7 @@
      />
 
     <ListView
-        android:id="@+id/itemListView"
+        android:id="@+id/jointPantryItemsLV"
         android:layout_width="match_parent"
         android:layout_height="402dp"
         android:layout_marginBottom="30dp"

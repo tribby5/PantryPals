@@ -78,17 +78,6 @@ public class PantryItemsAdapter extends BaseAdapter{
         expirationDate.setText(result.getExpiration());
         expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
 
-
-//        HashMap<String, String> map=items.get(i);
-//        name.setText(map.get(PersonalPantryFragment.FIRST_COLUMN));
-//        name.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        amount.setText(map.get(PersonalPantryFragment.SECOND_COLUMN));
-//        amount.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        units.setText(map.get(PersonalPantryFragment.THIRD_COLUMN));
-//        units.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-//        expirationDate.setText(map.get(PersonalPantryFragment.FOURTH_COLUMN));
-//        expirationDate.setTextColor(activity.getResources().getColor(R.color.colorWhite));
-
         return rowView;
     }
 

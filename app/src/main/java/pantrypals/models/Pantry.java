@@ -7,7 +7,7 @@ import java.util.Map;
  */
 
 public class Pantry {
-    private Map<String, Item> items;
+    private Map<String, Boolean> items;
     private Map<String, Boolean> ownedBy;
     private Boolean shared;
     protected String databaseID;
@@ -17,11 +17,11 @@ public class Pantry {
     }
 
 
-    public Map<String, Item> getItems() {
+    public Map<String, Boolean> getItems() {
         return items;
     }
 
-    public void setItems(Map<String, Item> items) {
+    public void setItems(Map<String, Boolean> items) {
         this.items = items;
     }
 
