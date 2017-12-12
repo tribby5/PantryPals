@@ -41,6 +41,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -74,7 +75,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
      * @param resource
      * @param objects
      */
-    public CustomListAdapter(Context context, int resource, ArrayList<Recipe> objects) {
+    public CustomListAdapter(Context context, int resource, List<Recipe> objects) {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
