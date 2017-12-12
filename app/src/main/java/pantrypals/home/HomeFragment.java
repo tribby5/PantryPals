@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import pantrypals.activities.NewRecipeActivity;
 import pantrypals.database.generate.RecipeGenerator;
@@ -45,6 +46,16 @@ public class HomeFragment extends Fragment {
 
     private static final String TEMP_IMAGE = "https://metrouk2.files.wordpress.com/2017/10/523733805-e1508406361613.jpg";
     private static final String TAG = "HomeFragment";
+
+    public boolean getBool() {
+        return bool;
+    }
+
+    public void setBool(boolean bool) {
+        this.bool = bool;
+    }
+
+    private boolean bool = false;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference ref;
@@ -108,11 +119,11 @@ public class HomeFragment extends Fragment {
 //        });
 
 
-        ref.orderByChild("negTimestamp").limitToFirst(4).addValueEventListener(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(10).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Recipe recipe = snapshot.getValue(Recipe.class);
+                    final Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
                         oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                         //dataSnapshot.getChildrenCount();
@@ -122,10 +133,36 @@ public class HomeFragment extends Fragment {
                         //recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
                         recipe.setDbKey(recipeId);
                         //feedList.add(recipe);
-                        if (meetsCondition(recipe)) {
+
+                        // filter based on whether i follow this person or not
+                        final String currUserId = mAuth.getCurrentUser().getUid();
+                        Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
+                        final String postedBy = recipePostedBySet.iterator().next();
+                        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
+
+                        if (currUserId.equals(postedBy)) {
                             adapter.add(recipe);
+                        } else {
+                            mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                        adapter.add(recipe);
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                         Log.d(TAG, "Retrieved Id: " + recipeId);
+
+
+
+
                     }
                 }
             }
@@ -160,7 +197,6 @@ public class HomeFragment extends Fragment {
             private int currentScrollState;
             private int currentFirstVisibleItem;
             private int totalItem;
-            private LinearLayout lBelow;
 
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState) {
@@ -178,12 +214,12 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(4)
+                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(5)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        Recipe recipe = snapshot.getValue(Recipe.class);
+                                        final Recipe recipe = snapshot.getValue(Recipe.class);
                                         if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
                                             oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                                             String recipeId = snapshot.getKey();
@@ -191,14 +227,40 @@ public class HomeFragment extends Fragment {
                                             //recipe.setImgURL(TEMP_IMAGE);
                                             recipe.setDbKey(recipeId);
                                             //feedList.add(recipe);
-                                            if (meetsCondition(recipe)) {
+
+                                            // filter based on whether i follow this person or not
+                                            final String currUserId = mAuth.getCurrentUser().getUid();
+                                            Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
+                                            final String postedBy = recipePostedBySet.iterator().next();
+                                            DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
+                                            //boolean isFollowed = false;
+
+                                            // If recipe is written by me (my recipe) then show
+                                            if (currUserId.equals(postedBy)) {
                                                 adapter.add(recipe);
+                                            } else {
+                                                // this recipe is not written by me - check if i follow this person
+                                                mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        //boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
+                                                        if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                                            adapter.add(recipe);
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+
                                             }
+
                                             Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
                                         }
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
 
@@ -210,15 +272,43 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Add logic for intelligent feed filtering
-     *
-     * @param recipe
-     * @return
-     */
-    private boolean meetsCondition(Recipe recipe) {
-        return true;
-    }
+//    /**
+//     * Add logic for intelligent feed filtering
+//     *
+//     * @param recipe
+//     * @return
+//     */
+//    private boolean meetsCondition(Recipe recipe) {
+//
+//
+//
+//        // filter based on whether i follow this person or not
+//        final String currUserId = mAuth.getCurrentUser().getUid();
+//        Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
+//        final String postedBy = recipePostedBySet.iterator().next();
+//        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
+//        mFollow.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                boolean mybool = dataSnapshot.child(currUserId).hasChild(postedBy);
+//                if (mybool) {
+//                    // TODO: Find out whether I have the ingredients here
+//                    setBool(true);
+//                } else {
+//                    setBool(false);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//        Boolean bb = getBool();
+//
+//        return getBool();
+//    }
 
     private void toastMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

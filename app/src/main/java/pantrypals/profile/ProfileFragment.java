@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,11 +33,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.models.Notification;
+import pantrypals.models.Recipe;
 import pantrypals.models.User;
 import pantrypals.util.AuthUserInfo;
 import pantrypals.util.DownloadImageTask;
@@ -46,6 +51,8 @@ public class ProfileFragment extends Fragment {
 
     private static final String ARG_ID = "ID";
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+    private boolean mProcessShowSavedPosts = false;
 
     private int prevSelected = -1;
     private int follow;
@@ -101,8 +108,13 @@ public class ProfileFragment extends Fragment {
                 name.setText(user.getName());
                 bio.setText(user.getBio());
 
-                new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
-                        .execute("https://vignette.wikia.nocookie.net/mrbean/images/4/4b/Mr_beans_holiday_ver2.jpg/revision/latest/scale-to-width-down/250?cb=20100424114324");
+                if(user.getAvatar() != null) {
+                    new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
+                            .execute(user.getAvatar());
+                } else {
+                    new DownloadImageTask((ImageView) view.findViewById(R.id.avatar))
+                            .execute("https://vignette.wikia.nocookie.net/mrbean/images/4/4b/Mr_beans_holiday_ver2.jpg/revision/latest/scale-to-width-down/250?cb=20100424114324");
+                }
 
                 ImageView verifiedImage = view.findViewById(R.id.verifiedIcon);
                 verifiedImage.setVisibility(user.isVerified() ? View.VISIBLE : View.INVISIBLE);
@@ -114,6 +126,8 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        final ImageButton likedPostsButton = view.findViewById(R.id.profile_liked_posts_btn);
+        final ImageButton savedPostsButton = view.findViewById(R.id.profile_saved_posts_btn);
 
         final Spinner spinner = view.findViewById(R.id.profile_follow_spinner);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_layout, Lists.newArrayList("Not following", "Following all", "Following relevant"));
@@ -165,10 +179,12 @@ public class ProfileFragment extends Fragment {
                     }
                 });
                 spinner.setSelection(follow);
-                if(follow == 0) {
-                    spinner.setBackgroundColor(getResources().getColor(R.color.colorLightGray));
-                } else {
-                    spinner.setBackgroundColor(getResources().getColor(R.color.colorGreen));
+                if(isAdded()) {
+                    if (follow == 0) {
+                        spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorLightGray));
+                    } else {
+                        spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorGreen));
+                    }
                 }
             }
 
@@ -212,6 +228,12 @@ public class ProfileFragment extends Fragment {
 
         if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(getArguments().get(ARG_ID))) {
             spinner.setVisibility(View.INVISIBLE);
+            likedPostsButton.setVisibility(View.VISIBLE);
+            savedPostsButton.setVisibility(View.VISIBLE);
+        } else {
+            spinner.setVisibility(View.VISIBLE);
+            likedPostsButton.setVisibility(View.INVISIBLE);
+            savedPostsButton.setVisibility(View.INVISIBLE);
         }
 
         final TextView numFollowing = view.findViewById(R.id.profile_following_num);
@@ -249,6 +271,61 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        likedPostsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        savedPostsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mProcessShowSavedPosts = true;
+                mDatabase.child("userAccounts").child((String) getArguments().getCharSequence(ARG_ID)).child("savedForLater").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<String> recipes = Lists.newArrayList();
+                        for(DataSnapshot recipeIDSnapshot : dataSnapshot.getChildren()) {
+                            String recipeID = recipeIDSnapshot.getKey();
+                            recipes.add(recipeID);
+                        }
+                        for(final String recipeID : recipes) {
+                            mDatabase.child("recipes").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(mProcessShowSavedPosts) {
+                                        List<Recipe> recipes = Lists.newArrayList();
+                                        for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                                            if (recipeSnapshot.getKey().equals(recipeID)) {
+                                                Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                                                recipe.setDbKey(recipeID);
+                                                recipes.add(recipe);
+                                            }
+                                        }
+                                        SavedForLaterFragment newFragment = SavedForLaterFragment.newFragment(recipes);
+                                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.frame_layout, newFragment).addToBackStack(null).commit();
+                                        mProcessShowSavedPosts = false;
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 

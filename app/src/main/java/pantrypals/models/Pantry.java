@@ -10,10 +10,12 @@ public class Pantry {
     private Map<String, Item> items;
     private Map<String, Boolean> ownedBy;
     private Boolean shared;
+    protected String databaseID;
 
     public Pantry() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
     }
+
 
     public Map<String, Item> getItems() {
         return items;
@@ -37,6 +39,14 @@ public class Pantry {
 
     public void setShared(Boolean shared) {
         this.shared = shared;
+    }
+
+    public String getDatabaseID() {
+        return this.databaseID;
+    }
+
+    public void setDatabaseID(String databaseId) {
+        this.databaseID = databaseId;
     }
 
 }

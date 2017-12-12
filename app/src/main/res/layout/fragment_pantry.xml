@@ -34,9 +34,16 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:textSize="24sp"
         android:layout_gravity="center"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="25dp"
         android:padding="10dp"
         />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="5dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:background="#FFF"/>
 
     <TextView
         android:id="@+id/joint_pantries"
@@ -45,9 +52,25 @@
         android:text="@string/joint_pantries"
         android:textSize="20sp"
         android:textColor="@color/colorWhite"
-        android:layout_marginStart="56dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp"
         android:layout_marginBottom="15dp"
+        android:textAlignment="center"
      />
+
+    <Button
+        android:id="@+id/addJointPantry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_new_joint_pantry"
+        android:textSize="18sp"
+        android:textColor="@color/colorWhite"
+        android:background="@color/colorAccentAlt"
+        android:layout_gravity="center"
+        android:padding="10dp"
+        android:textAllCaps="false"
+        android:layout_marginBottom="20dp"
+        />
 
     <ListView
         android:id="@+id/jointPantriesListView"
@@ -62,18 +85,7 @@
       ></ListView>
     <!-- android:background="@drawable/border_ui" -->
 
-    <Button
-        android:id="@+id/addJointPantry"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_new_joint_pantry"
-        android:textSize="18sp"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorAccentAlt"
-        android:layout_gravity="center"
-        android:padding="10dp"
-        android:textAllCaps="false"
-        />
+
 
 
 </LinearLayout>

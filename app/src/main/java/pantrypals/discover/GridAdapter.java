@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
@@ -47,8 +48,18 @@ public class GridAdapter extends BaseAdapter {
         view = layoutInflater.inflate(R.layout.grid_item, null);
 
         SquareLayout sq = view.findViewById(R.id.grid_item_square);
+        ImageView iv = view.findViewById(R.id.grid_item_image);
+        String iconName = string.split(" ")[0].toLowerCase();
+        int resID = mContext.getResources().getIdentifier(iconName , "drawable", mContext.getPackageName());
+        iv.setImageResource(resID);
+
+        // SUPER HACKY WORKAROUND
         TextView tv = view.findViewById(R.id.grid_item_text);
-        tv.setText(string);
+        if(string.contains("Breakfast") || string.contains("Holidays")) {
+            tv.setText(string.split(" ")[0]);
+        } else {
+            tv.setText(string);
+        }
 
         return sq;
     }

@@ -97,7 +97,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, fragment).commit();
+        transaction.replace(R.id.frame_layout, fragment).addToBackStack(null).commit();
     }
 
     @Override

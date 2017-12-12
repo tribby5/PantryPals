@@ -4,22 +4,26 @@
     android:layout_height="match_parent"
     android:id="@+id/discover_detail_layout"
     android:orientation="vertical"
+    android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.discover.DiscoverDetailFragment">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:textSize="@dimen/h1Size"
         android:padding="@dimen/padding"
-        android:hint="Title"
+        android:text="Title"
         android:id="@+id/discover_detail_title"
-        android:textColor="@color/colorBlack"/>
+        android:textColor="@color/colorWhite"/>
 
     <GridView
         android:id="@+id/discover_detail_grid_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding"
+        android:horizontalSpacing="@dimen/padding"
+        android:verticalSpacing="@dimen/padding"
         android:gravity="center"
         android:columnWidth="100dp"
         android:numColumns="2"

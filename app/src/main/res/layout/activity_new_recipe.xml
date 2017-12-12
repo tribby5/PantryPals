@@ -5,94 +5,187 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="16dp"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="16dp"
+    android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.activities.NewRecipeActivity">
 
-    <Button
-        android:id="@+id/uploadImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="Upload Image" />
-
-    <EditText
-        android:layout_below="@+id/uploadImageButton"
-        android:id="@+id/newRecipeTitle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:hint="New Recipe Title"
-        android:textStyle="bold"
-        android:inputType="text"
-        android:textSize="24dp"/>
-
-    <EditText
-        android:id="@+id/newRecipeCaption"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/newRecipeTitle"
-        android:hint="New Recipe Caption"
-        android:textStyle="italic"
-        android:inputType="text"
-        android:textSize="22dp"/>
-
-    <EditText
-        android:id="@+id/newRecipeText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/newRecipeCaption"
-        android:hint="New Recipe Text"
-        android:inputType="text"/>
-
-    <TableLayout
-        android:layout_below="@+id/newRecipeText"
-        android:id="@+id/newRecipeIngredientTable"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_marginBottom="@dimen/extraPadding">
 
-        <TableRow
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp">
-            <EditText
-                android:hint="Ingredient"
-                android:layout_height="50dp"
-                android:id="@+id/ingredientName"
-                android:inputType="text"
-                android:layout_width="150dp"
-                android:gravity="center">
-            </EditText>/>
-            <EditText
-                android:hint="Amt"
-                android:layout_height="50dp"
-                android:id="@+id/ingredientAmount"
-                android:inputType="numberDecimal"
-                android:layout_width="60dp"
-                android:gravity="center">
-            </EditText>/>
-            <EditText
-                android:hint="Unit"
-                android:layout_height="50dp"
-                android:id="@+id/ingredientUnit"
-                android:inputType="text"
-                android:layout_width="50dp"
-                android:gravity="center">
-            </EditText>/>
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding">
+            <TextView
+                android:id="@+id/create_recipe_title"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
+                android:paddingBottom="@dimen/padding"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/h2Size"
+                android:text="Create a Recipe" />
             <Button
-                android:id="@+id/addRowButton"
-                android:layout_width="64dp"
-                android:layout_height="match_parent"
+                android:id="@+id/uploadImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/create_recipe_title"
+                android:padding="@dimen/padding"
+                android:background="@drawable/rounded_corner_blue"
+                android:textColor="@color/colorWhite"
                 android:layout_centerHorizontal="true"
-                android:text="More" />
-        </TableRow>
+                android:text="Upload Image" />
 
-    </TableLayout>
+            <EditText
+                android:layout_below="@+id/uploadImageButton"
+                android:id="@+id/newRecipeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:hint="Title"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
+                android:inputType="text"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="#bdbdbd"
+                android:textSize="20dp"/>
+
+            <EditText
+                android:id="@+id/newRecipeCaption"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/newRecipeTitle"
+                android:hint="Caption"
+                android:inputType="text"
+                android:textColorHint="#bdbdbd"
+                android:textColor="@color/colorHint"
+                android:textSize="14dp"/>
+
+            <TableLayout
+                android:layout_below="@+id/newRecipeCaption"
+                android:id="@+id/newRecipeIngredientTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp">
+                    <EditText
+                        android:hint="ingredient"
+                        android:layout_height="50dp"
+                        android:id="@+id/ingredientName"
+                        android:textSize="@dimen/h4Size"
+                        android:textColorHint="@color/colorHintDark"
+                        android:textColor="@color/colorWhite"
+                        android:inputType="text"
+                        android:layout_width="150dp"
+                        android:gravity="center">
+                    </EditText>/>
+                    <EditText
+                        android:hint="amt"
+                        android:layout_height="50dp"
+                        android:id="@+id/ingredientAmount"
+                        android:textSize="@dimen/h4Size"
+                        android:textColorHint="@color/colorHintDark"
+                        android:textColor="@color/colorWhite"
+                        android:inputType="numberDecimal"
+                        android:layout_width="60dp"
+                        android:gravity="center">
+                    </EditText>/>
+                    <EditText
+                        android:hint="unit"
+                        android:layout_height="50dp"
+                        android:id="@+id/ingredientUnit"
+                        android:textSize="@dimen/h4Size"
+                        android:textColorHint="@color/colorHintDark"
+                        android:textColor="@color/colorWhite"
+                        android:inputType="text"
+                        android:layout_width="50dp"
+                        android:gravity="center">
+                    </EditText>/>
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/addIngredientButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/padding"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/rounded_corner_purple"
+                android:layout_below="@id/newRecipeIngredientTable"
+                android:text="+" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#888"
+                android:layout_toEndOf="@id/addIngredientButton"
+                android:layout_marginLeft="@dimen/padding"
+                android:textSize="12sp"
+                android:layout_alignBaseline="@id/addIngredientButton"
+                android:text="Add another ingredient"/>
+
+            <TableLayout
+                android:layout_below="@+id/addIngredientButton"
+                android:id="@+id/newRecipeInstructionTable"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/extraPadding"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="@dimen/h4Size"
+                        android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+                        android:text="1. "/>
+                    <EditText
+                        android:hint="enter the next step"
+                        android:layout_width="match_parent"
+                        android:width="300dp"
+                        android:id="@+id/instructionText"
+                        android:textSize="@dimen/h4Size"
+                        android:textColorHint="@color/colorHintDark"
+                        android:textColor="@color/colorWhite"
+                        android:inputType="text">
+                    </EditText>
+                </TableRow>
+
+            </TableLayout>
+
+            <Button
+                android:id="@+id/addInstructionButton"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/padding"
+                android:textColor="@color/colorWhite"
+                android:background="@drawable/rounded_corner_purple"
+                android:layout_below="@id/newRecipeInstructionTable"
+                android:text="+" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#888"
+                android:layout_toEndOf="@id/addInstructionButton"
+                android:layout_marginLeft="@dimen/padding"
+                android:textSize="12sp"
+                android:layout_alignBaseline="@id/addInstructionButton"
+                android:text="Add another instruction"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/createRecipeButton"
@@ -100,7 +193,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="Post New Recipe" />
+        android:background="@drawable/rounded_corner_blue"
+        android:textColor="@color/colorWhite"
+        android:text="PUBLISH" />
 
 
 </RelativeLayout>
