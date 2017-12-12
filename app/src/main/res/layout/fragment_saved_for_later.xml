@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    android:padding="@dimen/padding"
+    android:orientation="vertical"
+    android:id="@+id/saved_for_later_layout"
+    tools:context="pantrypals.profile.SavedForLaterFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/h2Size"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
+        android:textColor="@color/colorWhite"
+        android:text="Saved For Later" />
+
+</LinearLayout>

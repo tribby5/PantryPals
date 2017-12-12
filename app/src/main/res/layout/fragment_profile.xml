@@ -40,6 +40,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@+id/avatar"
                 android:layout_below="@+id/profile_following_num"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
                 android:layout_marginTop="13dp"
                 android:text="Name"
                 android:textSize="18sp"
@@ -51,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/avatar"
                 android:layout_alignStart="@+id/profile_following_text"
+                android:textAppearance="@style/AppTheme.TextAppearance.Bold"
                 android:textSize="@dimen/h4Size"
                 android:text="234"
                 android:textAlignment="center"
@@ -62,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/profile_following_num"
                 android:layout_alignBottom="@+id/profile_following_num"
+                android:textAppearance="@style/AppTheme.TextAppearance.Bold"
                 android:layout_alignStart="@+id/profile_followers_text"
                 android:textSize="@dimen/h4Size"
                 android:text="60"
@@ -122,6 +125,22 @@
                 android:layout_alignStart="@+id/profile_following_text"
                 android:layout_alignTop="@+id/avatar"
                 android:layout_marginTop="17dp" />
+
+            <ImageButton
+                android:id="@+id/profile_liked_posts_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/avatar"
+                android:layout_toStartOf="@+id/profile_followers_text"
+                android:src="@drawable/like_pink" />
+
+            <ImageButton
+                android:id="@+id/profile_saved_posts_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/profile_followers_num"
+                android:layout_alignTop="@+id/profile_liked_posts_btn"
+                android:src="@drawable/saved" />
 
         </RelativeLayout>
 
