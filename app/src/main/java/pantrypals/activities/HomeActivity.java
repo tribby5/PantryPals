@@ -62,7 +62,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
                                 selectedFragment = ProfileFragment.newFragment(FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 break;
                             case R.id.nav_notifications:
-                                selectedFragment = RecipeFragment.newFragment("004e0c9d-369c-44ae-bc2d-fa9aad66b377");
+                                selectedFragment = NotificationsFragment.newInstance();
                                 break;
                         }
 
@@ -97,7 +97,7 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
 
     private void setFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.frame_layout, fragment).commit();
+        transaction.replace(R.id.frame_layout, fragment).addToBackStack(null).commit();
     }
 
     @Override

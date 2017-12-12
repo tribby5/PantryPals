@@ -61,7 +61,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private boolean mProcessLike = false;
     private boolean mProcessSave = false;
     private boolean mAddLikeNotifToUser = false;
-    private boolean mAddLikeNotifToNotif = false;
     private DatabaseReference refLike;
     private DatabaseReference refSave;
     private FirebaseAuth mAuth;
@@ -263,7 +262,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     }
 
     private void sendLikeNotif(String recipeName, String recipeId, final String destId) {
-        mAddLikeNotifToNotif = true;
         mAddLikeNotifToUser = true;
         Notification notif = new Notification();
         final String notifId = UUID.randomUUID().toString().substring(0, 30).replace("-", "");
