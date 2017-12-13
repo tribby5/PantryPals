@@ -2,9 +2,7 @@
 <!-- Taken from a tutorial at http://techlovejump.com/android-multicolumn-listview/ -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:layout_marginBottom="20dp">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/item_name"
@@ -13,7 +11,8 @@
         android:layout_weight="1"
         android:textAlignment="center"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/colorBlack"/>
 
     <TextView
         android:id="@+id/item_amount"
@@ -21,7 +20,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:textColor="@color/colorBlack"/>
+
 
     <TextView
         android:id="@+id/item_unit"
@@ -29,7 +30,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textAlignment="center"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        android:textColor="@color/colorBlack"/>
+
 
     <TextView
         android:id="@+id/item_expiration"
@@ -37,6 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textAlignment="center"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:textColor="@color/colorBlack"/>
+
 
 </LinearLayout>

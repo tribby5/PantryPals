@@ -21,18 +21,16 @@
         android:layout_marginBottom="20dp"
        />
 
-    <Button
-        android:id="@+id/addItem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_item_from_pantry"
-        android:textColor="@color/colorWhite"
-        android:background="@color/colorAccentAlt"
-        android:padding="10dp"
-        android:layout_gravity="center"
-        android:textAllCaps="false"
-        android:layout_marginBottom="25dp"
-     />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_item_my_pantry_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/add"
+        app:backgroundTint="@android:color/holo_purple"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="bottom|right"
+        android:layout_marginEnd="8dp">
+    </android.support.design.widget.FloatingActionButton>
 
     <ListView
         android:id="@+id/jointPantryItemsLV"

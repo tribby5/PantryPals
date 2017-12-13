@@ -323,8 +323,10 @@ public class PantryTabFragment extends Fragment {
         JointPantryFragment jointFrag = new JointPantryFragment();
         String pantryID = jointAdapter.getPantryIdFromDataSource(position);
         Bundle args = new Bundle();
-        args.putString("pantryID", pantryID);
+        args.putString("jointPantryID", pantryID);
+        args.putString("personalPantryID", personalPantryID);
         System.out.println("PRINT: storing joint pantryID = "+pantryID);
+        System.out.println("PRINT: storing persona; pantryID = "+personalPantryID);
         jointFrag.setArguments(args);
         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
         transaction.replace(getId(), this).addToBackStack(null); // so that back button works

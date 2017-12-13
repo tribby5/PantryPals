@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp"
+    android:background="@color/colorHintDark"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/addItemFromMyPantry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_item_from_my_pantry_title"
+            android:textAlignment="center"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:textColor="@color/colorWhite"
+            />
+
+        <ListView
+            android:id="@+id/addItemFromMyPantryLV"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="402dp"
+            android:layout_marginBottom="30dp"
+            android:background="@color/colorHintDark"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="15.0sp"
+            ></ListView>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
+
