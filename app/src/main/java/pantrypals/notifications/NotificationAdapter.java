@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -18,6 +19,8 @@ import java.util.List;
 import pantrypals.discover.SquareLayout;
 import pantrypals.models.Notification;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.recipe.RecipeFragment;
+import pantrypals.util.DownloadImageTask;
 
 /**
  * Created by adityasrinivasan on 09/12/17.
@@ -59,6 +62,10 @@ public class NotificationAdapter extends BaseAdapter {
         view = layoutInflater.inflate(R.layout.notification_item, null);
 
         RelativeLayout rl = view.findViewById(R.id.notification_layout);
+        ImageView iv  = view.findViewById(R.id.notification_img);
+        if(notif.getImageURL() != null) {
+            new DownloadImageTask(iv).execute(notif.getImageURL());
+        }
         TextView tv1 = view.findViewById(R.id.notification_primary);
         tv1.setText(notif.getOriginator());
         TextView tv2 = view.findViewById(R.id.notification_secondary);
@@ -85,7 +92,16 @@ public class NotificationAdapter extends BaseAdapter {
                 public void onClick(View view) {
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(notif.getLinkID()));
-                    transaction.commit();
+                    transaction.addToBackStack(null).commit();
+                }
+            });
+        } else if(notif.getLinkType().equals("recipe")) {
+            rl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, RecipeFragment.newFragment(notif.getLinkID()));
+                    transaction.addToBackStack(null).commit();
                 }
             });
         }

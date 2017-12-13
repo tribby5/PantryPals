@@ -191,7 +191,7 @@ public class DiscoverFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.frame_layout, SearchPageFragment.newInstance(s)).commit();
+                transaction.replace(R.id.frame_layout, SearchPageFragment.newInstance(s.toLowerCase())).commit();
                 return true;
             }
 
