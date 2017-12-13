@@ -23,16 +23,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ValueEventListener;
 import com.wefika.flowlayout.FlowLayout;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
+import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.util.AuthUserInfo;
 import pantrypals.util.DownloadImageTask;
 
 /**
@@ -45,6 +49,8 @@ public class RecipeFragment extends Fragment {
     private static final String ARG_RID = "RID";
 
     private boolean mLock = false;
+
+    private boolean mProcessRateNotif = false;
 
     private String rid;
 
@@ -154,6 +160,7 @@ public class RecipeFragment extends Fragment {
                     stars.get(i).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            mProcessRateNotif = true;
                             Map<String, Integer> ratingMap = recipe.getRatings();
                             if(ratingMap == null) {
                                 ratingMap = Maps.newHashMap();
@@ -161,6 +168,36 @@ public class RecipeFragment extends Fragment {
                             ratingMap.put(FirebaseAuth.getInstance().getCurrentUser().getUid(), score);
                             recipe.setRatings(ratingMap);
                             mDatabase.child("recipes").child(dataSnapshot.getKey()).setValue(recipe);
+                            final String notifID = UUID.randomUUID().toString().substring(0, 32).replace("-", "");
+                            final Notification notif = new Notification();
+                            notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
+                            notif.setLinkType("recipe");
+                            notif.setImageURL(recipe.getImageURL());
+                            notif.setLinkID(dataSnapshot.getKey());
+                            notif.setOriginator(recipe.getName());
+                            notif.setMessage(AuthUserInfo.INSTANCE.getUser().getName() + " has rated this recipe " + score + " stars.");
+                            mDatabase.child("notifications").child(notifID).setValue(notif);
+                            mDatabase.child("userAccounts").child(recipe.getPostedBy().keySet().iterator().next()).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(mProcessRateNotif) {
+                                        User user = dataSnapshot.getValue(User.class);
+                                        Map<String, Boolean> notifMap = user.getNotifications();
+                                        if (notifMap == null) {
+                                            notifMap = Maps.newHashMap();
+                                        }
+                                        notifMap.put(notifID, true);
+                                        user.setNotifications(notifMap);
+                                        mDatabase.child("userAccounts").child(recipe.getPostedBy().keySet().iterator().next()).setValue(user);
+                                    }
+                                    mProcessRateNotif = false;
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                             Toast.makeText(getContext(), "Rated " + (score + 1) + " stars!", Toast.LENGTH_SHORT);
                         }
                     });
