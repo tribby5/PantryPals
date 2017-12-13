@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -48,6 +49,7 @@ import java.util.UUID;
 import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
+import pantrypals.models.User;
 import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.AuthUserInfo;
 
@@ -102,6 +104,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
         //get the recipe
         final String name = getItem(position).getName();
+        final String body = getItem(position).getCaption();
         String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
         final String key = getItem(position).getDbKey();
@@ -120,6 +123,9 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 holder.title = (TextView) convertView.findViewById(R.id.cardTitle);
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
+                holder.subtitle = convertView.findViewById(R.id.cardSubtitle);
+                holder.body = convertView.findViewById(R.id.cardBody);
+                holder.bullets = convertView.findViewById(R.id.cardBullets);
                 holder.setLikeButton(key);
                 holder.setSaveButton(key);
                 holder.likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
@@ -205,6 +211,20 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             lastPosition = position;
 
             holder.title.setText(name);
+            holder.body.setText(body);
+
+            refSave.child(posterId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User posterUser = dataSnapshot.getValue(User.class);
+                    holder.subtitle.setText(posterUser.getName());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
             //holder.description.setText(description);
 
 
@@ -320,6 +340,9 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
      */
     private static class ViewHolder {
         TextView title;
+        TextView subtitle;
+        TextView body;
+        LinearLayout bullets;
         //        TextView description;
         ImageView image;
         ProgressBar dialog;

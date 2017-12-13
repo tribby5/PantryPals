@@ -42,6 +42,7 @@ import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
+import pantrypals.recipe.RecipeListFragment;
 import pantrypals.util.AuthUserInfo;
 import pantrypals.util.DownloadImageTask;
 
@@ -54,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     private boolean mProcessShowSavedPosts = false;
+    private boolean mProcessShowLikedPosts = false;
 
     private int prevSelected = -1;
     private int follow;
@@ -280,7 +282,48 @@ public class ProfileFragment extends Fragment {
         likedPostsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mProcessShowLikedPosts = true;
+                mDatabase.child("userAccounts").child((String) getArguments().getCharSequence(ARG_ID)).child("likedRecipes").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        List<String> recipes = Lists.newArrayList();
+                        for(DataSnapshot recipeIDSnapshot : dataSnapshot.getChildren()) {
+                            String recipeID = recipeIDSnapshot.getKey();
+                            recipes.add(recipeID);
+                        }
+                        for(final String recipeID : recipes) {
+                            mDatabase.child("recipes").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(mProcessShowLikedPosts) {
+                                        List<Recipe> recipes = Lists.newArrayList();
+                                        for (DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                                            if (recipeSnapshot.getKey().equals(recipeID)) {
+                                                Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                                                recipe.setDbKey(recipeID);
+                                                recipes.add(recipe);
+                                            }
+                                        }
+                                        RecipeListFragment likedFragment = RecipeListFragment.newFragment("Liked", recipes);
+                                        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.frame_layout, likedFragment).addToBackStack(null).commit();
+                                        mProcessShowLikedPosts = false;
+                                    }
+                                }
 
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 
@@ -309,9 +352,9 @@ public class ProfileFragment extends Fragment {
                                                 recipes.add(recipe);
                                             }
                                         }
-                                        SavedForLaterFragment newFragment = SavedForLaterFragment.newFragment(recipes);
+                                        RecipeListFragment savedForLaterFragment = RecipeListFragment.newFragment("Saved For Later", recipes);
                                         FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.frame_layout, newFragment).addToBackStack(null).commit();
+                                        transaction.replace(R.id.frame_layout, savedForLaterFragment).addToBackStack(null).commit();
                                         mProcessShowSavedPosts = false;
                                     }
                                 }

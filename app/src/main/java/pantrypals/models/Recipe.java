@@ -1,7 +1,10 @@
 package pantrypals.models;
 
+import android.os.Parcelable;
+
 import com.google.firebase.database.ServerValue;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
