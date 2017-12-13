@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import pantrypals.models.Group;
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
 
@@ -287,6 +288,24 @@ public class NewRecipeActivity extends AppCompatActivity {
                 newRecipe.setTags(tags);
                 if(ctx != null) {
                     newRecipe.setGroupId(ctx);
+                    FirebaseDatabase.getInstance().getReference().child("groups").child(ctx).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Group group = dataSnapshot.getValue(Group.class);
+                            Map<String, Boolean> recipes = group.getRecipes();
+                            if(recipes == null) {
+                                recipes = Maps.newHashMap();
+                            }
+                            recipes.put(mRecipe_key, true);
+                            group.setRecipes(recipes);
+                            FirebaseDatabase.getInstance().getReference().child("groups").child(ctx).setValue(group);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
