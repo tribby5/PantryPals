@@ -253,7 +253,7 @@ public class HomeFragment extends Fragment {
                                                                 relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
                                                             }
                                                         }
-                                                        
+
                                                         // Ingredient matching if I only follow relevant
                                                         if (relevant) {
                                                             // First find my pantry
@@ -286,7 +286,7 @@ public class HomeFragment extends Fragment {
                                                                 }
                                                             }
                                                         }
-
+                                                        
                                                         // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
                                                         if (groupId != null) {
                                                             if (dataSnapshot.child("/group").hasChild(userId)) {
