@@ -142,16 +142,19 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         if (dataSnapshot.child(key).child("likedBy").hasChild(userId)) {
                                             //Already liked
                                             refLike.child(key).child("likedBy").child(userId).removeValue();
+                                            refSave.child(userId).child("likedPosts").child(key).removeValue();
                                             mProcessLike = false;
                                         } else {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                            refSave.child(userId).child("likedPosts").child(key).setValue(true);
                                             sendLikeNotif(name, key, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                        refSave.child(userId).child("likedPosts").child(key).setValue(true);
                                         sendLikeNotif(name, key, posterId);
                                         mProcessLike = false;
                                     }
@@ -296,7 +299,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mAddLikeNotifToUser) {
-                    Map<String, Boolean> map = dataSnapshot.getValue(Map.class);
+                    Map<String, Boolean> map = (Map<String, Boolean>)dataSnapshot.getValue();
                     if(map == null) {
                         map = Maps.newHashMap();
                     }
