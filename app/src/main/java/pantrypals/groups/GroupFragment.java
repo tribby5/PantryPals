@@ -1,6 +1,7 @@
 package pantrypals.groups;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
+import pantrypals.activities.NewRecipeActivity;
 import pantrypals.models.Group;
 import pantrypals.profile.ProfileFragment;
 import pantrypals.profile.ProfileInfoFragment;
@@ -69,13 +71,14 @@ public class GroupFragment extends Fragment {
 
         mDatabase.child("/groups/" + id).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(final DataSnapshot dataSnapshot) {
                 final Group group = dataSnapshot.getValue(Group.class);
                 final Map<String, Boolean> members = group.getMembers();
 
                 TextView nameTV = view.findViewById(R.id.group_name);
                 TextView membersTV = view.findViewById(R.id.group_members);
                 Button joinBtn = view.findViewById(R.id.group_join_btn);
+                Button addRecipeBtn = view.findViewById(R.id.group_new_post_btn);
 
                 nameTV.setText(group.getName());
                 membersTV.setText(members.size() + " members");
@@ -85,8 +88,10 @@ public class GroupFragment extends Fragment {
                 final boolean inGroup = members.containsKey(myID);
 
                 if(inGroup) {
+                    joinBtn.setText("Leave Group");
                     joinBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
                 } else {
+                    joinBtn.setText("Join Group");
                     joinBtn.setBackgroundColor(getResources().getColor(R.color.colorHint));
                 }
 
@@ -100,6 +105,15 @@ public class GroupFragment extends Fragment {
                         }
                         group.setMembers(members);
                         mDatabase.child("/groups").child(id).setValue(group);
+                    }
+                });
+
+                addRecipeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent postIntent = new Intent(getActivity(), NewRecipeActivity.class);
+                        postIntent.putExtra(NewRecipeActivity.CONTEXT_KEY, dataSnapshot.getKey());
+                        startActivity(postIntent);
                     }
                 });
 

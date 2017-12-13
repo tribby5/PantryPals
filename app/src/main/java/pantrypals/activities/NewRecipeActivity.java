@@ -26,6 +26,7 @@ import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +53,8 @@ public class NewRecipeActivity extends AppCompatActivity {
 
     private static final int GALLERY_INTENT = 2;
     private String uploadedImagePath = null;
+
+    public static final String CONTEXT_KEY = "ctx";
 
     private EditText prevIngNameField;
     private EditText prevIngAmtField;
@@ -84,6 +87,8 @@ public class NewRecipeActivity extends AppCompatActivity {
 
         final TableLayout ingredientTableView = (TableLayout) findViewById(R.id.newRecipeIngredientTable);
         final TableLayout instructionTableView = (TableLayout) findViewById(R.id.newRecipeInstructionTable);
+
+        final String ctx = getIntent().getStringExtra(CONTEXT_KEY);
 
         // Setonclicklistener on addRow button
         Button addIngredientButton = (Button) findViewById(R.id.addIngredientButton);
@@ -263,6 +268,8 @@ public class NewRecipeActivity extends AppCompatActivity {
                     tags.add(tag.trim());
                 }
 
+                Map<String, Boolean> groups = Maps.newHashMap();
+
                 Recipe newRecipe = new Recipe();
 
                 // set postedBy
@@ -280,6 +287,10 @@ public class NewRecipeActivity extends AppCompatActivity {
                 //newRecipe.setInstructions();
                 newRecipe.setInstructions(instructions);
                 newRecipe.setTags(tags);
+                if(ctx != null) {
+                    groups.put(ctx, true);
+                    newRecipe.setGroups(groups);
+                }
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
 //                recipesToSendToFirebase.put(mRecipe_key, newRecipe);
