@@ -196,7 +196,11 @@ public class PersonalPantryFragment extends Fragment {
                 EditText itemAmount = (EditText) dialogView.findViewById(R.id.add_item_amount);
                 EditText itemDate = (EditText) dialogView.findViewById(R.id.add_item_date);
                 add_item_name = itemName.getText().toString();
-                add_item_amount = Double.parseDouble(itemAmount.getText().toString());
+                try{
+                    add_item_amount = Double.parseDouble(itemAmount.getText().toString());
+                } catch (Exception e) {
+                    add_item_amount = 0.0;
+                }
                 add_item_date = itemDate.getText().toString();
 
 
