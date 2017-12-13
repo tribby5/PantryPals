@@ -136,16 +136,19 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         if (dataSnapshot.child(key).child("likedBy").hasChild(userId)) {
                                             //Already liked
                                             refLike.child(key).child("likedBy").child(userId).removeValue();
+                                            refSave.child(userId).child("likedPosts").child(key).removeValue();
                                             mProcessLike = false;
                                         } else {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                            refSave.child(userId).child("likedPosts").child(key).setValue(true);
                                             sendLikeNotif(name, key, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
+                                        refSave.child(userId).child("likedPosts").child(key).setValue(true);
                                         sendLikeNotif(name, key, posterId);
                                         mProcessLike = false;
                                     }
