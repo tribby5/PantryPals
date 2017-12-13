@@ -108,10 +108,8 @@ public class RecipeFragment extends Fragment {
                         mDatabase.child("userAccounts").child(userID).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                if(mLock) {
                                     User user = dataSnapshot.getValue(User.class);
                                     posterTV.setText(user.getName());
-                                }
                             }
 
                             @Override

@@ -61,14 +61,14 @@ public class NotificationsFragment extends Fragment {
                 for (DataSnapshot notifSnapshot : dataSnapshot.getChildren()) {
                     notifIDs.add(notifSnapshot.getKey());
                 }
-                mDatabase.child("/notifications").addValueEventListener(new ValueEventListener() {
+                mDatabase.child("/notifications").orderByChild("timestamp").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         List<Notification> notifs = Lists.newArrayList();
                         for(DataSnapshot notifSnapshot : dataSnapshot.getChildren()) {
                             if(notifIDs.contains(notifSnapshot.getKey())) {
                                 Notification notif = notifSnapshot.getValue(Notification.class);
-                                notifs.add(notif);
+                                notifs.add(0, notif);
                             }
                         }
                         NotificationAdapter adapter = new NotificationAdapter(getActivity(), notifs, getActivity().getSupportFragmentManager());

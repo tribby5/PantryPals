@@ -41,6 +41,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         //get the recipe
         final String name = getItem(position).getName();
         final String body = getItem(position).getCaption();
-        String imgUrl = getItem(position).getImageURL();
+        final String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
         final String key = getItem(position).getDbKey();
 
@@ -148,14 +149,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
                                             refSave.child(userId).child("likedPosts").child(key).setValue(true);
-                                            sendLikeNotif(name, key, posterId);
+                                            sendLikeNotif(name, key, imgUrl, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
                                         refSave.child(userId).child("likedPosts").child(key).setValue(true);
-                                        sendLikeNotif(name, key, posterId);
+                                        sendLikeNotif(name, key, imgUrl, posterId);
                                         mProcessLike = false;
                                     }
                                 }
@@ -285,7 +286,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
     }
 
-    private void sendLikeNotif(String recipeName, String recipeId, final String destId) {
+    private void sendLikeNotif(String recipeName, String recipeId, String recipeImage, final String destId) {
         mAddLikeNotifToUser = true;
         Notification notif = new Notification();
         final String notifId = UUID.randomUUID().toString().substring(0, 30).replace("-", "");
@@ -293,6 +294,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         notif.setOriginator(recipeName);
         notif.setLinkID(recipeId);
         notif.setLinkType("recipe");
+        notif.setImageURL(recipeImage);
+        notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {

@@ -150,6 +150,7 @@ public class ProfileFragment extends Fragment {
                 final Notification notif = new Notification();
                 notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
                 notif.setLinkType("user");
+                notif.setImageURL(AuthUserInfo.INSTANCE.getUser().getAvatar());
                 notif.setLinkID(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 if(follow == 0) {
                     notif.setMessage("This user has unfollowed you.");
