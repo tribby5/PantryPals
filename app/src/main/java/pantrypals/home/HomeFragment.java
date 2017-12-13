@@ -96,6 +96,7 @@ public class HomeFragment extends Fragment {
                         final String currUserId = userId;
                         Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                         final String postedBy = recipePostedBySet.iterator().next();
+
                         DatabaseReference mFollow = mFirebaseDatabase.getReference();
                         if (currUserId.equals(postedBy)) {
                             adapter.add(recipe);
@@ -116,6 +117,9 @@ public class HomeFragment extends Fragment {
                                             display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
                                         }
                                     }
+
+                                    // Ingredient matching
+
 
                                     if (display) {
                                         adapter.add(recipe);
