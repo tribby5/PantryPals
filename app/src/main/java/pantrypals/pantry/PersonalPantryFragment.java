@@ -4,10 +4,10 @@ package pantrypals.pantry;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +18,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.android.databaes.pantrypals.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,11 +28,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import pantrypals.models.Item;
-import pantrypals.models.JointPantry;
 import pantrypals.models.Pantry;
+import pantrypals.models.User;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -52,6 +56,8 @@ public class PersonalPantryFragment extends Fragment {
     private DatabaseReference itemsRef;
     private PantryItemsAdapter itemsAdapter;
     private ItemsRetriever itemsRetriever;
+    private User user;
+    private View view;
 
 
     public PersonalPantryFragment() {
@@ -79,23 +85,25 @@ public class PersonalPantryFragment extends Fragment {
         pantryID = this.getArguments().getString("pantryID");
         items = new ArrayList<>();
         itemsAdapter = new PantryItemsAdapter(getActivity(), items);
+        this.view = view;
         getMyPantry();
-        itemsRetriever = new ItemsRetriever(pantryID, itemsAdapter);
-        items = itemsRetriever.retrievePantryItems();
-        Log.d(TAG, "NUM OF ITEMS FROM THE RETRIEVER: " + items.size());
-        setupItemListView(view);
 
         super.onViewCreated(view, savedInstanceState);
     }
 
     private void getMyPantry() {
+
         pantryRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
 
-        // TODO: if the user doesn't have a pantry, we need to make one for them!
-        pantryRef.child(pantryID).addValueEventListener(new ValueEventListener() {
+        if(pantryID == null){
+            createPersonalPantry();
+        }
+        
+        pantryRef.child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 myPantry = dataSnapshot.getValue(Pantry.class);
+                fillPantry();
             }
 
             @Override
@@ -103,8 +111,54 @@ public class PersonalPantryFragment extends Fragment {
 
             }
         });
+
     }
 
+    //TODO method won't be needed after the old auto-generated users are gone
+    private void createPersonalPantry(){
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //Create entry for a personal pantry:
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+        Pantry newPantry = new Pantry();
+        HashMap<String, Boolean> ownedBy = new HashMap<>();
+        ownedBy.put(uid, true);
+        newPantry.setOwnedBy(ownedBy);
+        newPantry.setShared(false);
+        final String key = FirebaseDatabase.getInstance().getReference(getResources().getString(R.string.pantriesData)).push().getKey();
+        ref.child(key).setValue(newPantry);
+
+        //Set Pantry for user
+        DatabaseReference accounts = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts));
+        accounts.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                user = dataSnapshot.getValue(User.class);
+                user.setPersonalPantry(key);
+                updateUser();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        //set instance variable
+        pantryID = key;
+    }
+
+
+    private void updateUser(){
+        FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(user);
+    }
+
+    //Assumes pantry exists
+    private void fillPantry(){
+        itemsRetriever = new ItemsRetriever(pantryID, itemsAdapter);
+        items = itemsRetriever.retrievePantryItems();
+        setupItemListView(view);
+    }
 
 
     private void setupItemListView(View view){
@@ -177,7 +231,11 @@ public class PersonalPantryFragment extends Fragment {
                 add_item_amount = Double.parseDouble(itemAmount.getText().toString());
                 add_item_date = itemDate.getText().toString();
 
+
                 Map<String,Boolean> myItems = myPantry.getItems();
+                if(myItems == null){
+                    myItems = new HashMap<>();
+                }
 
                 DatabaseReference itemsRef = databaseRef.child(getResources().getString(R.string.items));
                 String itemID = itemsRef.push().getKey();
@@ -191,11 +249,13 @@ public class PersonalPantryFragment extends Fragment {
                 myItems.put(itemID, true);
 
                 FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData))
-                        .child(pantryID).child(getResources().getString(R.string.items)).setValue(myItems);
-
-
-                items = itemsRetriever.retrievePantryItems();
-                itemsAdapter.refresh(items);
+                        .child(pantryID).child(getResources().getString(R.string.items)).setValue(myItems).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        items = itemsRetriever.retrievePantryItems();
+                        itemsAdapter.refresh(items);
+                    }
+                });
 
             }
         });
