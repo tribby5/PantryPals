@@ -13,7 +13,24 @@ import java.util.Map;
 public class Comment {
     private String author;
     private String text;
-    private Long timestamp;
+    private String timePosted;
+    private long negTimestamp;
+
+    public String getTimePosted() {
+        return timePosted;
+    }
+
+    public void setTimePosted(String timePosted) {
+        this.timePosted = timePosted;
+    }
+
+    public long getNegTimestamp() {
+        return negTimestamp;
+    }
+
+    public void setNegTimestamp(long negTimestamp) {
+        this.negTimestamp = negTimestamp;
+    }
 
     public String getAuthor() {
         return author;
@@ -37,14 +54,6 @@ public class Comment {
 
     public Comment() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
-    }
-
-    public Long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Long timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Comment(String uid, String author, String text) {

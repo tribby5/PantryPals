@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,7 +131,7 @@ public class ProfileFragment extends Fragment {
         final ImageButton savedPostsButton = view.findViewById(R.id.profile_saved_posts_btn);
 
         final Spinner spinner = view.findViewById(R.id.profile_follow_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_layout, Lists.newArrayList("Not following", "Following all", "Following relevant"));
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_layout, Lists.newArrayList("Not following", "Following All", "Following Relevant"));
         spinner.setAdapter(adapter);
 
         mDatabase.child("/follows/" + FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
@@ -182,8 +183,10 @@ public class ProfileFragment extends Fragment {
                 if(isAdded()) {
                     if (follow == 0) {
                         spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorLightGray));
+                        spinner.setGravity(Gravity.CENTER);
                     } else {
                         spinner.setBackgroundColor(getActivity().getResources().getColor(R.color.colorGreen));
+                        spinner.setGravity(Gravity.CENTER);
                     }
                 }
             }
