@@ -1,6 +1,7 @@
 package pantrypals.home;
 
 import android.graphics.Bitmap;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ArrayAdapter;
 
 /**
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -57,6 +59,11 @@ import pantrypals.util.AuthUserInfo;
 
 public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
+    @Override
+    public int getCount() {
+        return objects.size();
+    }
+
     private static final String TAG = "CustomListAdapter";
 
     private Context mContext;
@@ -69,7 +76,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private DatabaseReference refSave;
     private FirebaseAuth mAuth;
     private FragmentManager fm;
-
+    private List<Recipe> objects;
 
     /**
      * Default constructor for the PersonListAdapter
@@ -82,6 +89,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         super(context, resource, objects);
         mContext = context;
         mResource = resource;
+        this.objects = objects;
         refLike = FirebaseDatabase.getInstance().getReference("/recipes");
         refSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         mAuth = FirebaseAuth.getInstance();
@@ -108,7 +116,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         final String body = getItem(position).getCaption();
         final String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
-        final String key = getItem(position).getDbKey();
+
+        final String key = getItem(position).getDbKey(); // TODO: starting point for debug
 
 
         Log.d(TAG, "getView called");
@@ -121,6 +130,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 convertView = inflater.inflate(mResource, parent, false);
                 holder = new ViewHolder();
+                holder.setRecipeId(key);
                 holder.title = (TextView) convertView.findViewById(R.id.cardTitle);
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
@@ -180,6 +190,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessSave) {
+                                    String key = holder.getRecipeId();
                                     String userId = mAuth.getCurrentUser().getUid();
                                     if (dataSnapshot.child(userId).hasChild("savedForLater")) {
                                         if (dataSnapshot.child(userId).child("savedForLater").hasChild(key)) {
@@ -358,10 +369,24 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         DatabaseReference mDatabaseSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+
+        String recipeId;
+
         private ViewHolder() {
             mDatabaseLike.keepSynced(true);
 
         }
+
+
+        public String getRecipeId() {
+            return recipeId;
+        }
+
+        public void setRecipeId(String recipeId) {
+            this.recipeId = recipeId;
+        }
+
+
         private void setLikeButton(final String dbKey) {
             mDatabaseLike.addValueEventListener(new ValueEventListener() {
                 @Override
