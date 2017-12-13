@@ -2,6 +2,7 @@ package pantrypals.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,9 +34,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import pantrypals.activities.NewRecipeActivity;
 import pantrypals.database.generate.RecipeGenerator;
+import pantrypals.models.Item;
+import pantrypals.models.Pantry;
 import pantrypals.models.Post;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
@@ -105,10 +109,13 @@ public class HomeFragment extends Fragment {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     boolean display = false;
-
+                                    boolean relevant = false;
                                     // Check if I follow this author
                                     if (dataSnapshot.child("/follows").hasChild(userId)) {
                                         display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+                                        if (display) {
+                                            relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
+                                        }
                                     }
 
                                     // Check if I'm in this group
@@ -118,8 +125,38 @@ public class HomeFragment extends Fragment {
                                         }
                                     }
 
-                                    // Ingredient matching
-
+                                    // Ingredient matching if I only follow relevant
+                                    if (relevant) {
+                                        // First find my pantry
+                                        Pantry pantry = null;
+                                        for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
+                                            Pantry p = ds.getValue(Pantry.class);
+                                            if (p.getOwnedBy().containsKey(userId)) {
+                                                // this is user's pantry
+                                                pantry = p;
+                                                break;
+                                            }
+                                        }
+                                        // Get all items in pantry into a list
+                                        if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
+                                            // No items, do not display
+                                            display = false;
+                                        } else {
+                                            // Just get item strings for now
+                                            List<String> itemNames = new ArrayList<>();
+                                            Set<String> itemIds = pantry.getItems().keySet();
+                                            for (String itemId : itemIds) {
+                                                if (dataSnapshot.child("/items").hasChild(itemId)) {
+                                                    Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
+                                                    itemNames.add(i.getName());
+                                                }
+                                            }
+                                            // Now with a list of item names, compare with recipe's item names
+                                            if (!hasIngredients(recipe, itemNames)) {
+                                                display = false;
+                                            }
+                                        }
+                                    }
 
                                     if (display) {
                                         adapter.add(recipe);
@@ -244,6 +281,18 @@ public class HomeFragment extends Fragment {
             }
         });
         return view;
+    }
+
+    private boolean hasIngredients(Recipe recipe, List<String> itemNames) {
+        for (Recipe.Ingredient ingredient : recipe.getIngredients()) {
+            String ingredientName = ingredient.getName();
+            for (String itemName : itemNames) {
+                if (!Pattern.compile(Pattern.quote(itemName), Pattern.CASE_INSENSITIVE).matcher(ingredientName).find()) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     private void toastMessage(String message) {
