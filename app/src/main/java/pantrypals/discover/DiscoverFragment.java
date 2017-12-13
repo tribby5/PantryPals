@@ -2,6 +2,8 @@ package pantrypals.discover;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -20,10 +23,17 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Lists;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
 import pantrypals.discover.search.SearchPageFragment;
+import pantrypals.models.Recipe;
+import pantrypals.util.DownloadImageTask;
 
 
 public class DiscoverFragment extends Fragment {
@@ -34,6 +44,8 @@ public class DiscoverFragment extends Fragment {
     private static final List<String> ITEMS = Lists.newArrayList("Trending", "Moods", "Cuisines", "Communities");
 
     private DiscoverItemClickListener mListener;
+    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private LinearLayout featured_posts;
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -108,16 +120,57 @@ public class DiscoverFragment extends Fragment {
      */
 
     private void populateFeaturedPosts(View view) {
-        LinearLayout layout = view.findViewById(R.id.featured_posts);
-        int[] ids = {R.drawable.ic_discover, R.drawable.ic_home, R.drawable.ic_notifications, R.drawable.ic_pantry, R.drawable.ic_person};
-        for (int i = 0; i < 5; i++) {
-            FeaturedPost fp = new FeaturedPost(getContext());
-            fp.setPadding(50, 50, 50, 50);
-            fp.setBackgroundColor(i * 20);
-            fp.setImageResource(ids[i]);
-            layout.addView(fp);
-        }
+        featured_posts = view.findViewById(R.id.featured_posts);
+        mDatabase.child("featured").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final List<String> featured = Lists.newArrayList();
+
+                for(DataSnapshot child : dataSnapshot.getChildren()) {
+                    String currRecipe = child.getKey();
+                    featured.add(currRecipe);
+                }
+
+                for (String id : featured) {
+                    mDatabase.child("recipes").child(id).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                            LayoutInflater inflater = LayoutInflater.from(getContext());
+                            //View view = inflater.inflate(R.layout.grid_item, featured_posts, false);
+                            // Instead of text view, use square layout code. Set image to recipe image
+
+                            View view = inflater.inflate(R.layout.grid_item, null);
+
+                            SquareLayout sq = view.findViewById(R.id.grid_item_square);
+                            ImageView iv = view.findViewById(R.id.grid_item_image);
+                            //String iconName = string.split(" ")[0].toLowerCase();
+                            //int resID = mContext.getResources().getIdentifier(iconName , "drawable", mContext.getPackageName());
+                            new DownloadImageTask(iv).execute(recipe.getImageURL());
+                            iv.getLayoutParams().height = 200;
+                            iv.getLayoutParams().width = 200;
+                            iv.requestLayout();
+                            TextView tv = view.findViewById(R.id.grid_item_text);
+                            tv.setText(recipe.getName());
+                            featured_posts.addView(sq);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
+
 
     private void createSearchBar(Menu menu) {
         // Implementing ActionBar Search inside a fragment
@@ -153,3 +206,4 @@ public class DiscoverFragment extends Fragment {
 
 
 }
+
