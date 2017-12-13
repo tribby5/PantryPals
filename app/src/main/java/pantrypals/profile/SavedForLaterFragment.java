@@ -13,6 +13,7 @@ import com.android.databaes.pantrypals.R;
 import java.util.List;
 
 import pantrypals.models.Recipe;
+import pantrypals.recipe.RecipeListView;
 
 /**
  * A simple {@link Fragment} subclass.

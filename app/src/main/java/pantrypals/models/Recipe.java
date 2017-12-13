@@ -18,6 +18,9 @@ public class Recipe {
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
+
+    // following groupId is null if it's public recipe
+    private String groupId;
     private Map<String, Integer> ratings;
 
     private List<Ingredient> ingredients;
@@ -30,6 +33,14 @@ public class Recipe {
     private String imageURL;
     private long negTimestamp;
 
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public long getNegTimestamp() {
         return negTimestamp;

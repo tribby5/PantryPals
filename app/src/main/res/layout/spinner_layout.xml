@@ -4,5 +4,6 @@
     android:text="HELLO"
     android:padding="10dp"
     android:textColor="@color/colorBlack"
+    android:textAlignment="center"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" />

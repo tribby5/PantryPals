@@ -2,6 +2,7 @@ package pantrypals.home;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,9 +34,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import pantrypals.activities.NewRecipeActivity;
 import pantrypals.database.generate.RecipeGenerator;
+import pantrypals.models.Item;
+import pantrypals.models.Pantry;
 import pantrypals.models.Post;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
@@ -44,18 +48,7 @@ import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE;
 
 public class HomeFragment extends Fragment {
 
-    private static final String TEMP_IMAGE = "https://metrouk2.files.wordpress.com/2017/10/523733805-e1508406361613.jpg";
     private static final String TAG = "HomeFragment";
-
-    public boolean getBool() {
-        return bool;
-    }
-
-    public void setBool(boolean bool) {
-        this.bool = bool;
-    }
-
-    private boolean bool = false;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference ref;
@@ -64,9 +57,9 @@ public class HomeFragment extends Fragment {
 
     private ListView feedListView;
     private ArrayList<Recipe> feedList = new ArrayList<>();
-    // getActivity for fragment
     private CustomListAdapter adapter;
     private long oldestRecipeNegTimestamp;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -84,40 +77,12 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO: Use the following current user information for more intelligent feed later on
+        // the following current user information for more intelligent feed later on
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
         userId = user.getUid();
-
-        // Retrieve data from Firebase
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-
-//        //TEMP CODE TO ADD NEGTIMESTAMP FIELD TO ALL RECIPE ENTRIES
-//        ref.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//                    Recipe r = snapshot.getValue(Recipe.class);
-//                    String rid = snapshot.getKey();
-//                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-//                    long negts = 0;
-//                    try {
-//                        Date dt = dateFormat.parse(r.getTimePosted());
-//                        negts = dt.getTime() * -1;
-//                    } catch (ParseException e) {
-//                        e.printStackTrace();
-//                    }
-//                    ref.child(rid).child("negTimestamp").setValue(negts);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
 
         ref.orderByChild("negTimestamp").limitToFirst(10).addValueEventListener(new ValueEventListener() {
             @Override
@@ -126,29 +91,75 @@ public class HomeFragment extends Fragment {
                     final Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
                         oldestRecipeNegTimestamp = recipe.getNegTimestamp();
-                        //dataSnapshot.getChildrenCount();
-
                         String recipeId = snapshot.getKey();
-                        // Remove this line
-                        //recipe.setImgURL("http://locations.in-n-out.com/Content/images/Combo.png");
                         recipe.setDbKey(recipeId);
-                        //feedList.add(recipe);
+                        // get the group this recipe belongs to
+                        final String groupId = recipe.getGroupId();
 
                         // filter based on whether i follow this person or not
-                        final String currUserId = mAuth.getCurrentUser().getUid();
+                        final String currUserId = userId;
                         Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                         final String postedBy = recipePostedBySet.iterator().next();
-                        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
 
+                        DatabaseReference mFollow = mFirebaseDatabase.getReference();
                         if (currUserId.equals(postedBy)) {
                             adapter.add(recipe);
                         } else {
                             mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
-                                        adapter.add(recipe);
+                                    boolean display = false;
+                                    boolean relevant = false;
+                                    // Check if I follow this author and if my setting is only following relevant recipes
+                                    if (dataSnapshot.child("/follows").hasChild(userId)) {
+                                        display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+                                        if (display) {
+                                            relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
+                                        }
+                                    }
 
+                                    // Ingredient matching if I only follow relevant
+                                    if (relevant) {
+                                        // First find my pantry
+                                        Pantry pantry = null;
+                                        for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
+                                            Pantry p = ds.getValue(Pantry.class);
+                                            if (p.getOwnedBy().containsKey(userId)) {
+                                                // this is user's pantry
+                                                pantry = p;
+                                                break;
+                                            }
+                                        }
+                                        // Get all items in pantry into a list
+                                        if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
+                                            // No items, do not display
+                                            display = false;
+                                        } else {
+                                            // Just get item strings for now
+                                            List<String> itemNames = new ArrayList<>();
+                                            Set<String> itemIds = pantry.getItems().keySet();
+                                            for (String itemId : itemIds) {
+                                                if (dataSnapshot.child("/items").hasChild(itemId)) {
+                                                    Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
+                                                    itemNames.add(i.getName());
+                                                }
+                                            }
+                                            // Now with a list of item names, compare with recipe's item names
+                                            if (!hasIngredients(recipe, itemNames)) {
+                                                display = false;
+                                            }
+                                        }
+                                    }
+
+                                    // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+                                    if (groupId != null) {
+                                        if (dataSnapshot.child("/group").hasChild(userId)) {
+                                            display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                        }
+                                    }
+
+                                    if (display) {
+                                        adapter.add(recipe);
                                     }
                                 }
 
@@ -159,17 +170,11 @@ public class HomeFragment extends Fragment {
                             });
                         }
                         Log.d(TAG, "Retrieved Id: " + recipeId);
-
-
-
-
                     }
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -189,7 +194,6 @@ public class HomeFragment extends Fragment {
         feedListView = (ListView) view.findViewById(R.id.feedListView);
         adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList);
         feedListView.setAdapter(adapter);
-
 
         // Implement scrolling
         feedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -223,18 +227,15 @@ public class HomeFragment extends Fragment {
                                         if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
                                             oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                                             String recipeId = snapshot.getKey();
-                                            // Take out this line if url is there
-                                            //recipe.setImgURL(TEMP_IMAGE);
                                             recipe.setDbKey(recipeId);
-                                            //feedList.add(recipe);
+                                            // get the group this recipe belongs to
+                                            final String groupId = recipe.getGroupId();
 
                                             // filter based on whether i follow this person or not
-                                            final String currUserId = mAuth.getCurrentUser().getUid();
+                                            final String currUserId = userId;
                                             Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                                             final String postedBy = recipePostedBySet.iterator().next();
-                                            DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-                                            //boolean isFollowed = false;
-
+                                            DatabaseReference mFollow = mFirebaseDatabase.getReference();
                                             // If recipe is written by me (my recipe) then show
                                             if (currUserId.equals(postedBy)) {
                                                 adapter.add(recipe);
@@ -243,8 +244,57 @@ public class HomeFragment extends Fragment {
                                                 mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                                        //boolean value = dataSnapshot.child(currUserId).hasChild(postedBy);
-                                                        if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                                        boolean display = false;
+                                                        boolean relevant = false;
+                                                        // Check if I follow this author and if my setting is only following relevant recipes
+                                                        if (dataSnapshot.child("/follows").hasChild(userId)) {
+                                                            display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+                                                            if (display) {
+                                                                relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
+                                                            }
+                                                        }
+                                                        
+                                                        // Ingredient matching if I only follow relevant
+                                                        if (relevant) {
+                                                            // First find my pantry
+                                                            Pantry pantry = null;
+                                                            for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
+                                                                Pantry p = ds.getValue(Pantry.class);
+                                                                if (p.getOwnedBy().containsKey(userId)) {
+                                                                    // this is user's pantry
+                                                                    pantry = p;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            // Get all items in pantry into a list
+                                                            if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
+                                                                // No items, do not display
+                                                                display = false;
+                                                            } else {
+                                                                // Just get item strings for now
+                                                                List<String> itemNames = new ArrayList<>();
+                                                                Set<String> itemIds = pantry.getItems().keySet();
+                                                                for (String itemId : itemIds) {
+                                                                    if (dataSnapshot.child("/items").hasChild(itemId)) {
+                                                                        Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
+                                                                        itemNames.add(i.getName());
+                                                                    }
+                                                                }
+                                                                // Now with a list of item names, compare with recipe's item names
+                                                                if (!hasIngredients(recipe, itemNames)) {
+                                                                    display = false;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+                                                        if (groupId != null) {
+                                                            if (dataSnapshot.child("/group").hasChild(userId)) {
+                                                                display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                                            }
+                                                        }
+
+                                                        if (display) {
                                                             adapter.add(recipe);
                                                         }
                                                     }
@@ -254,16 +304,13 @@ public class HomeFragment extends Fragment {
 
                                                     }
                                                 });
-
                                             }
-
-                                            Log.d(TAG, "Retrieved Id on Scroll: " + recipeId);
+                                            Log.d(TAG, "Retrieved Id: " + recipeId);
                                         }
                                     }
                                 }
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-
                                 }
                             });
                 }
@@ -272,43 +319,17 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-//    /**
-//     * Add logic for intelligent feed filtering
-//     *
-//     * @param recipe
-//     * @return
-//     */
-//    private boolean meetsCondition(Recipe recipe) {
-//
-//
-//
-//        // filter based on whether i follow this person or not
-//        final String currUserId = mAuth.getCurrentUser().getUid();
-//        Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
-//        final String postedBy = recipePostedBySet.iterator().next();
-//        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-//        mFollow.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                boolean mybool = dataSnapshot.child(currUserId).hasChild(postedBy);
-//                if (mybool) {
-//                    // TODO: Find out whether I have the ingredients here
-//                    setBool(true);
-//                } else {
-//                    setBool(false);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//        Boolean bb = getBool();
-//
-//        return getBool();
-//    }
+    private boolean hasIngredients(Recipe recipe, List<String> itemNames) {
+        for (Recipe.Ingredient ingredient : recipe.getIngredients()) {
+            String ingredientName = ingredient.getName();
+            for (String itemName : itemNames) {
+                if (!Pattern.compile(Pattern.quote(itemName), Pattern.CASE_INSENSITIVE).matcher(ingredientName).find()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     private void toastMessage(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

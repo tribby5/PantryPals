@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,9 @@ import pantrypals.models.Pantry;
  * A simple {@link Fragment} subclass.
  */
 public class PersonalPantryFragment extends Fragment {
+
+    private static final String TAG = "PersonalPantryFragment";
+
 
     private ArrayList<Item> items;
     private PantryItemsAdapter adapter;
@@ -78,7 +82,7 @@ public class PersonalPantryFragment extends Fragment {
         getMyPantry();
         itemsRetriever = new ItemsRetriever(pantryID, itemsAdapter);
         items = itemsRetriever.retrievePantryItems();
-        System.out.println("PRINT: ITEMS FROM THE RETRIEVER "+items.size());
+        Log.d(TAG, "NUM OF ITEMS FROM THE RETRIEVER: " + items.size());
         setupItemListView(view);
 
         super.onViewCreated(view, savedInstanceState);
@@ -86,6 +90,8 @@ public class PersonalPantryFragment extends Fragment {
 
     private void getMyPantry() {
         pantryRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+
+        // TODO: if the user doesn't have a pantry, we need to make one for them!
         pantryRef.child(pantryID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

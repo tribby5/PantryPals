@@ -9,6 +9,7 @@ import java.util.Map;
 
 public class Group {
     private Map<String, Boolean> members;
+    private Map<String, Boolean> recipes;
     private String name;
 
     public String getName() {
@@ -29,5 +30,13 @@ public class Group {
 
     public void setMembers(Map<String, Boolean> members) {
         this.members = members;
+    }
+
+    public Map<String, Boolean> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(Map<String, Boolean> recipes) {
+        this.recipes = recipes;
     }
 }

@@ -26,6 +26,7 @@ import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import pantrypals.models.Group;
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
 
@@ -52,6 +54,8 @@ public class NewRecipeActivity extends AppCompatActivity {
 
     private static final int GALLERY_INTENT = 2;
     private String uploadedImagePath = null;
+
+    public static final String CONTEXT_KEY = "ctx";
 
     private EditText prevIngNameField;
     private EditText prevIngAmtField;
@@ -84,6 +88,8 @@ public class NewRecipeActivity extends AppCompatActivity {
 
         final TableLayout ingredientTableView = (TableLayout) findViewById(R.id.newRecipeIngredientTable);
         final TableLayout instructionTableView = (TableLayout) findViewById(R.id.newRecipeInstructionTable);
+
+        final String ctx = getIntent().getStringExtra(CONTEXT_KEY);
 
         // Setonclicklistener on addRow button
         Button addIngredientButton = (Button) findViewById(R.id.addIngredientButton);
@@ -191,8 +197,7 @@ public class NewRecipeActivity extends AppCompatActivity {
             }
         });
 
-
-
+        final EditText tagsET = (EditText) findViewById(R.id.create_recipe_tags);
 
         Button createNewRecipeButton = (Button) findViewById(R.id.createRecipeButton);
         createNewRecipeButton.setOnClickListener(new View.OnClickListener() {
@@ -259,6 +264,11 @@ public class NewRecipeActivity extends AppCompatActivity {
                     }
                 }
 
+                List<String> tags = Lists.newArrayList();
+                for(String tag : tagsET.getText().toString().split(",")) {
+                    tags.add(tag.trim());
+                }
+
                 Recipe newRecipe = new Recipe();
 
                 // set postedBy
@@ -275,6 +285,28 @@ public class NewRecipeActivity extends AppCompatActivity {
                 newRecipe.setImageURL(uploadedImagePath);
                 //newRecipe.setInstructions();
                 newRecipe.setInstructions(instructions);
+                newRecipe.setTags(tags);
+                if(ctx != null) {
+                    newRecipe.setGroupId(ctx);
+                    FirebaseDatabase.getInstance().getReference().child("groups").child(ctx).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Group group = dataSnapshot.getValue(Group.class);
+                            Map<String, Boolean> recipes = group.getRecipes();
+                            if(recipes == null) {
+                                recipes = Maps.newHashMap();
+                            }
+                            recipes.put(mRecipe_key, true);
+                            group.setRecipes(recipes);
+                            FirebaseDatabase.getInstance().getReference().child("groups").child(ctx).setValue(group);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
 //                recipesToSendToFirebase.put(mRecipe_key, newRecipe);

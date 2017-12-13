@@ -9,8 +9,8 @@ import java.util.Map;
 public class Pantry {
     private Map<String, Boolean> items;
     private Map<String, Boolean> ownedBy;
-    private Boolean shared;
-    protected String databaseID;
+    private boolean shared;
+    private String databaseID;
 
     public Pantry() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
