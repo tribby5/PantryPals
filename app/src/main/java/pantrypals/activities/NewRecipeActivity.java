@@ -191,8 +191,7 @@ public class NewRecipeActivity extends AppCompatActivity {
             }
         });
 
-
-
+        final EditText tagsET = (EditText) findViewById(R.id.create_recipe_tags);
 
         Button createNewRecipeButton = (Button) findViewById(R.id.createRecipeButton);
         createNewRecipeButton.setOnClickListener(new View.OnClickListener() {
@@ -259,6 +258,11 @@ public class NewRecipeActivity extends AppCompatActivity {
                     }
                 }
 
+                List<String> tags = Lists.newArrayList();
+                for(String tag : tagsET.getText().toString().split(",")) {
+                    tags.add(tag.trim());
+                }
+
                 Recipe newRecipe = new Recipe();
 
                 // set postedBy
@@ -275,6 +279,7 @@ public class NewRecipeActivity extends AppCompatActivity {
                 newRecipe.setImageURL(uploadedImagePath);
                 //newRecipe.setInstructions();
                 newRecipe.setInstructions(instructions);
+                newRecipe.setTags(tags);
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
 //                recipesToSendToFirebase.put(mRecipe_key, newRecipe);
