@@ -77,7 +77,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // TODO: Use the following current user information for more intelligent feed later on
+        // the following current user information for more intelligent feed later on
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = mAuth.getCurrentUser();
         userId = user.getUid();
@@ -245,7 +245,7 @@ public class HomeFragment extends Fragment {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                                         boolean display = false;
-
+                                                        boolean relevant = false;
                                                         // Check if I follow this author
                                                         if (dataSnapshot.child("/follows").hasChild(userId)) {
                                                             display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
@@ -257,7 +257,38 @@ public class HomeFragment extends Fragment {
                                                                 display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
                                                             }
                                                         }
-
+                                                        // Ingredient matching if I only follow relevant
+                                                        if (relevant) {
+                                                            // First find my pantry
+                                                            Pantry pantry = null;
+                                                            for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
+                                                                Pantry p = ds.getValue(Pantry.class);
+                                                                if (p.getOwnedBy().containsKey(userId)) {
+                                                                    // this is user's pantry
+                                                                    pantry = p;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            // Get all items in pantry into a list
+                                                            if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
+                                                                // No items, do not display
+                                                                display = false;
+                                                            } else {
+                                                                // Just get item strings for now
+                                                                List<String> itemNames = new ArrayList<>();
+                                                                Set<String> itemIds = pantry.getItems().keySet();
+                                                                for (String itemId : itemIds) {
+                                                                    if (dataSnapshot.child("/items").hasChild(itemId)) {
+                                                                        Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
+                                                                        itemNames.add(i.getName());
+                                                                    }
+                                                                }
+                                                                // Now with a list of item names, compare with recipe's item names
+                                                                if (!hasIngredients(recipe, itemNames)) {
+                                                                    display = false;
+                                                                }
+                                                            }
+                                                        }
                                                         if (display) {
                                                             adapter.add(recipe);
                                                         }
