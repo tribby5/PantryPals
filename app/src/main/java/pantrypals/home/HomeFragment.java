@@ -56,6 +56,7 @@ public class HomeFragment extends Fragment {
     private CustomListAdapter adapter;
     private long oldestRecipeNegTimestamp;
 
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -74,7 +75,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // TODO: Use the following current user information for more intelligent feed later on
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        final FirebaseUser user = mAuth.getCurrentUser();
         userId = user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
@@ -88,20 +89,36 @@ public class HomeFragment extends Fragment {
                         oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                         String recipeId = snapshot.getKey();
                         recipe.setDbKey(recipeId);
+                        // get the group this recipe belongs to
+                        final String groupId = recipe.getGroupId();
+
                         // filter based on whether i follow this person or not
                         final String currUserId = userId;
                         Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                         final String postedBy = recipePostedBySet.iterator().next();
-                        DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
+                        DatabaseReference mFollow = mFirebaseDatabase.getReference();
                         if (currUserId.equals(postedBy)) {
                             adapter.add(recipe);
                         } else {
                             mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
-                                        adapter.add(recipe);
+                                    boolean display = false;
 
+                                    // Check if I follow this author
+                                    if (dataSnapshot.child("/follows").hasChild(userId)) {
+                                        display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+                                    }
+
+                                    // Check if I'm in this group
+                                    if (groupId != null) {
+                                        if (dataSnapshot.child("/group").hasChild(userId)) {
+                                            display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                        }
+                                    }
+
+                                    if (display) {
+                                        adapter.add(recipe);
                                     }
                                 }
 
@@ -117,7 +134,6 @@ public class HomeFragment extends Fragment {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -171,12 +187,14 @@ public class HomeFragment extends Fragment {
                                             oldestRecipeNegTimestamp = recipe.getNegTimestamp();
                                             String recipeId = snapshot.getKey();
                                             recipe.setDbKey(recipeId);
+                                            // get the group this recipe belongs to
+                                            final String groupId = recipe.getGroupId();
+
                                             // filter based on whether i follow this person or not
                                             final String currUserId = userId;
                                             Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
                                             final String postedBy = recipePostedBySet.iterator().next();
-                                            DatabaseReference mFollow = FirebaseDatabase.getInstance().getReference("/follows");
-
+                                            DatabaseReference mFollow = mFirebaseDatabase.getReference();
                                             // If recipe is written by me (my recipe) then show
                                             if (currUserId.equals(postedBy)) {
                                                 adapter.add(recipe);
@@ -185,7 +203,21 @@ public class HomeFragment extends Fragment {
                                                 mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                                        if (dataSnapshot.child(currUserId).hasChild(postedBy)) {
+                                                        boolean display = false;
+
+                                                        // Check if I follow this author
+                                                        if (dataSnapshot.child("/follows").hasChild(userId)) {
+                                                            display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+                                                        }
+
+                                                        // Check if I'm in this group
+                                                        if (groupId != null) {
+                                                            if (dataSnapshot.child("/group").hasChild(userId)) {
+                                                                display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                                            }
+                                                        }
+
+                                                        if (display) {
                                                             adapter.add(recipe);
                                                         }
                                                     }
@@ -202,7 +234,6 @@ public class HomeFragment extends Fragment {
                                 }
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
-
                                 }
                             });
                 }
