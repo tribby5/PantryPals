@@ -84,7 +84,27 @@ public class HomeFragment extends Fragment {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
 
-        ref.orderByChild("negTimestamp").limitToFirst(10).addValueEventListener(new ValueEventListener() {
+        /**
+        //temp script for adding dbKey field to all recipe instances in firebase
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String dbkey = ds.getKey();
+                    Recipe recipe = ds.getValue(Recipe.class);
+                    ref.child(dbkey).child("dbKey").setValue(dbkey);
+                    Log.d(TAG, "dbKey field added for recipeId: " + dbkey);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        */
+
+        ref.orderByChild("negTimestamp").limitToFirst(30).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -103,7 +123,9 @@ public class HomeFragment extends Fragment {
 
                         DatabaseReference mFollow = mFirebaseDatabase.getReference();
                         if (currUserId.equals(postedBy)) {
-                            adapter.add(recipe);
+                            feedList.add(recipe);
+                            //adapter.add(recipe);
+                            adapter.notifyDataSetChanged();
                         } else {
                             mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
@@ -159,7 +181,9 @@ public class HomeFragment extends Fragment {
                                     }
 
                                     if (display) {
-                                        adapter.add(recipe);
+                                        feedList.add(recipe);
+                                        //adapter.add(recipe);
+                                        adapter.notifyDataSetChanged();
                                     }
                                 }
 
@@ -218,7 +242,7 @@ public class HomeFragment extends Fragment {
             private void isScrollCompleted() {
                 if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
                         && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(5)
+                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(20)
                             .addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -238,7 +262,9 @@ public class HomeFragment extends Fragment {
                                             DatabaseReference mFollow = mFirebaseDatabase.getReference();
                                             // If recipe is written by me (my recipe) then show
                                             if (currUserId.equals(postedBy)) {
-                                                adapter.add(recipe);
+                                                feedList.add(recipe);
+                                                //adapter.add(recipe);
+                                                adapter.notifyDataSetChanged();
                                             } else {
                                                 // this recipe is not written by me - check if i follow this person
                                                 mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -295,7 +321,9 @@ public class HomeFragment extends Fragment {
                                                         }
 
                                                         if (display) {
-                                                            adapter.add(recipe);
+                                                            feedList.add(recipe);
+                                                            //adapter.add(recipe);
+                                                            adapter.notifyDataSetChanged();
                                                         }
                                                     }
 
