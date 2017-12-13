@@ -19,6 +19,7 @@ import java.util.List;
 import pantrypals.discover.SquareLayout;
 import pantrypals.models.Notification;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.DownloadImageTask;
 
 /**
@@ -91,7 +92,16 @@ public class NotificationAdapter extends BaseAdapter {
                 public void onClick(View view) {
                     FragmentTransaction transaction = fm.beginTransaction();
                     transaction.replace(R.id.frame_layout, ProfileFragment.newFragment(notif.getLinkID()));
-                    transaction.commit();
+                    transaction.addToBackStack(null).commit();
+                }
+            });
+        } else if(notif.getLinkType().equals("recipe")) {
+            rl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, RecipeFragment.newFragment(notif.getLinkID()));
+                    transaction.addToBackStack(null).commit();
                 }
             });
         }
