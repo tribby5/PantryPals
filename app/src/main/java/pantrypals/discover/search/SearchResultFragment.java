@@ -21,8 +21,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 import pantrypals.discover.GridAdapter;
+import pantrypals.home.CustomListAdapter;
 import pantrypals.models.Group;
 import pantrypals.models.Post;
+import pantrypals.models.Recipe;
 import pantrypals.models.User;
 
 /**
@@ -115,17 +117,17 @@ public class SearchResultFragment extends Fragment {
                 }
             });
         } else if(type == SearchType.POSTS) {
-            mDatabase.child("/posts").addValueEventListener(new ValueEventListener() {
+            mDatabase.child("/recipes").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    List<SearchResult> results = Lists.newArrayList();
+                    List<Recipe> results = Lists.newArrayList();
                     for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        Post post = postSnapshot.getValue(Post.class);
-                        if(query.equals("*") || post.getTitle().toLowerCase().contains(query)) {
-                            results.add(new SearchResult(type, post, postSnapshot.getKey()));
+                        Recipe recipe = postSnapshot.getValue(Recipe.class);
+                        if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
+                            results.add(recipe);
                         }
                     }
-                    gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
+                    gridView.setAdapter(new CustomListAdapter(getActivity(), R.layout.card_layout_main, results));
                 }
 
                 @Override

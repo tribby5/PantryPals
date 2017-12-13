@@ -71,18 +71,22 @@ public class NotificationAdapter extends BaseAdapter {
         TextView tv2 = view.findViewById(R.id.notification_secondary);
         tv2.setText(notif.getMessage());
         TextView tv3 = view.findViewById(R.id.notification_date);
-        Timestamp timestamp = Timestamp.valueOf(notif.getTimestamp());
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        long secondsAgo = (now.getTime() - timestamp.getTime())/1000;
         String agoText;
-        if (secondsAgo < 60) {
-            agoText = secondsAgo + "s ago";
-        } else if (secondsAgo < 60 * 60) {
-            agoText = (secondsAgo/60) + "m ago";
-        } else if (secondsAgo < 60 * 60 * 24) {
-            agoText = (secondsAgo/3600) + "h ago";
+        if(notif.getTimestamp() == null) {
+            agoText = "";
         } else {
-            agoText = (secondsAgo/(3600 * 24)) + "d ago";
+            Timestamp timestamp = Timestamp.valueOf(notif.getTimestamp());
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            long secondsAgo = (now.getTime() - timestamp.getTime()) / 1000;
+            if (secondsAgo < 60) {
+                agoText = secondsAgo + "s ago";
+            } else if (secondsAgo < 60 * 60) {
+                agoText = (secondsAgo / 60) + "m ago";
+            } else if (secondsAgo < 60 * 60 * 24) {
+                agoText = (secondsAgo / 3600) + "h ago";
+            } else {
+                agoText = (secondsAgo / (3600 * 24)) + "d ago";
+            }
         }
         tv3.setText(agoText);
 
