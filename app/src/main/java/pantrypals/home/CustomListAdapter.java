@@ -279,7 +279,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mAddLikeNotifToUser) {
-                    Map<String, Boolean> map = dataSnapshot.getValue(Map.class);
+                    Map<String, Boolean> map = (Map<String, Boolean>)dataSnapshot.getValue();
                     if(map == null) {
                         map = Maps.newHashMap();
                     }
