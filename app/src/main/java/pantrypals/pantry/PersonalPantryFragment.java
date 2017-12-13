@@ -98,7 +98,7 @@ public class PersonalPantryFragment extends Fragment {
         if(pantryID == null){
             createPersonalPantry();
         }
-        
+
         pantryRef.child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

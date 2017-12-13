@@ -168,8 +168,8 @@ public class RegistrationActivity extends AppCompatActivity {
         user.setRestrictions(restrictions);
 
         //Creates personal pantry and return keys to store it with
-        //String pantryKey = createPersonalPantry();
-       // user.setPersonalPantry(pantryKey);
+        String pantryKey = createPersonalPantry();
+        user.setPersonalPantry(pantryKey);
         
         FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
 
