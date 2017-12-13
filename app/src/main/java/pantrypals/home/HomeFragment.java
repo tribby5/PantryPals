@@ -110,18 +110,11 @@ public class HomeFragment extends Fragment {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     boolean display = false;
                                     boolean relevant = false;
-                                    // Check if I follow this author
+                                    // Check if I follow this author and if my setting is only following relevant recipes
                                     if (dataSnapshot.child("/follows").hasChild(userId)) {
                                         display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
                                         if (display) {
                                             relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
-                                        }
-                                    }
-
-                                    // Check if I'm in this group
-                                    if (groupId != null) {
-                                        if (dataSnapshot.child("/group").hasChild(userId)) {
-                                            display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
                                         }
                                     }
 
@@ -155,6 +148,13 @@ public class HomeFragment extends Fragment {
                                             if (!hasIngredients(recipe, itemNames)) {
                                                 display = false;
                                             }
+                                        }
+                                    }
+
+                                    // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+                                    if (groupId != null) {
+                                        if (dataSnapshot.child("/group").hasChild(userId)) {
+                                            display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
                                         }
                                     }
 
@@ -246,17 +246,14 @@ public class HomeFragment extends Fragment {
                                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                                         boolean display = false;
                                                         boolean relevant = false;
-                                                        // Check if I follow this author
+                                                        // Check if I follow this author and if my setting is only following relevant recipes
                                                         if (dataSnapshot.child("/follows").hasChild(userId)) {
                                                             display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
-                                                        }
-
-                                                        // Check if I'm in this group
-                                                        if (groupId != null) {
-                                                            if (dataSnapshot.child("/group").hasChild(userId)) {
-                                                                display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                                            if (display) {
+                                                                relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
                                                             }
                                                         }
+                                                        
                                                         // Ingredient matching if I only follow relevant
                                                         if (relevant) {
                                                             // First find my pantry
@@ -289,6 +286,14 @@ public class HomeFragment extends Fragment {
                                                                 }
                                                             }
                                                         }
+
+                                                        // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+                                                        if (groupId != null) {
+                                                            if (dataSnapshot.child("/group").hasChild(userId)) {
+                                                                display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                                            }
+                                                        }
+
                                                         if (display) {
                                                             adapter.add(recipe);
                                                         }
