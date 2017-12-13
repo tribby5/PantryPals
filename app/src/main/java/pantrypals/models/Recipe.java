@@ -18,8 +18,9 @@ public class Recipe {
     private Map<String, Comment> comments;
     private Map<String, Boolean> likedBy;
     private Map<String, Boolean> postedBy;
-    // for groups, we have groupIDs. Consider it relevant if currUser is in that group no matter if currUser follows the author or not
-    private Map<String, Boolean> groups;
+
+    // following groupId is null if it's public recipe
+    private String groupId;
     private Map<String, Integer> ratings;
 
     private List<Ingredient> ingredients;
@@ -32,12 +33,13 @@ public class Recipe {
     private String imageURL;
     private long negTimestamp;
 
-    public Map<String, Boolean> getGroups() {
-        return groups;
+
+    public String getGroupId() {
+        return groupId;
     }
 
-    public void setGroups(Map<String, Boolean> groups) {
-        this.groups = groups;
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public long getNegTimestamp() {
