@@ -268,8 +268,6 @@ public class NewRecipeActivity extends AppCompatActivity {
                     tags.add(tag.trim());
                 }
 
-                Map<String, Boolean> groups = Maps.newHashMap();
-
                 Recipe newRecipe = new Recipe();
 
                 // set postedBy
@@ -288,8 +286,7 @@ public class NewRecipeActivity extends AppCompatActivity {
                 newRecipe.setInstructions(instructions);
                 newRecipe.setTags(tags);
                 if(ctx != null) {
-                    groups.put(ctx, true);
-                    newRecipe.setGroups(groups);
+                    newRecipe.setGroupId(ctx);
                 }
 
 //                Map<String, Recipe> recipesToSendToFirebase = new HashMap<>();
