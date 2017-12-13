@@ -8,6 +8,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
@@ -17,31 +19,32 @@ import pantrypals.models.JointPantry;
  */
 
 public class ItemsRetriever {
-    private ArrayList<Item> items;
+    private HashMap<String, Item> items;
     private PantryItemsAdapter itemsAdapter;
     private String pantryID;
 
-    public ItemsRetriever(String pantryID, PantryItemsAdapter itemsAdapter) {
-        this.pantryID = pantryID;
-        this.itemsAdapter = itemsAdapter;
-        this.items = new ArrayList<>();
+    public ItemsRetriever() {
+
     }
 
-    public ArrayList<Item> retrievePantryItems() {
-        items = new ArrayList<>();
+    public HashMap<String, Item> retrievePantryItems(String pantryID, PantryItemsAdapter adapter) {
+        this.pantryID = pantryID;
+        this.itemsAdapter = adapter;
+        items = new HashMap<>();
         final DatabaseReference itemsRef = FirebaseDatabase.getInstance().getReference().child("items");
         FirebaseDatabase.getInstance().getReference().child("pantries").child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
                 if (pantry.getItems() != null) {
-                    for (String itemID : pantry.getItems().keySet()) {
+                    for (final String itemID : pantry.getItems().keySet()) {
                         itemsRef.child(itemID).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Item item = dataSnapshot.getValue(Item.class);
-                                items.add(item);
-                                itemsAdapter.refresh(items);
+                                item.setDatabaseId(itemID);
+                                items.put(itemID, item);
+                                itemsAdapter.refresh(items.values());
                             }
 
                             @Override
@@ -50,7 +53,7 @@ public class ItemsRetriever {
                             }
                         });
                     }
-                    itemsAdapter.refresh(items);
+                    itemsAdapter.refresh(items.values());
                 }
             }
 
