@@ -10,13 +10,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ValueEventListener;
 import com.wefika.flowlayout.FlowLayout;
 
@@ -25,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
@@ -39,6 +43,8 @@ public class RecipeFragment extends Fragment {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
     private static final String ARG_RID = "RID";
+
+    private boolean mLock = false;
 
     private String rid;
 
@@ -87,42 +93,55 @@ public class RecipeFragment extends Fragment {
         final LinearLayout ingredientsLayout = view.findViewById(R.id.ingredientsLayout);
         final FlowLayout tagLayout = view.findViewById(R.id.recipe_tags_container);
 
+        mLock = true;
+
         mDatabase.child("recipes").child(rid).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Recipe recipe = dataSnapshot.getValue(Recipe.class);
-                new DownloadImageTask(imageView)
-                        .execute(recipe.getImageURL());
-                nameTV.setText(recipe.getName());
-                captionTV.setText(recipe.getCaption());
-                for(final String userID : recipe.getPostedBy().keySet()) {
-                    mDatabase.child("userAccounts").child(userID).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            User user = dataSnapshot.getValue(User.class);
-                            posterTV.setText(user.getName());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                    posterTV.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ProfileFragment newFragment = ProfileFragment.newFragment(userID);
-                            if(isAdded()) {
-                                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                                transaction.replace(R.id.frame_layout, newFragment).commit();
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                final Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                if(mLock) {
+                    new DownloadImageTask(imageView)
+                            .execute(recipe.getImageURL());
+                    nameTV.setText(recipe.getName());
+                    captionTV.setText(recipe.getCaption());
+                    for (final String userID : recipe.getPostedBy().keySet()) {
+                        mDatabase.child("userAccounts").child(userID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(mLock) {
+                                    User user = dataSnapshot.getValue(User.class);
+                                    posterTV.setText(user.getName());
+                                }
                             }
-                        }
-                    });
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                        posterTV.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ProfileFragment newFragment = ProfileFragment.newFragment(userID);
+                                if (isAdded()) {
+                                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                                    transaction.replace(R.id.frame_layout, newFragment).addToBackStack(null).commit();
+                                }
+                            }
+                        });
+                    }
                 }
-                double rating;
+                double rating = 0.0;
                 try {
-                    rating = Double.parseDouble(recipe.getAverageRating());
-                } catch (NullPointerException e) {
+                    if(recipe.getRatings() == null || recipe.getRatings().isEmpty()) {
+                        rating = Double.parseDouble(recipe.getAverageRating());
+                    } else {
+                        for(int val : recipe.getRatings().values()) {
+                            rating += (double) val;
+                        }
+                        rating /= recipe.getRatings().size();
+                    }
+                } catch (Exception e) {
                     rating = 0.0;
                 }
                 for(int i = 0; i < stars.size(); i++) {
@@ -132,74 +151,92 @@ public class RecipeFragment extends Fragment {
                         stars.get(i).setImageResource(inactiveStarID);
                     }
                 }
-                String date;
-                try {
-
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                    Date dt;
-                    dt = dateFormat.parse(recipe.getTimePosted());
-                    SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy,  hh:mm aaa");
-                    date = newFormat.format(dt);
-                    // below: NOT UNIX TIMESTAMP!!
-                    //date = unixToDate(recipe.getNegTimestamp());
-
-                } catch (ParseException pe) {
-                    date = "Unknown date";
-                }
-                dateTV.setText(date);
-
-                List<Recipe.Ingredient> ingredients = recipe.getIngredients();
-
-                for(Recipe.Ingredient ingredient : ingredients) {
-                    if(isAdded()) {
-                        TextView ingTV = new TextView(getContext());
-                        if (ingredient.getUnit() != null) {
-                            ingTV.setText(String.format(Locale.US, "• %d %s %s", (int) ingredient.getAmount(), ingredient.getUnit(), ingredient.getName()));
-                        } else {
-                            ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
-                        }
-                        ingTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-                        ingTV.setPadding(0, 20, 0, 20);
-                        ingredientsLayout.addView(ingTV);
-                    }
-                }
-
-                List<String> instructions = recipe.getInstructions();
-
-                for(int i = 1; i <= instructions.size(); i++) {
-                    if(isAdded()) {
-                        TextView instrTV = new TextView(getContext());
-                        instrTV.setText(String.format(Locale.US, "%d. %s", i, instructions.get(i - 1)));
-                        instrTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
-                        instrTV.setPadding(0, 20, 0, 20);
-                        instructionsLayout.addView(instrTV);
-                    }
-                }
-
-                List<String> tags = recipe.getTags();
-
-                tagLayout.removeAllViews();
-                if (tags != null && tags.size() != 0) {
-                    for(String tag : tags) {
-                        if(isAdded()) {
-                            TextView tagTV = new TextView(getContext());
-                            tagTV.setText(tag);
-                            tagTV.setTextSize(12);
-                            tagTV.setPadding(25, 15, 25, 15);
-                            if (isAdded()) {
-                                tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
-                                tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                for(int i = 0; i < stars.size(); i++) {
+                    final int score = i + 1;
+                    stars.get(i).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Map<String, Integer> ratingMap = recipe.getRatings();
+                            if(ratingMap == null) {
+                                ratingMap = Maps.newHashMap();
                             }
+                            ratingMap.put(FirebaseAuth.getInstance().getCurrentUser().getUid(), score);
+                            recipe.setRatings(ratingMap);
+                            mDatabase.child("recipes").child(dataSnapshot.getKey()).setValue(recipe);
+                            Toast.makeText(getContext(), "Rated " + (score + 1) + " stars!", Toast.LENGTH_SHORT);
+                        }
+                    });
+                }
+                if(mLock) {
+                    String date;
+                    try {
 
-                            FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                            params.setMargins(10, 0, 10, 0);
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        Date dt;
+                        dt = dateFormat.parse(recipe.getTimePosted());
+                        SimpleDateFormat newFormat = new SimpleDateFormat("MMM d, yyyy,  hh:mm aaa");
+                        date = newFormat.format(dt);
+                        // below: NOT UNIX TIMESTAMP!!
+                        //date = unixToDate(recipe.getNegTimestamp());
 
-                            tagTV.setLayoutParams(params);
-                            tagLayout.addView(tagTV);
+                    } catch (ParseException pe) {
+                        date = "Unknown date";
+                    }
+                    dateTV.setText(date);
+
+                    List<Recipe.Ingredient> ingredients = recipe.getIngredients();
+
+                    for (Recipe.Ingredient ingredient : ingredients) {
+                        if (isAdded()) {
+                            TextView ingTV = new TextView(getContext());
+                            if (ingredient.getUnit() != null) {
+                                ingTV.setText(String.format(Locale.US, "• %d %s %s", (int) ingredient.getAmount(), ingredient.getUnit(), ingredient.getName()));
+                            } else {
+                                ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
+                            }
+                            ingTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
+                            ingTV.setPadding(0, 20, 0, 20);
+                            ingredientsLayout.addView(ingTV);
+                        }
+                    }
+
+                    List<String> instructions = recipe.getInstructions();
+
+                    for (int i = 1; i <= instructions.size(); i++) {
+                        if (isAdded()) {
+                            TextView instrTV = new TextView(getContext());
+                            instrTV.setText(String.format(Locale.US, "%d. %s", i, instructions.get(i - 1)));
+                            instrTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
+                            instrTV.setPadding(0, 20, 0, 20);
+                            instructionsLayout.addView(instrTV);
+                        }
+                    }
+
+                    List<String> tags = recipe.getTags();
+
+                    tagLayout.removeAllViews();
+                    if (tags != null && tags.size() != 0) {
+                        for (String tag : tags) {
+                            if (isAdded()) {
+                                TextView tagTV = new TextView(getContext());
+                                tagTV.setText(tag);
+                                tagTV.setTextSize(12);
+                                tagTV.setPadding(25, 15, 25, 15);
+                                if (isAdded()) {
+                                    tagTV.setTextColor(getResources().getColor(R.color.colorWhite));
+                                    tagTV.setBackground(getResources().getDrawable(R.drawable.rounded_corner_blue));
+                                }
+
+                                FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
+                                params.setMargins(10, 0, 10, 0);
+
+                                tagTV.setLayoutParams(params);
+                                tagLayout.addView(tagTV);
+                            }
                         }
                     }
                 }
-
+                mLock = false;
             }
 
             @Override

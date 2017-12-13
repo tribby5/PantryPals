@@ -183,6 +183,17 @@
                 android:layout_alignBaseline="@id/addInstructionButton"
                 android:text="Add another instruction"/>
 
+            <EditText
+                android:id="@+id/create_recipe_tags"
+                android:layout_marginTop="@dimen/padding"
+                android:layout_below="@id/addInstructionButton"
+                android:layout_width="match_parent"
+                android:textSize="@dimen/h4Size"
+                android:hint="add tags"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@color/colorHint"
+                android:layout_height="wrap_content" />
+
         </RelativeLayout>
 
     </ScrollView>
