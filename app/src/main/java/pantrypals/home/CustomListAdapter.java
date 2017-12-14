@@ -82,6 +82,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private DatabaseReference refLike;
     private DatabaseReference refSave;
     private DatabaseReference refRoot;
+    private DatabaseReference refAuthor;
     private FirebaseAuth mAuth;
     private FragmentManager fm;
     private List<Recipe> objects;
@@ -100,6 +101,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         this.objects = objects;
         refLike = FirebaseDatabase.getInstance().getReference("/recipes");
         refSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
+        refAuthor = FirebaseDatabase.getInstance().getReference("/userAccounts");
         refRoot = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         if(context != null) {
@@ -303,7 +305,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 }
             });
 
-            refSave.child(posterId).addValueEventListener(new ValueEventListener() {
+            refAuthor.child(posterId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     User posterUser = dataSnapshot.getValue(User.class);
