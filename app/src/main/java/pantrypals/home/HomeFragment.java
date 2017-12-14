@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
         userId = user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.orderByChild("negTimestamp").limitToFirst(30).addValueEventListener(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(30).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
