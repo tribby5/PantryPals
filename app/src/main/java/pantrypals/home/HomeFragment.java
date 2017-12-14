@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
         userId = user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.orderByChild("negTimestamp").limitToFirst(30).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(50).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -201,146 +201,146 @@ public class HomeFragment extends Fragment {
         adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList, getActivity());
         feedListView.setAdapter(adapter);
 
-        // Implement scrolling
-        feedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            private int currentVisibleItemCount;
-            private int currentScrollState;
-            private int currentFirstVisibleItem;
-            private int totalItem;
-
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
-                currentScrollState = scrollState;
-                isScrollCompleted();
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                currentFirstVisibleItem = firstVisibleItem;
-                currentVisibleItemCount = visibleItemCount;
-                totalItem = totalItemCount;
-            }
-
-            private void isScrollCompleted() {
-                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
-                        && currentScrollState == SCROLL_STATE_IDLE) {
-                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                final Recipe recipe = snapshot.getValue(Recipe.class);
-                                if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
-                                    oldestRecipeNegTimestamp = recipe.getNegTimestamp();
-                                    String recipeId = snapshot.getKey();
-                                    recipe.setDbKey(recipeId);
-                                    // get the group this recipe belongs to
-                                    final String groupId = recipe.getGroupId();
-
-                                    // filter based on whether i follow this person or not
-                                    final String currUserId = userId;
-                                    Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
-                                    final String postedBy = recipePostedBySet.iterator().next();
-                                    DatabaseReference mFollow = mFirebaseDatabase.getReference();
-                                    // If recipe is written by me (my recipe) then show
-                                    if (currUserId.equals(postedBy)) {
-                                        feedList.add(recipe);
-                                        //adapter.add(recipe);
-                                        adapter.notifyDataSetChanged();
-                                    } else {
-                                        // this recipe is not written by me - check if i follow this person
-                                        mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                boolean display = false;
-                                                boolean relevant = false;
-                                                // Check if I follow this author and if my setting is only following relevant recipes
-                                                if (dataSnapshot.child("/follows").hasChild(userId)) {
-                                                    display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
-                                                    if (display) {
-                                                        relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
-                                                    }
-                                                }
-
-                                                // Ingredient matching if I only follow relevant
-                                                if (relevant) {
-                                                    // First find my pantry
-                                                    Pantry pantry = null;
-                                                    for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
-                                                        Pantry p = ds.getValue(Pantry.class);
-                                                        if (p.getOwnedBy().containsKey(userId)) {
-                                                            // this is user's pantry
-                                                            pantry = p;
-                                                            break;
-                                                        }
-                                                    }
-                                                    // Get all items in pantry into a list
-                                                    if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
-                                                        // No items, do not display
-                                                        display = false;
-                                                    } else {
-                                                        // Just get item strings for now
-                                                        List<String> itemNames = new ArrayList<>();
-                                                        Set<String> itemIds = pantry.getItems().keySet();
-                                                        for (String itemId : itemIds) {
-                                                            if (dataSnapshot.child("/items").hasChild(itemId)) {
-                                                                Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
-                                                                itemNames.add(i.getName());
-                                                            }
-                                                        }
-                                                        // Now with a list of item names, compare with recipe's item names
-                                                        if (!hasIngredients(recipe, itemNames)) {
-                                                            display = false;
-                                                        }
-                                                    }
-                                                }
-
-                                                // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
-                                                if (groupId != null) {
-                                                    if (dataSnapshot.child("/group").hasChild(userId)) {
-                                                        display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
-                                                    }
-                                                }
-
-                                                // Check if currUser has restrictions for this recipe
-                                                User currUser = dataSnapshot.child("userAcccounts").child(userId).getValue(User.class);
-                                                // Get a set of restrictions for user
-                                                Set<String> restrictions;
-                                                try {
-                                                    restrictions = currUser.getRestrictions().keySet();
-                                                } catch (Exception e) {
-                                                    restrictions = null;
-                                                }
-                                                // Get restriction tags for the recipe
-                                                List<String> tags = recipe.getTags();
-                                                if (!meetsRestrictions(restrictions, tags)) {
-                                                    display = false;
-                                                }
-
-                                                if (display) {
-                                                    feedList.add(recipe);
-                                                    adapter.notifyDataSetChanged();
-                                                    log("Display_recipe", recipe.getDbKey());
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {
-
-                                            }
-                                        });
-                                    }
-                                    Log.d(TAG, "Retrieved Id: " + recipeId);
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                        }
-                    });
-                }
-            }
-        });
+//        // Implement scrolling
+//        feedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            private int currentVisibleItemCount;
+//            private int currentScrollState;
+//            private int currentFirstVisibleItem;
+//            private int totalItem;
+//
+//            @Override
+//            public void onScrollStateChanged(AbsListView absListView, int scrollState) {
+//                currentScrollState = scrollState;
+//                isScrollCompleted();
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+//                currentFirstVisibleItem = firstVisibleItem;
+//                currentVisibleItemCount = visibleItemCount;
+//                totalItem = totalItemCount;
+//            }
+//
+//            private void isScrollCompleted() {
+//                if (totalItem - currentFirstVisibleItem == currentVisibleItemCount
+//                        && currentScrollState == SCROLL_STATE_IDLE) {
+//                    ref.orderByChild("negTimestamp").startAt(oldestRecipeNegTimestamp).limitToFirst(20).addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                                final Recipe recipe = snapshot.getValue(Recipe.class);
+//                                if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
+//                                    oldestRecipeNegTimestamp = recipe.getNegTimestamp();
+//                                    String recipeId = snapshot.getKey();
+//                                    recipe.setDbKey(recipeId);
+//                                    // get the group this recipe belongs to
+//                                    final String groupId = recipe.getGroupId();
+//
+//                                    // filter based on whether i follow this person or not
+//                                    final String currUserId = userId;
+//                                    Set<String> recipePostedBySet = recipe.getPostedBy().keySet();
+//                                    final String postedBy = recipePostedBySet.iterator().next();
+//                                    DatabaseReference mFollow = mFirebaseDatabase.getReference();
+//                                    // If recipe is written by me (my recipe) then show
+//                                    if (currUserId.equals(postedBy)) {
+//                                        feedList.add(recipe);
+//                                        //adapter.add(recipe);
+//                                        adapter.notifyDataSetChanged();
+//                                    } else {
+//                                        // this recipe is not written by me - check if i follow this person
+//                                        mFollow.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                            @Override
+//                                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                                boolean display = false;
+//                                                boolean relevant = false;
+//                                                // Check if I follow this author and if my setting is only following relevant recipes
+//                                                if (dataSnapshot.child("/follows").hasChild(userId)) {
+//                                                    display = dataSnapshot.child("/follows").child(userId).hasChild(postedBy);
+//                                                    if (display) {
+//                                                        relevant = dataSnapshot.child("/follows").child(userId).child(postedBy).getValue(String.class).equals("relevant");
+//                                                    }
+//                                                }
+//
+//                                                // Ingredient matching if I only follow relevant
+//                                                if (relevant) {
+//                                                    // First find my pantry
+//                                                    Pantry pantry = null;
+//                                                    for (DataSnapshot ds : dataSnapshot.child("/pantries").getChildren()) {
+//                                                        Pantry p = ds.getValue(Pantry.class);
+//                                                        if (p.getOwnedBy().containsKey(userId)) {
+//                                                            // this is user's pantry
+//                                                            pantry = p;
+//                                                            break;
+//                                                        }
+//                                                    }
+//                                                    // Get all items in pantry into a list
+//                                                    if (pantry == null || pantry.getItems() == null || pantry.getItems().size() == 0) {
+//                                                        // No items, do not display
+//                                                        display = false;
+//                                                    } else {
+//                                                        // Just get item strings for now
+//                                                        List<String> itemNames = new ArrayList<>();
+//                                                        Set<String> itemIds = pantry.getItems().keySet();
+//                                                        for (String itemId : itemIds) {
+//                                                            if (dataSnapshot.child("/items").hasChild(itemId)) {
+//                                                                Item i = dataSnapshot.child("/items").child(itemId).getValue(Item.class);
+//                                                                itemNames.add(i.getName());
+//                                                            }
+//                                                        }
+//                                                        // Now with a list of item names, compare with recipe's item names
+//                                                        if (!hasIngredients(recipe, itemNames)) {
+//                                                            display = false;
+//                                                        }
+//                                                    }
+//                                                }
+//
+//                                                // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+//                                                if (groupId != null) {
+//                                                    if (dataSnapshot.child("/group").hasChild(userId)) {
+//                                                        display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+//                                                    }
+//                                                }
+//
+//                                                // Check if currUser has restrictions for this recipe
+//                                                User currUser = dataSnapshot.child("userAcccounts").child(userId).getValue(User.class);
+//                                                // Get a set of restrictions for user
+//                                                Set<String> restrictions;
+//                                                try {
+//                                                    restrictions = currUser.getRestrictions().keySet();
+//                                                } catch (Exception e) {
+//                                                    restrictions = null;
+//                                                }
+//                                                // Get restriction tags for the recipe
+//                                                List<String> tags = recipe.getTags();
+//                                                if (!meetsRestrictions(restrictions, tags)) {
+//                                                    display = false;
+//                                                }
+//
+//                                                if (display) {
+//                                                    feedList.add(recipe);
+//                                                    adapter.notifyDataSetChanged();
+//                                                    log("Display_recipe", recipe.getDbKey());
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(DatabaseError databaseError) {
+//
+//                                            }
+//                                        });
+//                                    }
+//                                    Log.d(TAG, "Retrieved Id: " + recipeId);
+//                                }
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//                        }
+//                    });
+//                }
+//            }
+//        });
         return view;
     }
 

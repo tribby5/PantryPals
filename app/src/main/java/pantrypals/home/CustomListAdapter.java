@@ -139,6 +139,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         final String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
         final List<Recipe.Ingredient> ingredients = getItem(position).getIngredients();
+        final Recipe r = getItem(position);
 
         final String key = getItem(position).getDbKey(); // TODO: starting point for debug
 
@@ -277,7 +278,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         Item item = itemSnapshot.getValue(Item.class);
                                         String ingName = ingredient.getName().toLowerCase();
                                         String itemName = item.getName().toLowerCase();
-                                        if (ingName.contains(itemName) || itemName.contains(ingName)) {
+                                        if (!(ingName.equals("") || itemName.equals("")) && ingName.contains(itemName) || itemName.contains(ingName)) {
                                             weHaveIt = true;
                                             break;
                                         }
@@ -286,11 +287,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                 if(!weHaveIt) {
                                     numMissing++;
                                 }
+                                Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
                             }
                             if(mProcessCardBullets) {
                                 LinearLayout bulletLayout = new LinearLayout(getContext());
                                 TextView tv = new TextView(getContext());
                                 ImageView bullet = new ImageView(getContext());
+
                                 if(numMissing == 0) {
                                     tv.setText("You have all the ingredients to make this!");
                                     bullet.setImageResource(R.drawable.green);
