@@ -316,6 +316,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                     holder.bullets.addView(bulletLayout);
                                     mProcessCardBullets = false;
                                 }
+                                //Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
+
                             }
 
                             @Override
