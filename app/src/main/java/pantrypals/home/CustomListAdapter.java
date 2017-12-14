@@ -430,7 +430,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     /**
      * Holds variables in a View
      */
-    private static class ViewHolder {
+    private class ViewHolder {
         TextView title;
         TextView subtitle;
         TextView body;
