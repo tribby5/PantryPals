@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +54,7 @@ public class PersonalPantryFragment extends Fragment {
     private DatabaseReference pantryRef;
     private DatabaseReference itemsRef;
     private PantryItemsAdapter itemsAdapter;
-    private ItemsRetriever itemsRetriever;
+    private DatabaseRetriever itemsRetriever;
     private User user;
     private View view;
 
@@ -155,9 +154,8 @@ public class PersonalPantryFragment extends Fragment {
 
     //Assumes pantry exists
     private void fillPantry(){
-        itemsRetriever = new ItemsRetriever();
+        itemsRetriever = new DatabaseRetriever();
         items = itemsRetriever.retrievePantryItems(pantryID, itemsAdapter);
-        System.out.println("PRINT: items?@?!?!? = "+items.size());
         setupItemListView(view);
     }
 
