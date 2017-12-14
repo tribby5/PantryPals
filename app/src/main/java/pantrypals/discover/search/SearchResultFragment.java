@@ -124,11 +124,23 @@ public class SearchResultFragment extends Fragment {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<Recipe> results = Lists.newArrayList();
-                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        Recipe recipe = postSnapshot.getValue(Recipe.class);
+                    for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        Recipe recipe = recipeSnapshot.getValue(Recipe.class);
                         if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
                             results.add(recipe);
+                        } else {
+                            boolean containsTag = false;
+                            for(String tag : recipe.getTags()) {
+                                if(!tag.isEmpty() && query.contains(tag.toLowerCase())) {
+                                    containsTag = true;
+                                    break;
+                                }
+                            }
+                            if(containsTag) {
+                                results.add(recipe);
+                            }
                         }
+                        recipe.setDbKey(recipeSnapshot.getKey());
                     }
                     gridView.setAdapter(new CustomListAdapter(getActivity(), R.layout.card_layout_main, results));
                 }
@@ -163,8 +175,20 @@ public class SearchResultFragment extends Fragment {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
                                         Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                                        recipe.setDbKey(recipeSnapshot.getKey());
                                         if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
                                             results.add(new SearchResult(type, recipe, recipeSnapshot.getKey()));
+                                        } else {
+                                            boolean containsTag = false;
+                                            for(String tag : recipe.getTags()) {
+                                                if(!tag.isEmpty() && query.contains(tag.toLowerCase())) {
+                                                    containsTag = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(containsTag) {
+                                                results.add(new SearchResult(type, recipe, recipeSnapshot.getKey()));
+                                            }
                                         }
                                     }
                                     gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
