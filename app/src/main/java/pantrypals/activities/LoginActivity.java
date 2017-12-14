@@ -21,31 +21,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.FirebaseDatabase;
 
-import pantrypals.database.generate.FollowGenerator;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 /**
  * A login screen that offers login via email/password.
- *
- * This code was a collaborative effort between Steven Yang and
- * Matthew Tribby who overhauled the code to include Firebase
- * auth and a more robust handling of login credentials.
+ * Google log-in also included
  */
 public class LoginActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    private static final int RC_GOOGLE_SIGN_IN = 100;
 
 
     // UI references.
@@ -53,6 +54,7 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private GoogleApiClient googleApiClient;
 
     //tracks whether there exists users in the system
     private static boolean existUser = false;
@@ -98,15 +100,35 @@ public class LoginActivity extends AppCompatActivity{
         });
 
 
-        setOnClick();
+        regularSignInOnClick();
+        googleSignInOnClick();
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
+            allowAccess();
+        }
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
 
 
-    private void setOnClick(){
+    private void regularSignInOnClick(){
         //When sign in button is clicked
         Button mEmailSignInButton = (Button) findViewById(R.id.Bsignin);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
@@ -129,19 +151,23 @@ public class LoginActivity extends AppCompatActivity{
         });
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+    private void googleSignInOnClick(){
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
-    }
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, null).addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+        final SignInButton googleSignIn= (SignInButton) findViewById(R.id.google_signin);
+        googleSignIn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptGoogleLogin();
+            }
+        });
     }
 
 
@@ -195,16 +221,12 @@ public class LoginActivity extends AppCompatActivity{
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d("attemptedLogin", "signInWithEmail:onComplete:" + task.isSuccessful());
 
-                            // If sign in fails, display a message to the user. If sign in succeeds
-                            // the auth state listener will be notified and logic to handle the
-                            // signed in user can be handled in the listener.
                             if (!task.isSuccessful()) {
                                 Log.w("failedLogin", "signInWithEmail:failed", task.getException());
                                 Toast.makeText(LoginActivity.this, R.string.auth_failed,
                                         Toast.LENGTH_SHORT).show();
                             } else {
-                                Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
-                                startActivity(mainIntent);
+                               allowAccess();
                             }
                         }
                     });
@@ -212,7 +234,49 @@ public class LoginActivity extends AppCompatActivity{
 
     }
 
+    private void attemptGoogleLogin(){
+        Intent googleSignin = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        startActivityForResult(googleSignin, RC_GOOGLE_SIGN_IN);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RC_GOOGLE_SIGN_IN){
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            getUserDataFromGoogle(result);
+        }
+    }
+
+    private void getUserDataFromGoogle(GoogleSignInResult result){
+        if(result.isSuccess()){
+            GoogleSignInAccount user = result.getSignInAccount();
+
+            AuthCredential credential = GoogleAuthProvider.getCredential(user.getIdToken(), null);
+            mAuth.signInWithCredential(credential)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                allowAccess();
+                                Log.d("WORKS", "UID: " + mAuth.getCurrentUser().getUid());
+                            }
+                            else{
+                                Log.d("GOOGLE_AUTH_LOGIN_ERROR", "ERROR IN LOGIN");
+                            }
+                        }
+                    });
+        }
+        else{
+            Log.d("GOOGLE_AUTH_LOGIN_ERROR", "task not successful");
+        }
+    }
+
+    private void allowAccess(){
+        Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(mainIntent);
+    }
 
     public static boolean isEmailValid(String email) {
         //TODO replace logic
