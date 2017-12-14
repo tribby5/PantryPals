@@ -278,7 +278,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         Item item = itemSnapshot.getValue(Item.class);
                                         String ingName = ingredient.getName().toLowerCase();
                                         String itemName = item.getName().toLowerCase();
-                                        if (!(ingName.equals("") || itemName.equals("")) && ingName.contains(itemName) || itemName.contains(ingName)) {
+                                        if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
                                             weHaveIt = true;
                                             break;
                                         }
