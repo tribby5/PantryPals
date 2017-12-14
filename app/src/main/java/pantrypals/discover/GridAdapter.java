@@ -74,7 +74,7 @@ public class GridAdapter extends BaseAdapter {
 
         SquareLayout sq = view.findViewById(R.id.grid_item_square);
         ImageView iv = view.findViewById(R.id.grid_item_image);
-        String iconName = string.split(" ")[0].toLowerCase();
+        String iconName = string.split(" ")[0].toLowerCase().replace("-", "_");
         int resID = mContext.getResources().getIdentifier(iconName , "drawable", mContext.getPackageName());
         iv.setImageResource(resID);
 
