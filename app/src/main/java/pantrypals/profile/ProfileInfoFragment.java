@@ -266,6 +266,10 @@ public class ProfileInfoFragment extends Fragment {
         myJPantries = retriever.retrieveJointPantries(myId, jointPantryAdapter);
 
         Button sendInvBtn = (Button) view.findViewById(R.id.sendInviteBtn);
+        if (otherId.equals(myId)) {
+            sendInvBtn.setVisibility(View.GONE);
+            return;
+        }
 
         sendInvBtn.setOnClickListener(new View.OnClickListener() {
             @Override
