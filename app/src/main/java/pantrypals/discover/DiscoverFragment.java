@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,17 +23,26 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Ordering;
+import com.google.common.collect.UnmodifiableIterator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import pantrypals.discover.search.SearchPageFragment;
+import pantrypals.models.Group;
 import pantrypals.models.Recipe;
 import pantrypals.util.DownloadImageTask;
 
@@ -65,6 +75,7 @@ public class DiscoverFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        generateTrendingData();
     }
 
     @Override
@@ -213,6 +224,139 @@ public class DiscoverFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString(eventType, value);
         mFirebaseAnalytics.logEvent("HomeFragment", bundle);
+    }
+    private void generateTrendingData() {
+        mDatabase.child("trending").setValue(null);
+
+        // generate trending users
+        mDatabase.child("userAccounts").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot1) {
+                mDatabase.child("follows").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                        Map<String, Integer> followMap = Maps.newHashMap();
+                        for(DataSnapshot userSnapshot1 : dataSnapshot1.getChildren()) {
+                            final String userID = userSnapshot1.getKey();
+                            int num = 0;
+                            for (DataSnapshot userSnapshot2 : dataSnapshot2.getChildren()) {
+                                for (DataSnapshot followingSnapshot : userSnapshot2.getChildren()) {
+                                    if (followingSnapshot.getKey().equals(userID)) {
+                                        num++;
+                                    }
+                                }
+                            }
+                            followMap.put(userID, num);
+                        }
+                        Ordering<Map.Entry<String, Integer>> entryOrdering = Ordering.natural()
+                                .onResultOf(new Function<Map.Entry<String, Integer>, Integer>() {
+                                    public Integer apply(Map.Entry<String, Integer> entry) {
+                                        return entry.getValue();
+                                    }
+                                }).reverse();
+
+                        // Desired entries in desired order.  Put them in an ImmutableMap in this order.
+                        ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
+                        for (Map.Entry<String, Integer> entry :
+                                entryOrdering.sortedCopy(followMap.entrySet())) {
+                            builder.put(entry.getKey(), entry.getValue());
+                        }
+                        UnmodifiableIterator<String> sortedIter = builder.build().keySet().iterator();
+                        for(int i = 0; i < 5 && sortedIter.hasNext(); i++) {
+                            mDatabase.child("trending").child(sortedIter.next() + "@person").setValue(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // generate trending groups
+        mDatabase.child("groups").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                Map<String, Integer> groupMap = Maps.newHashMap();
+                for(DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
+                    Group group = groupSnapshot.getValue(Group.class);
+                    groupMap.put(groupSnapshot.getKey(), group.getMembers().size());
+                }
+                Ordering<Map.Entry<String, Integer>> entryOrdering = Ordering.natural()
+                        .onResultOf(new Function<Map.Entry<String, Integer>, Integer>() {
+                            public Integer apply(Map.Entry<String, Integer> entry) {
+                                return entry.getValue();
+                            }
+                        }).reverse();
+
+                // Desired entries in desired order.  Put them in an ImmutableMap in this order.
+                ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
+                for (Map.Entry<String, Integer> entry :
+                        entryOrdering.sortedCopy(groupMap.entrySet())) {
+                    builder.put(entry.getKey(), entry.getValue());
+                }
+                UnmodifiableIterator<String> sortedIter = builder.build().keySet().iterator();
+                for(int i = 0; i < 5 && sortedIter.hasNext(); i++) {
+                    mDatabase.child("trending").child(sortedIter.next() + "@group").setValue(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        // generate trending groups
+        mDatabase.child("recipes").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(final DataSnapshot dataSnapshot) {
+                Map<String, Double> recipeMap = Maps.newHashMap();
+                for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                    Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                    double rating;
+                    try {
+                        rating = Double.parseDouble(recipe.getAverageRating());
+                    } catch(Exception e) {
+                        try {
+                            rating = Integer.parseInt(recipe.getAverageRating());
+                        } catch(Exception ee) {
+                            rating = 0.0;
+                        }
+                    }
+                    recipeMap.put(recipeSnapshot.getKey(), rating * -recipe.getNegTimestamp());
+                }
+                Ordering<Map.Entry<String, Double>> entryOrdering = Ordering.natural()
+                        .onResultOf(new Function<Map.Entry<String, Double>, Double>() {
+                            public Double apply(Map.Entry<String, Double> entry) {
+                                return entry.getValue();
+                            }
+                        }).reverse();
+
+                // Desired entries in desired order.  Put them in an ImmutableMap in this order.
+                ImmutableMap.Builder<String, Double> builder = ImmutableMap.builder();
+                for (Map.Entry<String, Double> entry :
+                        entryOrdering.sortedCopy(recipeMap.entrySet())) {
+                    builder.put(entry.getKey(), entry.getValue());
+                }
+                UnmodifiableIterator<String> sortedIter = builder.build().keySet().iterator();
+                for(int i = 0; i < 5 && sortedIter.hasNext(); i++) {
+                    mDatabase.child("trending").child(sortedIter.next() + "@recipe").setValue(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }
 

@@ -23,6 +23,9 @@
         android:textColor="@color/colorBlack"
         android:layout_alignParentBottom="true"
         android:textAppearance="@style/AppTheme.TextAppearance.Black"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="TITLE"
         android:padding="@dimen/padding">
     </TextView>
