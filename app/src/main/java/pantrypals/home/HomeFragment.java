@@ -308,7 +308,7 @@ public class HomeFragment extends Fragment {
                                                 }
                                                 // Get restriction tags for the recipe
                                                 List<String> tags = recipe.getTags();
-                                                if (hasRestrictions(restrictions, tags)) {
+                                                if (meetsRestrictions(restrictions, tags)) {
                                                     display = false;
                                                 }
 
@@ -340,19 +340,20 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    private boolean hasRestrictions(Set<String> restrictions, List<String> tags) {
+    private boolean meetsRestrictions(Set<String> restrictions, List<String> tags) {
+        // if everything in restrictions appears in recipe's tags, return true
         if (restrictions == null || tags == null || restrictions.size() == 0 || tags.size() == 0) {
             return false;
         } else {
             // For each restriction, make sure nothing in the tag matches
             for (String restriction : restrictions) {
                 for (String tag : tags) {
-                    if (Pattern.compile(Pattern.quote(restriction), Pattern.CASE_INSENSITIVE).matcher(tag).find()) {
-                        return true;
+                    if (!Pattern.compile(Pattern.quote(restriction), Pattern.CASE_INSENSITIVE).matcher(tag).find()) {
+                        return false;
                     }
                 }
             }
-            return false;
+            return true;
         }
     }
 
