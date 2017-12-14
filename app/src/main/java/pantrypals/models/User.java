@@ -2,13 +2,14 @@ package pantrypals.models;
 
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by Hunter Lee on 11/7/2017.
  */
 @IgnoreExtraProperties
-public class User {
+public class User implements Serializable {
 
     private String name;
     private String email;

@@ -74,6 +74,7 @@ public class ProfilePostsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Recipe> recipes = Lists.newArrayList();
                 for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, recipeSnapshot.getKey());
                     Recipe recipe = recipeSnapshot.getValue(Recipe.class);
                     if(recipe.getPostedBy().keySet().iterator().next().equals(getArguments().get(ARG_ID))) {
                         recipe.setDbKey(recipeSnapshot.getKey());

@@ -1,10 +1,12 @@
 package pantrypals.discover.search;
 
+import java.io.Serializable;
+
 /**
  * Created by adityasrinivasan on 09/12/17.
  */
 
-public class SearchResult {
+public class SearchResult implements Serializable {
 
     private SearchType type;
     private Object info;

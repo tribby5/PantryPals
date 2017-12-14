@@ -35,6 +35,8 @@ public class SearchResultFragment extends Fragment {
     private static final String ARG_QUERY = "query";
     private static final String ARG_TYPE = "type";
 
+    private ValueEventListener mGroupListener;
+
     private static final String TAG = "SearchResultFragment";
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -98,7 +100,7 @@ public class SearchResultFragment extends Fragment {
                 }
             });
         } else if(type == SearchType.GROUPS) {
-            mDatabase.child("/groups").addValueEventListener(new ValueEventListener() {
+            mGroupListener = mDatabase.child("groups").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<SearchResult> results = Lists.newArrayList();
@@ -109,6 +111,7 @@ public class SearchResultFragment extends Fragment {
                         }
                     }
                     gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
+                    mDatabase.child("groups").removeEventListener(mGroupListener);
                 }
 
                 @Override
@@ -116,16 +119,28 @@ public class SearchResultFragment extends Fragment {
 
                 }
             });
-        } else if(type == SearchType.POSTS) {
+        } else if(type == SearchType.RECIPES) {
             mDatabase.child("/recipes").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<Recipe> results = Lists.newArrayList();
-                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        Recipe recipe = postSnapshot.getValue(Recipe.class);
+                    for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                        Recipe recipe = recipeSnapshot.getValue(Recipe.class);
                         if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
                             results.add(recipe);
+                        } else {
+                            boolean containsTag = false;
+                            for(String tag : recipe.getTags()) {
+                                if(!tag.isEmpty() && query.contains(tag.toLowerCase())) {
+                                    containsTag = true;
+                                    break;
+                                }
+                            }
+                            if(containsTag) {
+                                results.add(recipe);
+                            }
                         }
+                        recipe.setDbKey(recipeSnapshot.getKey());
                     }
                     gridView.setAdapter(new CustomListAdapter(getActivity(), R.layout.card_layout_main, results));
                 }
@@ -155,13 +170,25 @@ public class SearchResultFragment extends Fragment {
                                     results.add(new SearchResult(type, group, groupSnapshot.getKey()));
                                 }
                             }
-                            mDatabase.child("/posts").addValueEventListener(new ValueEventListener() {
+                            mDatabase.child("/recipes").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                        Post post = postSnapshot.getValue(Post.class);
-                                        if(query.equals("*") || post.getTitle().toLowerCase().contains(query)) {
-                                            results.add(new SearchResult(type, post, postSnapshot.getKey()));
+                                    for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                                        Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                                        recipe.setDbKey(recipeSnapshot.getKey());
+                                        if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
+                                            results.add(new SearchResult(type, recipe, recipeSnapshot.getKey()));
+                                        } else {
+                                            boolean containsTag = false;
+                                            for(String tag : recipe.getTags()) {
+                                                if(!tag.isEmpty() && query.contains(tag.toLowerCase())) {
+                                                    containsTag = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(containsTag) {
+                                                results.add(new SearchResult(type, recipe, recipeSnapshot.getKey()));
+                                            }
                                         }
                                     }
                                     gridView.setAdapter(new SearchResultAdapter(getActivity(), results));

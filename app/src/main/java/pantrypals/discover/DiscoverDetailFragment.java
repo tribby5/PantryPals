@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Lists;
@@ -25,6 +26,16 @@ import java.util.Map;
 public class DiscoverDetailFragment extends Fragment {
 
     private static final String ARG_TITLE = "ARG_TITLE";
+
+    class DiscoverResult {
+        String title;
+        String type;
+
+        DiscoverResult(String title, String type) {
+            this.title = title;
+            this.type = type;
+        }
+    }
 
     // Temporary: hardcoding results until database has correct data
     private static final Map<String, List<String>> MAP = Maps.newHashMap();
@@ -56,14 +67,17 @@ public class DiscoverDetailFragment extends Fragment {
 
         setTitle(view);
 
-        mDatabase.child("/" + ((String) getArguments().get(ARG_TITLE)).toLowerCase()).addValueEventListener(new ValueEventListener() {
+        final String page = ((String) getArguments().get(ARG_TITLE)).toLowerCase();
+
+        mDatabase.child(page).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<String> categories = Lists.newArrayList();
+                List<DiscoverResult> results = Lists.newArrayList();
                 for(DataSnapshot child : dataSnapshot.getChildren()) {
-                    categories.add(child.getKey());
+                    View.OnClickListener listener;
+                    results.add(new DiscoverResult(child.getKey(), page));
                 }
-                GridAdapter adapter = new GridAdapter(getActivity(), categories);
+                GridAdapter adapter = new GridAdapter(getActivity(), results);
                 gridView.setAdapter(adapter);
             }
 

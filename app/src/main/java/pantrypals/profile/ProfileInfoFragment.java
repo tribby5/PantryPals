@@ -16,7 +16,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wefika.flowlayout.FlowLayout;
 
+import java.util.Map;
+
 import pantrypals.models.Group;
+import pantrypals.models.JointPantry;
+import pantrypals.models.Pantry;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,6 +58,7 @@ public class ProfileInfoFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 FlowLayout prefLayout = view.findViewById(R.id.prefs_container);
                 prefLayout.removeAllViews();
+                boolean addedPref = false;
                 for(DataSnapshot pref : dataSnapshot.getChildren()) {
                     TextView prefText = new TextView(getContext());
                     prefText.setText(pref.getKey());
@@ -67,6 +72,15 @@ public class ProfileInfoFragment extends Fragment {
 
                     prefText.setLayoutParams(params);
                     prefLayout.addView(prefText);
+                    addedPref = true;
+                }
+                if(!addedPref) {
+                    TextView defaultText = new TextView(getContext());
+                    defaultText.setText("No preferences.");
+                    defaultText.setTextSize(14);
+                    defaultText.setPadding(15, 15, 15, 15);
+                    defaultText.setTextColor(getResources().getColor(R.color.colorHintDark));
+                    prefLayout.addView(defaultText);
                 }
             }
 
@@ -81,6 +95,7 @@ public class ProfileInfoFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 FlowLayout restrictionLayout = view.findViewById(R.id.restrictions_container);
                 restrictionLayout.removeAllViews();
+                boolean addedRestriction = false;
                 for(DataSnapshot restriction : dataSnapshot.getChildren()) {
                     TextView restrictionText = new TextView(getContext());
                     restrictionText.setText(restriction.getKey());
@@ -94,6 +109,15 @@ public class ProfileInfoFragment extends Fragment {
 
                     restrictionText.setLayoutParams(params);
                     restrictionLayout.addView(restrictionText);
+                    addedRestriction = true;
+                }
+                if(!addedRestriction) {
+                    TextView defaultText = new TextView(getContext());
+                    defaultText.setText("No restrictions.");
+                    defaultText.setTextSize(14);
+                    defaultText.setPadding(15, 15, 15, 15);
+                    defaultText.setTextColor(getResources().getColor(R.color.colorHintDark));
+                    restrictionLayout.addView(defaultText);
                 }
             }
 
@@ -108,6 +132,7 @@ public class ProfileInfoFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 FlowLayout groupLayout = view.findViewById(R.id.groups_container);
                 groupLayout.removeAllViews();
+                boolean addedGroup = false;
                 for(DataSnapshot groupSnapshot : dataSnapshot.getChildren()) {
                     Group group = groupSnapshot.getValue(Group.class);
                     if(group.getMembers().keySet().contains(getArguments().getCharSequence(ARG_ID))) {
@@ -123,7 +148,66 @@ public class ProfileInfoFragment extends Fragment {
 
                         groupText.setLayoutParams(params);
                         groupLayout.addView(groupText);
+                        addedGroup = true;
                     }
+                }
+                if(!addedGroup) {
+                    TextView defaultText = new TextView(getContext());
+                    defaultText.setText("No groups.");
+                    defaultText.setTextSize(14);
+                    defaultText.setPadding(15, 15, 15, 15);
+                    defaultText.setTextColor(getResources().getColor(R.color.colorHintDark));
+                    groupLayout.addView(defaultText);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        mDatabase.child("/userAccounts/" + getArguments().getCharSequence(ARG_ID) + "/jointPantries").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                final FlowLayout jpLayout = view.findViewById(R.id.joint_pantries_container);
+                jpLayout.removeAllViews();
+                Map<String, Boolean> jps = (Map<String, Boolean>) dataSnapshot.getValue();
+                if(jps != null) {
+                    for (String jpID : jps.keySet()) {
+                        mDatabase.child("pantries").child(jpID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                JointPantry jp = dataSnapshot.getValue(JointPantry.class);
+                                if(jp != null) {
+                                    TextView jpText = new TextView(getContext());
+                                    jpText.setText(jp.getTitle());
+                                    jpText.setTextSize(14);
+                                    jpText.setPadding(25, 15, 25, 15);
+                                    jpText.setTextColor(getResources().getColor(R.color.colorPurpleFade));
+                                    jpText.setBackground(getResources().getDrawable(R.drawable.rounded_corner_purple_fade));
+
+                                    FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
+                                    params.setMargins(10, 10, 10, 10);
+
+                                    jpText.setLayoutParams(params);
+                                    jpLayout.addView(jpText);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                } else {
+                    TextView defaultText = new TextView(getContext());
+                    defaultText.setText("No joint pantries.");
+                    defaultText.setTextSize(14);
+                    defaultText.setPadding(15, 15, 15, 15);
+                    defaultText.setTextColor(getResources().getColor(R.color.colorHintDark));
+                    jpLayout.addView(defaultText);
                 }
             }
 

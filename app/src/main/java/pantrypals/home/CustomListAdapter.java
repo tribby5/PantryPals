@@ -1,7 +1,9 @@
 package pantrypals.home;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.widget.ArrayAdapter;
 
 /**
@@ -46,10 +48,14 @@ import android.support.v4.app.FragmentTransaction;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import pantrypals.models.Item;
 import pantrypals.models.Notification;
+import pantrypals.models.Pantry;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
 import pantrypals.models.User;
@@ -72,8 +78,11 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private boolean mProcessLike = false;
     private boolean mProcessSave = false;
     private boolean mAddLikeNotifToUser = false;
+    private boolean mProcessCardBullets = false;
     private DatabaseReference refLike;
     private DatabaseReference refSave;
+    private DatabaseReference refRoot;
+    private DatabaseReference refAuthor;
     private FirebaseAuth mAuth;
     private FragmentManager fm;
     private List<Recipe> objects;
@@ -92,6 +101,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         this.objects = objects;
         refLike = FirebaseDatabase.getInstance().getReference("/recipes");
         refSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
+        refAuthor = FirebaseDatabase.getInstance().getReference("/userAccounts");
+        refRoot = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         if(context != null) {
             this.fm = ((FragmentActivity) context).getSupportFragmentManager();
@@ -116,6 +127,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         final String body = getItem(position).getCaption();
         final String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
+        final List<Recipe.Ingredient> ingredients = getItem(position).getIngredients();
 
         final String key = getItem(position).getDbKey(); // TODO: starting point for debug
 
@@ -144,7 +156,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessLike = true;
-                        refLike.addValueEventListener(new ValueEventListener() {
+                        refLike.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessLike) {
@@ -186,7 +198,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessSave = true;
-                        refSave.addValueEventListener(new ValueEventListener() {
+                        refSave.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessSave) {
@@ -209,7 +221,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
 
@@ -228,7 +239,72 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             holder.title.setText(name);
             holder.body.setText(body);
 
-            refSave.child(posterId).addValueEventListener(new ValueEventListener() {
+            mProcessCardBullets = true;
+
+            refRoot.child("pantries").child(AuthUserInfo.INSTANCE.getUser().getPersonalPantry()).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final Pantry pantry = dataSnapshot.getValue(Pantry.class);
+                    refRoot.child("items").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            int numMissing = 0;
+                            for(Recipe.Ingredient ingredient : ingredients) {
+                                boolean weHaveIt = false;
+                                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                                    if(pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
+                                        Item item = itemSnapshot.getValue(Item.class);
+                                        String ingName = ingredient.getName().toLowerCase();
+                                        String itemName = item.getName().toLowerCase();
+                                        if (ingName.contains(itemName) || itemName.contains(ingName)) {
+                                            weHaveIt = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(!weHaveIt) {
+                                    numMissing++;
+                                }
+                            }
+                            if(mProcessCardBullets) {
+                                LinearLayout bulletLayout = new LinearLayout(getContext());
+                                TextView tv = new TextView(getContext());
+                                ImageView bullet = new ImageView(getContext());
+                                if(numMissing == 0) {
+                                    tv.setText("You have all the ingredients to make this!");
+                                    bullet.setImageResource(R.drawable.green);
+
+                                } else {
+                                    String ingStr = numMissing == 1 ? "ingredient" : "ingredients";
+                                    tv.setText(String.format(Locale.US, "You are missing %d %s.", numMissing, ingStr));
+                                    bullet.setImageResource(R.drawable.red);
+                                }
+                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
+                                layoutParams.setMargins(0, 15, 15, 0);
+                                bullet.setLayoutParams(layoutParams);
+                                bulletLayout.addView(bullet);
+                                bulletLayout.addView(tv);
+                                holder.bullets.removeAllViews();
+                                holder.bullets.addView(bulletLayout);
+                                mProcessCardBullets = false;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            refAuthor.child(posterId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     User posterUser = dataSnapshot.getValue(User.class);
@@ -240,8 +316,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
                 }
             });
-            //holder.description.setText(description);
-
 
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
@@ -286,7 +360,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 public void onClick(View view) {
                     FragmentTransaction t = fm.beginTransaction();
                     t.replace(R.id.frame_layout, RecipeFragment.newFragment(getItem(position).getDbKey()));
-                    t.commit();
+                    t.addToBackStack(null).commit();
                 }
             });
             return convertView;
@@ -309,7 +383,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {
+        ref.child("userAccounts").child(destId).child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mAddLikeNotifToUser) {
@@ -355,7 +429,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     /**
      * Holds variables in a View
      */
-    private static class ViewHolder {
+    private class ViewHolder {
         TextView title;
         TextView subtitle;
         TextView body;
