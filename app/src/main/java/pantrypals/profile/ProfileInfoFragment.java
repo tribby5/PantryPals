@@ -1,14 +1,23 @@
 package pantrypals.profile;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -16,11 +25,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wefika.flowlayout.FlowLayout;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import pantrypals.models.Group;
+import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
-import pantrypals.models.Pantry;
+import pantrypals.models.User;
+import pantrypals.pantry.DatabaseRetriever;
+import pantrypals.pantry.JointPantryAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,8 +45,16 @@ public class ProfileInfoFragment extends Fragment {
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
 
+    private DatabaseRetriever retriever = new DatabaseRetriever();
+
+    private HashMap<String, JointPantry> myJPantries;
+    private JointPantryAdapter jointPantryAdapter;
+
+    private User otherUser;
+
     public ProfileInfoFragment() {
         // Required empty public constructor
+        myJPantries = new HashMap<>();
     }
 
     public static ProfileInfoFragment newFragment(CharSequence uid) {
@@ -52,7 +73,7 @@ public class ProfileInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_profile_info, container, false);
-
+        getOtherUser();
         mDatabase.child("/userAccounts/" + getArguments().getCharSequence(ARG_ID) + "/preferences").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -217,7 +238,151 @@ public class ProfileInfoFragment extends Fragment {
             }
         });
 
+        renderSendInvBtn(view);
+
         return view;
+    }
+
+    private void getOtherUser() {
+        String uid = getArguments().getCharSequence(ARG_ID).toString();
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child("userAccounts");
+        userRef.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                otherUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void renderSendInvBtn(View view) {
+        String otherId = getArguments().getCharSequence(ARG_ID).toString();
+        String myId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        jointPantryAdapter = new JointPantryAdapter(getActivity(), myJPantries.values());
+        myJPantries = retriever.retrieveJointPantries(myId, jointPantryAdapter);
+
+        Button sendInvBtn = (Button) view.findViewById(R.id.sendInviteBtn);
+
+        sendInvBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openInviteModal(view);
+            }
+        });
+
+    }
+
+    private void openInviteModal(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.send_invite);
+
+        LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
+
+        View sendInviteModal = inflater.inflate(R.layout.modal_add_existing_object, null);
+        TextView title = (TextView) sendInviteModal.findViewById(R.id.addExistingTitle);
+        title.setText(R.string.invite_to_jpantry_title);
+
+        renderJointPantryLV(sendInviteModal);
+
+        builder.setView(sendInviteModal);
+        builder.show();
+    }
+
+    private void renderJointPantryLV(View view) {
+        ListView toAddItemsLV = (ListView) view.findViewById(R.id.existingObjectLV);
+        toAddItemsLV.setAdapter(jointPantryAdapter);
+        toAddItemsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                JointPantry jPantry = jointPantryAdapter.getItem(i);
+                openConfirmAddModal(view, jPantry);
+            }
+        });
+    }
+
+    private void openConfirmAddModal(View view, final JointPantry jPantry) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getResources().getString(R.string.send_invite));
+
+        LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
+
+        View confirmInviteModal = inflater.inflate(R.layout.modal_confirm_invite, null);
+
+        setTextValues(confirmInviteModal, jPantry);
+
+
+        builder.setView(confirmInviteModal);
+        builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                addUsertoOwners(jPantry);
+            }
+        });
+        builder.show();
+    }
+
+    private void setTextValues(View view, JointPantry pantry) {
+        TextView personTV = (TextView)view.findViewById(R.id.confirmInvPersonTV);
+        personTV.setText(otherUser.getName());
+
+        TextView pantryTV = (TextView)view.findViewById(R.id.confirmInvPantryTV);
+        pantryTV.setText(pantry.getTitle());
+    }
+
+    private void addUsertoOwners(final JointPantry pantry) {
+        final String uid = getArguments().getCharSequence(ARG_ID).toString();
+        DatabaseReference pantryRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+
+        pantryRef.child(pantry.getDatabaseId()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                JointPantry jointPantry = dataSnapshot.getValue(JointPantry.class);
+                Map<String,Boolean> owners = jointPantry.getOwnedBy();
+                if(owners == null){
+                    owners = new HashMap<>();
+                }
+
+                if (owners.containsKey(uid)) {
+                    openInvalidAddModal();
+                    return;
+                }
+
+                owners.put(uid, true);
+
+                FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData))
+                        .child(pantry.getDatabaseId()).child("ownedBy").setValue(owners)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                //nothing for now
+                                System.out.println("PRINT: successfully sent the invite");
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void openInvalidAddModal() {
+        AlertDialog.Builder invalidBuilder = new AlertDialog.Builder(getActivity());
+        invalidBuilder.setTitle(getResources().getString(R.string.modal_add_item));
+
+        LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
+
+        View invalidAddModal = inflater.inflate(R.layout.modal_invalid_add_item, null);
+        TextView message = invalidAddModal.findViewById(R.id.invalidAddTV);
+        message.setText(R.string.invalidInviteText);
+
+        invalidBuilder.setView(invalidAddModal);
+        invalidBuilder.show();
     }
 
 }

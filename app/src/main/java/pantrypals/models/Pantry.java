@@ -41,11 +41,11 @@ public class Pantry {
         this.shared = shared;
     }
 
-    public String getDatabaseID() {
+    public String getDatabaseId() {
         return this.databaseID;
     }
 
-    public void setDatabaseID(String databaseId) {
+    public void setDatabaseId(String databaseId) {
         this.databaseID = databaseId;
     }
 

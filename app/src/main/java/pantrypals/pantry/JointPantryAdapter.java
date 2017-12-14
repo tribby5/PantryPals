@@ -62,7 +62,7 @@ public class JointPantryAdapter extends BaseAdapter{
     }
 
     @Override
-    public Object getItem(int i) {
+    public JointPantry getItem(int i) {
         return jointPantries.get(i);
     }
 
@@ -77,8 +77,8 @@ public class JointPantryAdapter extends BaseAdapter{
     }
 
     public String getPantryIdFromDataSource(int position) {
-        System.out.println("PRINT: adapter get id = "+jointPantries.get(position).getDatabaseID());
-        return jointPantries.get(position).getDatabaseID();
+        System.out.println("PRINT: adapter get id = "+jointPantries.get(position).getDatabaseId());
+        return jointPantries.get(position).getDatabaseId();
     }
 
     private static class PantryHolder {

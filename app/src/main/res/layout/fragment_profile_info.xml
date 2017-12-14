@@ -143,6 +143,17 @@
 
             </com.wefika.flowlayout.FlowLayout>
 
+            <Button
+                android:id="@+id/sendInviteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="@string/send_invite"
+                android:padding="15dp"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_corner_gray_bg"/>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

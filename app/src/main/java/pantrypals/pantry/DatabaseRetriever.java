@@ -1,29 +1,31 @@
 package pantrypals.pantry;
 
-import com.android.databaes.pantrypals.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
+import pantrypals.models.User;
 
 /**
  * Created by AlisonHuang on 12/11/17.
  */
 
-public class ItemsRetriever {
+public class DatabaseRetriever {
     private HashMap<String, Item> items;
     private PantryItemsAdapter itemsAdapter;
     private String pantryID;
 
-    public ItemsRetriever() {
+    private HashMap<String, JointPantry> jPantries;
+    private JointPantryAdapter jPantryAdapter;
+    private String uid;
+
+    public DatabaseRetriever() {
 
     }
 
@@ -64,5 +66,45 @@ public class ItemsRetriever {
         });
 
         return items;
+    }
+
+    public HashMap<String, JointPantry> retrieveJointPantries(String myID, JointPantryAdapter adapter) {
+        this.uid = myID;
+        this.jPantryAdapter = adapter;
+        this.jPantries = new HashMap<>();
+        final DatabaseReference pantriesRef = FirebaseDatabase.getInstance().getReference().child("pantries");
+        final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("userAccounts");
+        usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                if (user.getJointPantries() != null) {
+                    for (final String jPantryID : user.getJointPantries().keySet()) {
+                        pantriesRef.child(jPantryID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                JointPantry jPantry = dataSnapshot.getValue(JointPantry.class);
+                                jPantry.setDatabaseId(jPantryID);
+                                jPantries.put(jPantryID, jPantry);
+                                jPantryAdapter.refresh(jPantries.values());
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    jPantryAdapter.refresh(jPantries.values());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return jPantries;
     }
 }
