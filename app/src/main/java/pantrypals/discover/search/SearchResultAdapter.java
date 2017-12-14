@@ -34,7 +34,7 @@ public class SearchResultAdapter extends BaseAdapter {
     private final List<SearchResult> items;
     private FragmentManager fm;
 
-    SearchResultAdapter(Context mContext, List<SearchResult> items) {
+    public SearchResultAdapter(Context mContext, List<SearchResult> items) {
         this.mContext = mContext;
         this.items = items;
         if(mContext != null) {
@@ -93,6 +93,8 @@ public class SearchResultAdapter extends BaseAdapter {
 
         User user = (User) result.getInfo();
 
+        TextView categoryTV = view.findViewById(R.id.search_result_category);
+        categoryTV.setText("PERSON");
         TextView nameTV = view.findViewById(R.id.search_result_primary);
         nameTV.setText(user.getName());
         TextView bioTV = view.findViewById(R.id.search_result_secondary);
@@ -122,6 +124,8 @@ public class SearchResultAdapter extends BaseAdapter {
 
         Group group = (Group) result.getInfo();
 
+        TextView categoryTV = view.findViewById(R.id.search_result_category);
+        categoryTV.setText("GROUP");
         TextView nameTV = view.findViewById(R.id.search_result_primary);
         nameTV.setText(group.getName());
         TextView bioTV = view.findViewById(R.id.search_result_secondary);
@@ -150,6 +154,8 @@ public class SearchResultAdapter extends BaseAdapter {
 
         Post post = (Post) result.getInfo();
 
+        TextView categoryTV = view.findViewById(R.id.search_result_category);
+        categoryTV.setText("POST");
         TextView nameTV = view.findViewById(R.id.search_result_primary);
         nameTV.setText(post.getTitle());
         TextView bioTV = view.findViewById(R.id.search_result_secondary);

@@ -12,4 +12,5 @@
     <color name="colorGreen">#43a047</color>
     <color name="colorRed">#d32f2f</color>
     <color name="colorPurpleFade">#41325b</color>
+    <color name="colorGrayText">#4b4b4b</color>
 </resources>

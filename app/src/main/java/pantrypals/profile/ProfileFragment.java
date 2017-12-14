@@ -232,14 +232,18 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        TextView youIndicator = view.findViewById(R.id.profile_you_indicator);
+
         if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(getArguments().get(ARG_ID))) {
             spinner.setVisibility(View.INVISIBLE);
             likedPostsButton.setVisibility(View.VISIBLE);
             savedPostsButton.setVisibility(View.VISIBLE);
+            youIndicator.setVisibility(View.VISIBLE);
         } else {
             spinner.setVisibility(View.VISIBLE);
             likedPostsButton.setVisibility(View.INVISIBLE);
             savedPostsButton.setVisibility(View.INVISIBLE);
+            youIndicator.setVisibility(View.INVISIBLE);
         }
 
         final TextView numFollowing = view.findViewById(R.id.profile_following_num);

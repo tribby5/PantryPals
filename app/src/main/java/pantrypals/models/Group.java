@@ -11,6 +11,7 @@ public class Group {
     private Map<String, Boolean> members;
     private Map<String, Boolean> recipes;
     private String name;
+    private String category;
 
     public String getName() {
         return name;
@@ -38,5 +39,13 @@ public class Group {
 
     public void setRecipes(Map<String, Boolean> recipes) {
         this.recipes = recipes;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

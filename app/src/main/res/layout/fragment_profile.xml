@@ -126,6 +126,23 @@
                 android:layout_alignTop="@+id/avatar"
                 android:layout_marginTop="17dp" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/profile_follow_spinner"
+                android:layout_alignTop="@id/profile_follow_spinner"
+                android:id="@+id/profile_you_indicator"
+                android:background="@drawable/rounded_corner_gray_bg"
+                android:textSize="12sp"
+                android:paddingLeft="@dimen/padding"
+                android:paddingRight="@dimen/padding"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:layout_marginBottom="@dimen/padding"
+                android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+                android:textColor="@color/colorGrayText"
+                android:text="YOU" />
+
             <ImageButton
                 android:id="@+id/profile_liked_posts_btn"
                 android:layout_width="wrap_content"

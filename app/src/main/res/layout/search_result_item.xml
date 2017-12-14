@@ -6,7 +6,22 @@
     android:background="@drawable/border_top_down"
     android:id="@+id/search_result_person_layout"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_result_category"
+        android:background="@drawable/rounded_corner_gray_bg"
+        android:textSize="10sp"
+        android:paddingLeft="@dimen/padding"
+        android:paddingRight="@dimen/padding"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:layout_marginBottom="@dimen/padding"
+        android:textAppearance="@style/AppTheme.TextAppearance.Bold"
+        android:textColor="@color/colorGrayText"
+        android:text="Category" />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -14,6 +29,7 @@
         app:civ_border_color="@color/colorAccent"
         app:civ_fill_color="@color/colorWhite"
         app:civ_border_width="2dp"
+        android:layout_below="@id/search_result_category"
         android:id="@+id/search_result_person_avatar" />
 
     <TextView
@@ -44,6 +60,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_toEndOf="@+id/search_result_primary"
+        android:layout_alignTop="@id/search_result_primary"
         android:layout_marginStart="@dimen/padding"
         app:srcCompat="@drawable/verified" />
 
