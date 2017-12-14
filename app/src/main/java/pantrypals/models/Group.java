@@ -1,5 +1,6 @@
 package pantrypals.models;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +8,7 @@ import java.util.Map;
  * Created by adityasrinivasan on 12/7/2017.
  */
 
-public class Group {
+public class Group implements Serializable {
     private Map<String, Boolean> members;
     private Map<String, Boolean> recipes;
     private String name;

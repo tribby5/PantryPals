@@ -42,6 +42,8 @@ public class GridAdapter extends BaseAdapter {
 
     private DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
 
+    private ValueEventListener mCommunitiesListener;
+
     GridAdapter(Context mContext, List<DiscoverDetailFragment.DiscoverResult> items) {
         this.mContext = mContext;
         this.items = items;
@@ -118,7 +120,7 @@ public class GridAdapter extends BaseAdapter {
                 } else if(type.equals("trending")) {
 
                 } else if(type.equals("communities")) {
-                    mRef.child("groups").addValueEventListener(new ValueEventListener() {
+                    mCommunitiesListener = mRef.child("groups").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             List<SearchResult> groups = Lists.newArrayList();
@@ -132,6 +134,8 @@ public class GridAdapter extends BaseAdapter {
                             DiscoverResultFragment frag = DiscoverResultFragment.newInstance(string, groups);
                             FragmentTransaction transaction = fm.beginTransaction();
                             transaction.replace(R.id.frame_layout, frag).addToBackStack(null).commit();
+                            Log.d("GridAdapter", "HERE!!!");
+                            mRef.child("groups").removeEventListener(mCommunitiesListener);
                         }
 
                         @Override

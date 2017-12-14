@@ -35,6 +35,8 @@ public class SearchResultFragment extends Fragment {
     private static final String ARG_QUERY = "query";
     private static final String ARG_TYPE = "type";
 
+    private ValueEventListener mGroupListener;
+
     private static final String TAG = "SearchResultFragment";
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -98,7 +100,7 @@ public class SearchResultFragment extends Fragment {
                 }
             });
         } else if(type == SearchType.GROUPS) {
-            mDatabase.child("/groups").addValueEventListener(new ValueEventListener() {
+            mGroupListener = mDatabase.child("groups").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     List<SearchResult> results = Lists.newArrayList();
@@ -109,6 +111,7 @@ public class SearchResultFragment extends Fragment {
                         }
                     }
                     gridView.setAdapter(new SearchResultAdapter(getActivity(), results));
+                    mDatabase.child("groups").removeEventListener(mGroupListener);
                 }
 
                 @Override

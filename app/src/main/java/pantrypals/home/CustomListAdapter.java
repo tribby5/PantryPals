@@ -361,7 +361,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 public void onClick(View view) {
                     FragmentTransaction t = fm.beginTransaction();
                     t.replace(R.id.frame_layout, RecipeFragment.newFragment(getItem(position).getDbKey()));
-                    t.commit();
+                    t.addToBackStack(null).commit();
                 }
             });
             return convertView;
