@@ -57,6 +57,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import pantrypals.models.Item;
+import pantrypals.models.JointPantry;
 import pantrypals.models.Notification;
 import pantrypals.models.Pantry;
 import pantrypals.models.Recipe;
@@ -81,6 +82,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private boolean mProcessLike = false;
     private boolean mProcessSave = false;
     private boolean mAddLikeNotifToUser = false;
+    private boolean mProcessJointCardBullet = false;
     private boolean mProcessCardBullets = false;
     private DatabaseReference refLike;
     private DatabaseReference refSave;
@@ -263,70 +265,171 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
             mProcessCardBullets = true;
 
-            refRoot.child("pantries").child(AuthUserInfo.INSTANCE.getUser().getPersonalPantry()).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    final Pantry pantry = dataSnapshot.getValue(Pantry.class);
-                    refRoot.child("items").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            int numMissing = 0;
-                            for(Recipe.Ingredient ingredient : ingredients) {
-                                boolean weHaveIt = false;
-                                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                                    if(pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
-                                        Item item = itemSnapshot.getValue(Item.class);
-                                        String ingName = ingredient.getName().toLowerCase();
-                                        String itemName = item.getName().toLowerCase();
-                                        if (!(ingName.equals("") || itemName.equals("")) && ingName.contains(itemName) || itemName.contains(ingName)) {
-                                            weHaveIt = true;
-                                            break;
+            if(AuthUserInfo.INSTANCE.getUser().getPersonalPantry() != null) {
+                refRoot.child("pantries").child(AuthUserInfo.INSTANCE.getUser().getPersonalPantry()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        final Pantry pantry = dataSnapshot.getValue(Pantry.class);
+                        refRoot.child("items").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                int numMissing = 0;
+                                for (Recipe.Ingredient ingredient : ingredients) {
+                                    boolean weHaveIt = false;
+                                    for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                                        if (pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
+                                            Item item = itemSnapshot.getValue(Item.class);
+                                            String ingName = ingredient.getName().toLowerCase();
+                                            String itemName = item.getName().toLowerCase();
+                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                                weHaveIt = true;
+                                                break;
+                                            }
                                         }
                                     }
+                                    if (!weHaveIt) {
+                                        numMissing++;
+                                    }
+//                                Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
                                 }
-                                if(!weHaveIt) {
-                                    numMissing++;
+                                if (mProcessCardBullets) {
+                                    LinearLayout bulletLayout = new LinearLayout(getContext());
+                                    TextView tv = new TextView(getContext());
+                                    ImageView bullet = new ImageView(getContext());
+
+                                    if (numMissing == 0) {
+                                        tv.setText("You have all the ingredients to make this!");
+                                        bullet.setImageResource(R.drawable.green);
+
+                                    } else {
+                                        String ingStr = numMissing == 1 ? "ingredient" : "ingredients";
+                                        tv.setText(String.format(Locale.US, "You are missing %d %s.", numMissing, ingStr));
+                                        bullet.setImageResource(R.drawable.red);
+                                    }
+                                    tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
+                                    layoutParams.setMargins(0, 15, 15, 0);
+                                    bullet.setLayoutParams(layoutParams);
+                                    bulletLayout.addView(bullet);
+                                    bulletLayout.addView(tv);
+                                    holder.bullets.removeAllViews();
+                                    holder.bullets.addView(bulletLayout);
+                                    mProcessCardBullets = false;
                                 }
                                 //Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
+
                             }
-                            if(mProcessCardBullets) {
-                                LinearLayout bulletLayout = new LinearLayout(getContext());
-                                TextView tv = new TextView(getContext());
-                                ImageView bullet = new ImageView(getContext());
 
-                                if(numMissing == 0) {
-                                    tv.setText("You have all the ingredients to make this!");
-                                    bullet.setImageResource(R.drawable.green);
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                                } else {
-                                    String ingStr = numMissing == 1 ? "ingredient" : "ingredients";
-                                    tv.setText(String.format(Locale.US, "You are missing %d %s.", numMissing, ingStr));
-                                    bullet.setImageResource(R.drawable.red);
-                                }
-                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
-                                layoutParams.setMargins(0, 15, 15, 0);
-                                bullet.setLayoutParams(layoutParams);
-                                bulletLayout.addView(bullet);
-                                bulletLayout.addView(tv);
-                                holder.bullets.removeAllViews();
-                                holder.bullets.addView(bulletLayout);
-                                mProcessCardBullets = false;
                             }
-                        }
+                        });
+                    }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                        }
-                    });
+                    }
+                });
+
+                Map<String, Boolean> jps = AuthUserInfo.INSTANCE.getUser().getJointPantries();
+
+                if (jps != null) {
+                    for (final String jpID : jps.keySet()) {
+                        mProcessJointCardBullet = true;
+                        refRoot.child("pantries").child(jpID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                final JointPantry jp = dataSnapshot.getValue(JointPantry.class);
+                                refRoot.child("userAccounts").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                                        final Map<String, Map<String, Object>> users = (Map<String, Map<String, Object>>) dataSnapshot2.getValue();
+                                        refRoot.child("pantries").addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot3) {
+                                                final Map<String, Map<String, Object>> pantries = (Map<String, Map<String, Object>>) dataSnapshot3.getValue();
+                                                refRoot.child("items").addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot4) {
+                                                        Map<String, Map<String, Object>> items = (Map<String, Map<String, Object>>) dataSnapshot4.getValue();
+                                                        boolean canMake = true;
+                                                        for (Recipe.Ingredient ingredient : ingredients) {
+                                                            boolean ingredientOwned = false;
+                                                            for (String uID : jp.getOwnedBy().keySet()) {
+                                                                Map<String, Object> user = users.get(uID);
+                                                                if (user.get("personalPantry") != null) {
+                                                                    Map<String, Object> pantry = pantries.get(user.get("personalPantry"));
+                                                                    for (String itemID : ((Map<String, Object>) pantry.get("items")).keySet()) {
+                                                                        if (((Map<String, Object>) pantry.get("items")).containsKey(itemID)) {
+                                                                            Map<String, Object> item = items.get(itemID);
+                                                                            String ingName = ingredient.getName().toLowerCase();
+                                                                            String itemName = ((String) item.get("name")).toLowerCase();
+                                                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                                                                ingredientOwned = true;
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (ingredientOwned) {
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if (!ingredientOwned) {
+                                                                canMake = false;
+                                                            }
+                                                        }
+                                                        if (mProcessJointCardBullet) {
+                                                            LinearLayout bulletLayout = new LinearLayout(getContext());
+                                                            TextView tv = new TextView(getContext());
+                                                            ImageView bullet = new ImageView(getContext());
+
+                                                            if (canMake) {
+                                                                tv.setText("\"" + jp.getTitle() + "\" has all the ingredients to make this!");
+                                                                bullet.setImageResource(R.drawable.green);
+                                                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
+                                                                layoutParams.setMargins(0, 15, 15, 0);
+                                                                bullet.setLayoutParams(layoutParams);
+                                                                bulletLayout.addView(bullet);
+                                                                bulletLayout.addView(tv);
+                                                                holder.bullets.addView(bulletLayout);
+                                                                mProcessJointCardBullet = false;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
+            }
 
             refAuthor.child(posterId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

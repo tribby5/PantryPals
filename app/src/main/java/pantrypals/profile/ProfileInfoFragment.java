@@ -266,6 +266,10 @@ public class ProfileInfoFragment extends Fragment {
         myJPantries = retriever.retrieveJointPantries(myId, jointPantryAdapter);
 
         Button sendInvBtn = (Button) view.findViewById(R.id.sendInviteBtn);
+        if (otherId.equals(myId)) {
+            sendInvBtn.setVisibility(View.GONE);
+            return;
+        }
 
         sendInvBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -358,10 +362,36 @@ public class ProfileInfoFragment extends Fragment {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
-                                //nothing for now
                                 System.out.println("PRINT: successfully sent the invite");
                             }
                         });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.users));
+        userRef.child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Map<String,Boolean> jPantries = user.getJointPantries();
+                if (jPantries==null){
+                    jPantries = new HashMap<>();
+                }
+
+                if (jPantries.containsKey(pantry.getDatabaseId())){
+                    return;
+                }
+
+                jPantries.put(pantry.getDatabaseId(), true);
+
+                FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.users))
+                        .child(uid).child(getResources().getString(R.string.jointPantriesAttribute))
+                        .setValue(jPantries);
             }
 
             @Override
