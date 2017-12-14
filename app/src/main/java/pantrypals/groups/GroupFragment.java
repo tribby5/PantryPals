@@ -100,9 +100,13 @@ public class GroupFragment extends Fragment {
                 if(inGroup) {
                     joinBtn.setText("Leave Group");
                     joinBtn.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+                    notInGroupTV.setVisibility(View.INVISIBLE);
+                    groupFeed.setVisibility(View.VISIBLE);
                 } else {
                     joinBtn.setText("Join Group");
                     joinBtn.setBackgroundColor(getResources().getColor(R.color.colorGrayText));
+                    groupFeed.setVisibility(View.INVISIBLE);
+                    notInGroupTV.setVisibility(View.VISIBLE);
                 }
 
                 joinBtn.setOnClickListener(new View.OnClickListener() {
