@@ -1,5 +1,6 @@
 package pantrypals.discover;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,9 +27,15 @@ import java.util.stream.Collectors;
 
 import pantrypals.discover.search.SearchResult;
 import pantrypals.discover.search.SearchType;
+import pantrypals.groups.GroupFragment;
+import pantrypals.home.HomeFragment;
 import pantrypals.models.Group;
 import pantrypals.models.Recipe;
+import pantrypals.models.User;
+import pantrypals.profile.ProfileFragment;
+import pantrypals.recipe.RecipeFragment;
 import pantrypals.recipe.RecipeListFragment;
+import pantrypals.util.DownloadImageTask;
 
 /**
  * Created by adityasrinivasan on 07/11/17.
@@ -71,24 +78,84 @@ public class GridAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         DiscoverDetailFragment.DiscoverResult result = items.get(i);
         final String string = result.title;
+        final String type = result.type;
+
+        final StringBuilder resultType = new StringBuilder();
+        final StringBuilder resultID = new StringBuilder();
+
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         view = layoutInflater.inflate(R.layout.grid_item, null);
 
         SquareLayout sq = view.findViewById(R.id.grid_item_square);
-        ImageView iv = view.findViewById(R.id.grid_item_image);
-        String iconName = string.split(" ")[0].toLowerCase().replace("-", "_");
-        int resID = mContext.getResources().getIdentifier(iconName , "drawable", mContext.getPackageName());
-        iv.setImageResource(resID);
+        final ImageView iv = view.findViewById(R.id.grid_item_image);
+        final TextView tv = view.findViewById(R.id.grid_item_text);
 
-        // SUPER HACKY WORKAROUND
-        TextView tv = view.findViewById(R.id.grid_item_text);
-        if(string.contains("Breakfast") || string.contains("Holidays")) {
-            tv.setText(string.split(" ")[0]);
+        if(!type.equals("trending")) {
+            String iconName = string.split(" ")[0].toLowerCase().replace("-", "_");
+            int resID = mContext.getResources().getIdentifier(iconName, "drawable", mContext.getPackageName());
+            iv.setImageResource(resID);
+
+            if(string.contains("Breakfast") || string.contains("Holidays")) {
+                tv.setText(string.split(" ")[0]);
+            } else {
+                tv.setText(string);
+            }
         } else {
-            tv.setText(string);
-        }
+            if(string.contains("@")) {
+                String[] split = string.split("@");
+                resultID.append(split[0]);
+                resultType.append(split[1]);
+                if (resultType.toString().equals("person")) {
+                    mRef.child("userAccounts").child(resultID.toString()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            if (user != null) {
+                                new DownloadImageTask(iv).execute(user.getAvatar());
+                                tv.setText(user.getName());
+                            }
+                        }
 
-        final String type = result.type;
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else if (resultType.toString().equals("recipe")) {
+                    mRef.child("recipes").child(resultID.toString()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Recipe recipe = dataSnapshot.getValue(Recipe.class);
+                            if (recipe != null) {
+                                new DownloadImageTask(iv).execute(recipe.getImageURL());
+                                tv.setText(recipe.getName());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else if (resultType.toString().equals("group")) {
+                    mRef.child("groups").child(resultID.toString()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Group group = dataSnapshot.getValue(Group.class);
+                            if (group != null) {
+                                iv.setImageResource(R.drawable.group);
+                                tv.setText(group.getName());
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+        }
 
         sq.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +185,18 @@ public class GridAdapter extends BaseAdapter {
                         }
                     });
                 } else if(type.equals("trending")) {
-
+                    Fragment frag;
+                    if(resultType.toString().equals("person")) {
+                        frag = ProfileFragment.newFragment(resultID.toString());
+                    } else if(resultType.toString().equals("group")) {
+                        frag = GroupFragment.newFragment(resultID.toString());
+                    } else if(resultType.toString().equals("recipe")) {
+                        frag = RecipeFragment.newFragment(resultID.toString());
+                    } else {
+                        frag = HomeFragment.newInstance();
+                    }
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, frag).addToBackStack(null).commit();
                 } else if(type.equals("communities")) {
                     mCommunitiesListener = mRef.child("groups").addValueEventListener(new ValueEventListener() {
                         @Override
