@@ -86,7 +86,7 @@ public class HomeFragment extends Fragment {
         userId = user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.orderByChild("negTimestamp").limitToFirst(30).addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(50).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -201,7 +201,7 @@ public class HomeFragment extends Fragment {
         adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList, getActivity());
         feedListView.setAdapter(adapter);
 
-        // Implement scrolling
+        // Implement load on scroll
         feedListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             private int currentVisibleItemCount;
             private int currentScrollState;
