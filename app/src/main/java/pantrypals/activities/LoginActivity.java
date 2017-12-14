@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +43,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class LoginActivity extends AppCompatActivity{
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -61,6 +64,7 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
@@ -203,6 +207,8 @@ public class LoginActivity extends AppCompatActivity{
                                 Toast.makeText(LoginActivity.this, R.string.auth_failed,
                                         Toast.LENGTH_SHORT).show();
                             } else {
+                                // log login
+                                log(FirebaseAnalytics.Event.LOGIN, mAuth.getCurrentUser().toString());
                                 Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
                                 startActivity(mainIntent);
                             }
@@ -261,6 +267,12 @@ public class LoginActivity extends AppCompatActivity{
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void log(String eventType, String value) {
+        Bundle bundle = new Bundle();
+        bundle.putString(eventType, value);
+        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
     }
 
 }

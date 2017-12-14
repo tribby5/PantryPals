@@ -82,7 +82,7 @@ public class ProfilePostsFragment extends Fragment {
                     }
                 }
                 for(int i = 0; i < recipes.size(); i++) {
-                    CustomListAdapter adapter = new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes);
+                    CustomListAdapter adapter = new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes, getActivity());
                     ll.addView(adapter.getView(i, null, null));
                 }
             }

@@ -2,6 +2,8 @@ package pantrypals.home;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.widget.ArrayAdapter;
@@ -26,6 +28,7 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Maps;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -83,6 +86,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private DatabaseReference refSave;
     private DatabaseReference refRoot;
     private DatabaseReference refAuthor;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     private FirebaseAuth mAuth;
     private FragmentManager fm;
     private List<Recipe> objects;
@@ -94,8 +99,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
      * @param resource
      * @param objects
      */
-    public CustomListAdapter(Context context, int resource, List<Recipe> objects) {
+    public CustomListAdapter(Context context, int resource, List<Recipe> objects, FragmentActivity activity) {
         super(context, resource, objects);
+        if (activity != null) {
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+        } else {
+            mFirebaseAnalytics = null;
+        }
+
         mContext = context;
         mResource = resource;
         this.objects = objects;
@@ -166,11 +177,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                             //Already liked
                                             refLike.child(key).child("likedBy").child(userId).removeValue();
                                             refSave.child(userId).child("likedRecipes").child(key).removeValue();
+                                            log("UNLIKE", "User: " + userId + ", " + "Recipe: " + key);
                                             mProcessLike = false;
                                         } else {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
                                             refSave.child(userId).child("likedRecipes").child(key).setValue(true);
+                                            log("LIKE", "User: " + userId + ", " + "Recipe: " + key);
                                             sendLikeNotif(name, key, imgUrl, posterId);
                                             mProcessLike = false;
                                         }
@@ -178,6 +191,8 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
                                         refSave.child(userId).child("likedRecipes").child(key).setValue(true);
+                                        log("LIKE", "User: " + userId + ", " + "Recipe: " + key);
+
                                         sendLikeNotif(name, key, imgUrl, posterId);
                                         mProcessLike = false;
                                     }
@@ -208,15 +223,21 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         if (dataSnapshot.child(userId).child("savedForLater").hasChild(key)) {
                                             //Already liked
                                             refSave.child(userId).child("savedForLater").child(key).removeValue();
+                                            log("UNSAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                             mProcessSave = false;
                                         } else {
                                             //Not liked yet
                                             refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                            log("SAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                             mProcessSave = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                        log("SAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                         mProcessSave = false;
                                     }
                                 }
@@ -511,6 +532,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
                 }
             });
+        }
+    }
+
+    private void log(String eventType, String value) {
+        if (mFirebaseAnalytics != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString(eventType, value);
+            mFirebaseAnalytics.logEvent("HomeFragment", bundle);
         }
     }
 }
