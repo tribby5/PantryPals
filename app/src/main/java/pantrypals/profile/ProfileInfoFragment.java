@@ -299,7 +299,6 @@ public class ProfileInfoFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 JointPantry jPantry = jointPantryAdapter.getItem(i);
-                System.out.println("PRINT: click on item "+jPantry.getTitle()+" "+jPantry.getDatabaseId());
                 openConfirmAddModal(view, jPantry);
             }
         });
@@ -320,7 +319,6 @@ public class ProfileInfoFragment extends Fragment {
         builder.setPositiveButton(R.string.send, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                System.out.println("PRINT: sending "+otherUser.getName()+" an invite to "+jPantry.getTitle());
                 addUsertoOwners(jPantry);
             }
         });
@@ -343,7 +341,6 @@ public class ProfileInfoFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 JointPantry jointPantry = dataSnapshot.getValue(JointPantry.class);
-                System.out.println("PRINT: got joint Pantry = "+jointPantry.getTitle() + " "+jointPantry.getDatabaseId());
                 Map<String,Boolean> owners = jointPantry.getOwnedBy();
                 if(owners == null){
                     owners = new HashMap<>();
