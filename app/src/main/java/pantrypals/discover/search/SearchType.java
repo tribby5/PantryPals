@@ -7,5 +7,5 @@ import java.io.Serializable;
  */
 
 public enum SearchType implements Serializable {
-    ALL, PEOPLE, POSTS, GROUPS;
+    ALL, PEOPLE, RECIPES, GROUPS;
 }

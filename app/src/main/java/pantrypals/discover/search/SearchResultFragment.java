@@ -119,7 +119,7 @@ public class SearchResultFragment extends Fragment {
 
                 }
             });
-        } else if(type == SearchType.POSTS) {
+        } else if(type == SearchType.RECIPES) {
             mDatabase.child("/recipes").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -158,13 +158,13 @@ public class SearchResultFragment extends Fragment {
                                     results.add(new SearchResult(type, group, groupSnapshot.getKey()));
                                 }
                             }
-                            mDatabase.child("/posts").addValueEventListener(new ValueEventListener() {
+                            mDatabase.child("/recipes").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                        Post post = postSnapshot.getValue(Post.class);
-                                        if(query.equals("*") || post.getTitle().toLowerCase().contains(query)) {
-                                            results.add(new SearchResult(type, post, postSnapshot.getKey()));
+                                    for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                                        Recipe recipe = recipeSnapshot.getValue(Recipe.class);
+                                        if(query.equals("*") || recipe.getName().toLowerCase().contains(query)) {
+                                            results.add(new SearchResult(type, recipe, recipeSnapshot.getKey()));
                                         }
                                     }
                                     gridView.setAdapter(new SearchResultAdapter(getActivity(), results));

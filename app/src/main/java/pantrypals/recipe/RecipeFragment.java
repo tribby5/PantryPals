@@ -224,10 +224,11 @@ public class RecipeFragment extends Fragment {
                     for (Recipe.Ingredient ingredient : ingredients) {
                         if (isAdded()) {
                             TextView ingTV = new TextView(getContext());
+                            double amt = ingredient.getAmount() == 0d ? 1d : ingredient.getAmount();
                             if (ingredient.getUnit() != null) {
-                                ingTV.setText(String.format(Locale.US, "• %d %s %s", (int) ingredient.getAmount(), ingredient.getUnit(), ingredient.getName()));
+                                ingTV.setText(String.format(Locale.US, "• %.2f %s %s", amt, ingredient.getUnit(), ingredient.getName()));
                             } else {
-                                ingTV.setText(String.format(Locale.US, "• %d %s", (int) ingredient.getAmount(), ingredient.getName()));
+                                ingTV.setText(String.format(Locale.US, "• %.2f %s", amt, ingredient.getName()));
                             }
                             ingTV.setTextColor(getActivity().getResources().getColor(R.color.colorWhite));
                             ingTV.setPadding(0, 20, 0, 20);
@@ -263,7 +264,7 @@ public class RecipeFragment extends Fragment {
                                 }
 
                                 FlowLayout.LayoutParams params = new FlowLayout.LayoutParams(FlowLayout.LayoutParams.WRAP_CONTENT, FlowLayout.LayoutParams.WRAP_CONTENT);
-                                params.setMargins(10, 0, 10, 0);
+                                params.setMargins(10, 10, 10, 10);
 
                                 tagTV.setLayoutParams(params);
                                 tagLayout.addView(tagTV);

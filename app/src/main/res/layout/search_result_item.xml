@@ -41,6 +41,9 @@
         android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:textColor="@color/colorWhite"
         android:layout_toEndOf="@+id/search_result_person_avatar"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textSize="@dimen/h3Size"
         android:text="Name" />
 
