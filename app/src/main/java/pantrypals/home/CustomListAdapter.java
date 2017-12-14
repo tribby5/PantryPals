@@ -287,7 +287,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                 if(!weHaveIt) {
                                     numMissing++;
                                 }
-                                Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
+                                //Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
                             }
                             if(mProcessCardBullets) {
                                 LinearLayout bulletLayout = new LinearLayout(getContext());

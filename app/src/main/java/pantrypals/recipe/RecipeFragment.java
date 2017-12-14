@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
+import pantrypals.models.GroceryItem;
 import pantrypals.models.Notification;
 import pantrypals.models.Recipe;
 import pantrypals.models.User;
@@ -97,6 +99,7 @@ public class RecipeFragment extends Fragment {
 
         final LinearLayout instructionsLayout = view.findViewById(R.id.instructionsLayout);
         final LinearLayout ingredientsLayout = view.findViewById(R.id.ingredientsLayout);
+        final Button addToGroceryListButton = view.findViewById(R.id.addToGroceryList);
         final FlowLayout tagLayout = view.findViewById(R.id.recipe_tags_container);
 
         mLock = true;
@@ -106,6 +109,44 @@ public class RecipeFragment extends Fragment {
             public void onDataChange(final DataSnapshot dataSnapshot) {
                 final Recipe recipe = dataSnapshot.getValue(Recipe.class);
                 if(mLock) {
+
+                    // Add a click Action
+                    addToGroceryListButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            for (Recipe.Ingredient ingredient : recipe.getIngredients()) {
+                                String name;
+                                String unit;
+                                double amount;
+                                if (ingredient.getName() != null) {
+                                    name = ingredient.getName();
+                                } else {
+                                    continue;
+                                }
+                                if (ingredient.getUnit() != null) {
+                                    unit = ingredient.getUnit();
+                                } else {
+                                    unit = "";
+                                }
+                                try {
+                                    amount = ingredient.getAmount();
+                                } catch (Exception e) {
+                                    continue;
+                                }
+
+                                GroceryItem item = new GroceryItem();
+                                item.setName(name);
+                                item.setAmount(amount);
+                                item.setUnit(unit);
+
+                                String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                String newItemKey = mDatabase.child("groceryLists").child(currUserId).push().getKey();
+                                mDatabase.child("groceryLists").child(currUserId).child(newItemKey).setValue(item);
+                            }
+                        }
+                    });
+
+
                     new DownloadImageTask(imageView)
                             .execute(recipe.getImageURL());
                     nameTV.setText(recipe.getName());
@@ -284,11 +325,6 @@ public class RecipeFragment extends Fragment {
         return view;
     }
 
-    private String unixToDate(long unix_timestamp) throws ParseException {
-        long timestamp = unix_timestamp * -1000;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d H:mm", Locale.US);
-        return sdf.format(timestamp);
-    }
 
 }
