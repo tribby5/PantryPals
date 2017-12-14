@@ -102,4 +102,13 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- profile-->
+    <string name="send_invite">Send Invite</string>
+    <string name="send">Send</string>
+    <string name="invite_to_jpantry_title">Select a Joint Pantry</string>
+    <string name="confirmInvBefore">Are you sure you want to invite </string>
+    <string name="confirmInvMiddle"> to join the </string>
+    <string name="confirmInvAfter"> joint pantry?</string>
+    <string name="invalidInviteText">Sorry, this user is already an owner of this joint pantry.</string>
 </resources>

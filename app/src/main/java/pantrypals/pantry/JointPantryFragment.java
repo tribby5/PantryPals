@@ -3,7 +3,6 @@ package pantrypals.pantry;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,7 +29,6 @@ import java.util.Map;
 
 import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
-import pantrypals.models.Pantry;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,7 +50,7 @@ public class JointPantryFragment extends Fragment {
     private View addItemModal;
     private View confirmAddModal;
     private View invalidAddModal;
-    private ItemsRetriever retriever;
+    private DatabaseRetriever retriever;
     private JointPantry jointPantry;
 
     public JointPantryFragment() {
@@ -74,7 +71,7 @@ public class JointPantryFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         builder = new AlertDialog.Builder(getActivity());
-        retriever = new ItemsRetriever();
+        retriever = new DatabaseRetriever();
 
         jointPantryID = this.getArguments().getString("jointPantryID");
         personalPantryID = this.getArguments().getString("personalPantryID");
@@ -108,7 +105,7 @@ public class JointPantryFragment extends Fragment {
     }
 
     private void setupToAddItemListView(View view) {
-        ListView toAddItemsLV = (ListView) view.findViewById(R.id.addItemFromMyPantryLV);
+        ListView toAddItemsLV = (ListView) view.findViewById(R.id.existingObjectLV);
         toAddItemsLV.setAdapter(toAddItemsAdapter);
         toAddItemsLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -125,7 +122,9 @@ public class JointPantryFragment extends Fragment {
 
         LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
 
-        addItemModal = inflater.inflate(R.layout.modal_add_from_my_pantry, null);
+        addItemModal = inflater.inflate(R.layout.modal_add_existing_object, null);
+        TextView title = (TextView) addItemModal.findViewById(R.id.addExistingTitle);
+        title.setText(R.string.add_item_from_my_pantry_title);
 
         personalPantryItems = new HashMap<>();
         toAddItemsAdapter = new PantryItemsAdapter(getActivity(), personalPantryItems.values());
@@ -203,6 +202,8 @@ public class JointPantryFragment extends Fragment {
         LayoutInflater inflater = (LayoutInflater)getActivity().getLayoutInflater();
 
         invalidAddModal = inflater.inflate(R.layout.modal_invalid_add_item, null);
+        TextView message = invalidAddModal.findViewById(R.id.invalidAddTV);
+        message.setText(R.string.invalid_add_text);
 
         invalidBuilder.setView(invalidAddModal);
         invalidBuilder.show();
