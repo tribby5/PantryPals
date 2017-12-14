@@ -142,7 +142,9 @@ public class RecipeFragment extends Fragment {
                                 String currUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                 String newItemKey = mDatabase.child("groceryLists").child(currUserId).push().getKey();
                                 mDatabase.child("groceryLists").child(currUserId).child(newItemKey).setValue(item);
+
                             }
+                            toastMessage("Ingredients added to My Grocery List.");
                         }
                     });
 
@@ -326,5 +328,7 @@ public class RecipeFragment extends Fragment {
     }
 
 
-
+    private void toastMessage(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+    }
 }
