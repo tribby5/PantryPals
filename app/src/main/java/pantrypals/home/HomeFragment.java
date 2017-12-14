@@ -308,7 +308,7 @@ public class HomeFragment extends Fragment {
                                                 }
                                                 // Get restriction tags for the recipe
                                                 List<String> tags = recipe.getTags();
-                                                if (meetsRestrictions(restrictions, tags)) {
+                                                if (!meetsRestrictions(restrictions, tags)) {
                                                     display = false;
                                                 }
 
