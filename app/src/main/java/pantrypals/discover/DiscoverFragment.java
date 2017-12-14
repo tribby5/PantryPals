@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Lists;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,6 +40,7 @@ import pantrypals.util.DownloadImageTask;
 public class DiscoverFragment extends Fragment {
 
     private static final String TAG = "DiscoverFragment";
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     // Temporary: hardcoding results until database has correct data
     private static final List<String> ITEMS = Lists.newArrayList("Trending", "Moods", "Cuisines", "Communities");
@@ -69,6 +71,7 @@ public class DiscoverFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
 
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
@@ -190,6 +193,8 @@ public class DiscoverFragment extends Fragment {
         sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                // log search
+                log(FirebaseAnalytics.Event.SEARCH, "Search text: " + s);
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                 transaction.replace(R.id.frame_layout, SearchPageFragment.newInstance(s.toLowerCase())).addToBackStack(null).commit();
                 return true;
@@ -204,6 +209,10 @@ public class DiscoverFragment extends Fragment {
         item.setActionView(sv);
     }
 
-
+    private void log(String eventType, String value) {
+        Bundle bundle = new Bundle();
+        bundle.putString(eventType, value);
+        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
+    }
 }
 
