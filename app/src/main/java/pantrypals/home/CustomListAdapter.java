@@ -156,7 +156,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessLike = true;
-                        refLike.addValueEventListener(new ValueEventListener() {
+                        refLike.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessLike) {
@@ -198,7 +198,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessSave = true;
-                        refSave.addValueEventListener(new ValueEventListener() {
+                        refSave.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessSave) {
@@ -221,7 +221,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
 
@@ -317,8 +316,6 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
                 }
             });
-            //holder.description.setText(description);
-
 
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
@@ -386,7 +383,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {
+        ref.child("userAccounts").child(destId).child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mAddLikeNotifToUser) {
