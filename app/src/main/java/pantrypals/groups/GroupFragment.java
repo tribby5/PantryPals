@@ -146,7 +146,7 @@ public class GroupFragment extends Fragment {
                                 recipes.add(recipe);
                             }
                         }
-                        groupFeed.setAdapter(new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes));
+                        groupFeed.setAdapter(new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes, getActivity()));
                     }
 
                     @Override

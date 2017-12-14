@@ -198,7 +198,7 @@ public class HomeFragment extends Fragment {
         });
 
         feedListView = (ListView) view.findViewById(R.id.feedListView);
-        adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList);
+        adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList, getActivity());
         feedListView.setAdapter(adapter);
 
         // Implement scrolling

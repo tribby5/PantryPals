@@ -142,7 +142,7 @@ public class SearchResultFragment extends Fragment {
                         }
                         recipe.setDbKey(recipeSnapshot.getKey());
                     }
-                    gridView.setAdapter(new CustomListAdapter(getActivity(), R.layout.card_layout_main, results));
+                    gridView.setAdapter(new CustomListAdapter(getActivity(), R.layout.card_layout_main, results, getActivity()));
                 }
 
                 @Override
