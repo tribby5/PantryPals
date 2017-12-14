@@ -15,6 +15,7 @@ import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.Maps;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +40,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private static RegistrationActivity checkLogin;
     private FirebaseAuth mAuth;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     private DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
 
     private Map<String, Boolean> preferences = Maps.newHashMap();
@@ -57,6 +60,8 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
         setContentView(R.layout.activity_registration);
         setOnClick();
         checkLogin = this;
@@ -234,6 +239,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                         }
                                                     }
                                                 });
+                                        log(FirebaseAnalytics.Event.SIGN_UP, mAuth.getCurrentUser().toString());
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
                                         writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions);
 //                                      }
@@ -280,5 +286,11 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void log(String eventType, String value) {
+        Bundle bundle = new Bundle();
+        bundle.putString(eventType, value);
+        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
     }
 }

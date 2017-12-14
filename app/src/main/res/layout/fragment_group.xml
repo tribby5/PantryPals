@@ -58,7 +58,6 @@
     <ListView
         android:id="@+id/group_feed"
         android:layout_below="@id/group_members"
-        android:layout_above="@id/group_new_post_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark">
@@ -85,6 +84,8 @@
         android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:background="@drawable/rounded_corner_blue"
         android:textColor="@color/colorWhite"
+        android:shadowColor="@color/colorGrayText"
+        android:shadowRadius="20"
         android:layout_margin="@dimen/padding"
         android:textSize="@dimen/h4Size"
         android:padding="@dimen/padding"

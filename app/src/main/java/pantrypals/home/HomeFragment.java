@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +53,7 @@ public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
 
+    private FirebaseAnalytics mFirebaseAnalytics;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference ref;
     private FirebaseAuth mAuth;
@@ -78,19 +80,20 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
         mAuth = FirebaseAuth.getInstance();
         final FirebaseUser user = mAuth.getCurrentUser();
         userId = user.getUid();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         ref = mFirebaseDatabase.getReference("/recipes");
-        ref.orderByChild("negTimestamp").limitToFirst(30).addValueEventListener(new ValueEventListener() {
+        ref.orderByChild("negTimestamp").limitToFirst(30).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     final Recipe recipe = snapshot.getValue(Recipe.class);
                     if (recipe.getNegTimestamp() != oldestRecipeNegTimestamp) {
                         oldestRecipeNegTimestamp = recipe.getNegTimestamp();
-                        String recipeId = snapshot.getKey();
+                        final String recipeId = snapshot.getKey();
                         recipe.setDbKey(recipeId);
                         // get the group this recipe belongs to
                         final String groupId = recipe.getGroupId();
@@ -161,6 +164,7 @@ public class HomeFragment extends Fragment {
                                     if (display) {
                                         feedList.add(recipe);
                                         adapter.notifyDataSetChanged();
+                                        log("Display_recipe", recipeId);
                                     }
                                 }
 
@@ -194,7 +198,7 @@ public class HomeFragment extends Fragment {
         });
 
         feedListView = (ListView) view.findViewById(R.id.feedListView);
-        adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList);
+        adapter = new CustomListAdapter(getActivity(), R.layout.card_layout_main, feedList, getActivity());
         feedListView.setAdapter(adapter);
 
         // Implement scrolling
@@ -314,8 +318,8 @@ public class HomeFragment extends Fragment {
 
                                                 if (display) {
                                                     feedList.add(recipe);
-                                                    //adapter.add(recipe);
                                                     adapter.notifyDataSetChanged();
+                                                    log("Display_recipe", recipe.getDbKey());
                                                 }
                                             }
 
@@ -367,6 +371,12 @@ public class HomeFragment extends Fragment {
             }
         }
         return true;
+    }
+
+    private void log(String eventType, String value) {
+        Bundle bundle = new Bundle();
+        bundle.putString(eventType, value);
+        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
     }
 
     private void toastMessage(String message) {
