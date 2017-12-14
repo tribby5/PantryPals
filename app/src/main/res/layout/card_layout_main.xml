@@ -45,6 +45,9 @@
                 android:textAppearance="@style/AppTheme.TextAppearance.Black"
                 android:textSize="@dimen/h3Size"
                 android:layout_width="match_parent"
+                android:scrollHorizontally="true"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:layout_height="wrap_content" />
 
             <TextView

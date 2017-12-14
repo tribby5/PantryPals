@@ -20,8 +20,10 @@ import java.util.List;
 import pantrypals.groups.GroupFragment;
 import pantrypals.models.Group;
 import pantrypals.models.Post;
+import pantrypals.models.Recipe;
 import pantrypals.models.User;
 import pantrypals.profile.ProfileFragment;
+import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.DownloadImageTask;
 
 /**
@@ -70,8 +72,8 @@ public class SearchResultAdapter extends BaseAdapter {
                 return getPersonView(result, layoutInflater);
             } else if(result.getInfo() instanceof Group) {
                 return getGroupView(result, layoutInflater);
-            } else if(result.getInfo() instanceof Post) {
-                return getPostView(result, layoutInflater);
+            } else if(result.getInfo() instanceof Recipe) {
+                return getRecipeView(result, layoutInflater);
             } else {
                 view = layoutInflater.inflate(R.layout.search_result_item, null);
                 RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
@@ -79,8 +81,8 @@ public class SearchResultAdapter extends BaseAdapter {
             }
         } else if(result.getType() == SearchType.GROUPS) {
             return getGroupView(result, layoutInflater);
-        } else if(result.getType() == SearchType.POSTS) {
-            return getPostView(result, layoutInflater);
+        } else if(result.getType() == SearchType.RECIPES) {
+            return getRecipeView(result, layoutInflater);
         }
         view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
@@ -148,21 +150,32 @@ public class SearchResultAdapter extends BaseAdapter {
         return rl;
     }
 
-    private View getPostView(SearchResult result, LayoutInflater layoutInflater) {
+    private View getRecipeView(final SearchResult result, LayoutInflater layoutInflater) {
         View view = layoutInflater.inflate(R.layout.search_result_item, null);
         RelativeLayout rl = view.findViewById(R.id.search_result_person_layout);
 
-        Post post = (Post) result.getInfo();
+        Recipe recipe = (Recipe) result.getInfo();
 
         TextView categoryTV = view.findViewById(R.id.search_result_category);
-        categoryTV.setText("POST");
+        categoryTV.setText("RECIPE");
         TextView nameTV = view.findViewById(R.id.search_result_primary);
-        nameTV.setText(post.getTitle());
+        nameTV.setText(recipe.getName());
         TextView bioTV = view.findViewById(R.id.search_result_secondary);
-        bioTV.setText(post.getText());
+        bioTV.setText(recipe.getCaption());
 
         ImageView verifiedImg = view.findViewById(R.id.search_result_verified);
         verifiedImg.setVisibility(View.INVISIBLE);
+
+        rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(fm != null) {
+                    FragmentTransaction transaction = fm.beginTransaction();
+                    transaction.replace(R.id.frame_layout, RecipeFragment.newFragment(result.getId()));
+                    transaction.addToBackStack(null).commit();
+                }
+            }
+        });
 
         return rl;
     }
