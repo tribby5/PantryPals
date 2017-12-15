@@ -1,6 +1,7 @@
 package pantrypals.activities;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,13 +21,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.Maps;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,40 +38,52 @@ import com.wefika.flowlayout.FlowLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import pantrypals.models.Group;
 import pantrypals.models.Pantry;
 import pantrypals.models.User;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class AccountCreationActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    private FirebaseAnalytics mFirebaseAnalytics;
+public class RegistrationActivity extends AppCompatActivity {
     private static final int GALLERY_INTENT = 2;
-    //UI components
-    private EditText newUserFirstName;
-    private EditText newUserLastName;
-    private EditText newUserPreferences;
-    private EditText newUserRestrictions;
-    private EditText newUserBio;
-    private FlowLayout newUserPreferencesFlowLayout;
-    private FlowLayout newUserRestrictionsFlowLayout;
-    private Button newUserAvatarButton;
-    private Map<String, Boolean> preferences = Maps.newHashMap();
-    private Map<String, Boolean> restrictions = Maps.newHashMap();
-    private String avatar;
 
+    private static RegistrationActivity checkLogin;
+    private FirebaseAuth mAuth;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
     private StorageReference mStorage;
     private ProgressDialog mProgressDialog;
 
+    private Map<String, Boolean> preferences = Maps.newHashMap();
+    private Map<String, Boolean> restrictions = Maps.newHashMap();
+    private String avatar;
+
+    //UI components
+    private EditText newUserFirstName;
+    private EditText newUserLastName;
+    private EditText newUserEmail;
+    private EditText newUserPassword;
+    private EditText newUserPasswordConfirm;
+    private EditText newUserBio;
+    private FlowLayout newUserPreferencesFlowLayout;
+    private FlowLayout newUserRestrictionsFlowLayout;
+    private Button newUserAvatarButton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_creation);
-
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        newUserFirstName = (EditText) findViewById(R.id.TFnameFirst);
-        newUserLastName = (EditText) findViewById(R.id.TFnameLast);
+        setContentView(R.layout.activity_registration);
+        setOnClick();
+        checkLogin = this;
+        newUserFirstName = (EditText)findViewById(R.id.TFnameFirst);
+        newUserLastName = (EditText)findViewById(R.id.TFnameLast);
+        newUserEmail = (EditText)findViewById(R.id.TFemail);
+        newUserPassword = (EditText)findViewById(R.id.TFpassword);
+        newUserPasswordConfirm = (EditText) findViewById(R.id.TFpasswordConfirm);
         newUserBio = (EditText) findViewById(R.id.TFbio);
         newUserPreferencesFlowLayout = (FlowLayout) findViewById(R.id.reg_prefs_flow_layout);
         newUserRestrictionsFlowLayout = (FlowLayout) findViewById(R.id.reg_restrictions_flow_layout);
@@ -89,90 +103,7 @@ public class AccountCreationActivity extends AppCompatActivity {
         addPrefs();
         addRestrictions();
 
-
-        setOnClick();
-    }
-
-    private void setOnClick() {
-        Button Bregister = (Button) findViewById(R.id.BCreate);
-        Bregister.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-
-                //Set default errors
-                newUserBio.setError(null);
-
-                View focusView = null;
-
-                //Currently not reason to cancel
-                if(false){
-                    focusView.requestFocus();
-                }
-
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
-                String bio = newUserBio.getText().toString();
-                UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
-                user.updateProfile(profileUpdates);
-
-                writeNewUser(user.getUid(), displayName, FirebaseAuth.getInstance().getCurrentUser().getEmail(), bio, preferences, restrictions, avatar);
-
-            }
-        });
-    }
-
-    private Map<String, Boolean> extractFields(String input) {
-        Map<String, Boolean> map = Maps.newHashMap();
-        for (String s : input.split(",")) {
-            String trimmed = s.trim();
-            map.put(trimmed, true);
-        }
-        return map;
-    }
-
-
-
-    private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions, String avatar) {
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setBio(bio);
-        user.setPreferences(preferences);
-        user.setRestrictions(restrictions);
-        user.setAvatar(avatar);
-
-        //Creates personal pantry and return keys to store it with
-        String pantryKey = createPersonalPantry();
-        user.setPersonalPantry(pantryKey);
-
-        FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts)).child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.d("WORKS", "USER ID " + FirebaseAuth.getInstance().getCurrentUser().getUid());
-                Log.d("WORKS", "Successfully registered");
-                log(FirebaseAnalytics.Event.SIGN_UP, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(mainIntent);
-            }
-        });
-
-    }
-
-    private String createPersonalPantry(){
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //Create entry for a personal pantry:
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
-        Pantry newPantry = new Pantry();
-        HashMap<String, Boolean> ownedBy = new HashMap<>();
-        ownedBy.put(uid, true);
-        newPantry.setOwnedBy(ownedBy);
-        newPantry.setShared(false);
-        String key = FirebaseDatabase.getInstance().getReference(getResources().getString(R.string.pantriesData)).push().getKey();
-        ref.child(key).setValue(newPantry);
-
-        //Returns pantry key
-        return key;
+        mAuth= FirebaseAuth.getInstance();
     }
 
     private void addPrefs() {
@@ -181,7 +112,7 @@ public class AccountCreationActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot prefSnapshot : dataSnapshot.getChildren()) {
                     final String pref = prefSnapshot.getKey();
-                    final TextView prefText = new TextView(AccountCreationActivity.this);
+                    final TextView prefText = new TextView(RegistrationActivity.this);
                     prefText.setText(pref);
                     prefText.setTextSize(14);
                     prefText.setPadding(25, 15, 25, 15);
@@ -224,7 +155,7 @@ public class AccountCreationActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot prefSnapshot : dataSnapshot.getChildren()) {
                     final String pref = prefSnapshot.getKey();
-                    final TextView prefText = new TextView(AccountCreationActivity.this);
+                    final TextView prefText = new TextView(RegistrationActivity.this);
                     prefText.setText(pref);
                     prefText.setTextSize(14);
                     prefText.setPadding(25, 15, 25, 15);
@@ -259,19 +190,129 @@ public class AccountCreationActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    //Allow access to this activity through this method
+    public static RegistrationActivity getInstance(){
+        return checkLogin;
+    }
+
+    private void setOnClick() {
+        Button Bregister = (Button)findViewById(R.id.Bregister);
+        Bregister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Set default errors
+                newUserEmail.setError(null);
+                newUserPassword.setError(null);
+                newUserPasswordConfirm.setError(null);
+                newUserBio.setError(null);
+
+                final String email = newUserEmail.getText().toString();
+                final String password = newUserPassword.getText().toString();
+
+                Boolean cancel = false;
+                View focusView = null;
+
+                if(!LoginActivity.isEmailValid(email)){
+                    newUserEmail.setError(getResources().getString(R.string.error_invalid_email));
+                    focusView = newUserEmail;
+                    cancel = true;
+                }
+
+                if(!LoginActivity.isPasswordValid(password)){
+                    newUserPassword.setError(getResources().getString(R.string.error_invalid_password));
+                    focusView = newUserPassword;
+                    cancel = true;
+                }
+
+                if(!password.equals(newUserPasswordConfirm.getText().toString())){
+                    newUserPasswordConfirm.setError(getResources().getString(R.string.error_invalid_password_confirm));
+                    focusView = newUserPasswordConfirm;
+                    cancel = true;
+                }
+
+                if(cancel){
+                    focusView.requestFocus();
+                }
+                Log.d("EMAIL", email);
+
+                if(!cancel) {
+
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    Log.d("createCredentials", "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                                    if(task.isSuccessful()) {
+
+                                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        String displayName = newUserFirstName.getText().toString() + " " + newUserLastName.getText().toString();
+                                        String bio = newUserBio.getText().toString();
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setDisplayName(displayName).build();
+                                        user.updateProfile(profileUpdates);
 
 
+                                        //Verification email
+                                        FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
+                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                        if (task.isSuccessful()) {
+                                                            Log.d("EmailSent", "Email sent.");
+                                                        }
+                                                    }
+                                                });
+                                        log(FirebaseAnalytics.Event.SIGN_UP, mAuth.getCurrentUser().toString());
+                                        Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
+                                        writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions, avatar);
+//                                      }
+                                    }
+                                }
+                            });
+                }
+            }
+        });
+    }
+
+    private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions, String avatar) {
+        User user = new User();
+        user.setName(name);
+        user.setEmail(email);
+        user.setBio(bio);
+        user.setPreferences(preferences);
+        user.setRestrictions(restrictions);
+        user.setAvatar(avatar);
+
+        //Creates personal pantry and return keys to store it with
+        String pantryKey = createPersonalPantry();
+        user.setPersonalPantry(pantryKey);
+        
+        FirebaseDatabase.getInstance().getReference().child("userAccounts").child(userId).setValue(user);
 
     }
 
-    private void changeUploadButtonText() {
-        newUserAvatarButton.setText("AVATAR UPLOADED");
+    private String createPersonalPantry(){
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        //Create entry for a personal pantry:
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.pantriesData));
+        Pantry newPantry = new Pantry();
+        HashMap<String, Boolean> ownedBy = new HashMap<>();
+        ownedBy.put(uid, true);
+        newPantry.setOwnedBy(ownedBy);
+        newPantry.setShared(false);
+        String key = FirebaseDatabase.getInstance().getReference(getResources().getString(R.string.pantriesData)).push().getKey();
+        ref.child(key).setValue(newPantry);
+
+        //Returns pantry key
+        return key;
     }
 
-    private void log(String eventType, String value) {
-        Bundle bundle = new Bundle();
-        bundle.putString(eventType, value);
-        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
@@ -302,8 +343,19 @@ public class AccountCreationActivity extends AppCompatActivity {
         }
     }
 
+    private void changeUploadButtonText() {
+        newUserAvatarButton.setText("AVATAR UPLOADED");
+    }
+
+
     private void toastMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+
+    private void log(String eventType, String value) {
+        Bundle bundle = new Bundle();
+        bundle.putString(eventType, value);
+        mFirebaseAnalytics.logEvent("HomeFragment", bundle);
+    }
 }

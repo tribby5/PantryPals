@@ -277,7 +277,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                 for (Recipe.Ingredient ingredient : ingredients) {
                                     boolean weHaveIt = false;
                                     for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                                        if (pantry.getItems() != null && pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
+                                        if (pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
                                             Item item = itemSnapshot.getValue(Item.class);
                                             String ingName = ingredient.getName().toLowerCase();
                                             String itemName = item.getName().toLowerCase();
@@ -361,16 +361,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                                                 Map<String, Object> user = users.get(uID);
                                                                 if (user.get("personalPantry") != null) {
                                                                     Map<String, Object> pantry = pantries.get(user.get("personalPantry"));
-                                                                    if (pantry.get("items") != null) {
-                                                                        for (String itemID : ((Map<String, Object>) pantry.get("items")).keySet()) {
-                                                                            if (((Map<String, Object>) pantry.get("items")).containsKey(itemID)) {
-                                                                                Map<String, Object> item = items.get(itemID);
-                                                                                String ingName = ingredient.getName().toLowerCase();
-                                                                                String itemName = ((String) item.get("name")).toLowerCase();
-                                                                                if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
-                                                                                    ingredientOwned = true;
-                                                                                    break;
-                                                                                }
+                                                                    for (String itemID : ((Map<String, Object>) pantry.get("items")).keySet()) {
+                                                                        if (((Map<String, Object>) pantry.get("items")).containsKey(itemID)) {
+                                                                            Map<String, Object> item = items.get(itemID);
+                                                                            String ingName = ingredient.getName().toLowerCase();
+                                                                            String itemName = ((String) item.get("name")).toLowerCase();
+                                                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                                                                ingredientOwned = true;
+                                                                                break;
                                                                             }
                                                                         }
                                                                     }
