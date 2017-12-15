@@ -112,14 +112,6 @@
                 android:textSize="@dimen/h4Size"
                 android:textColor="@color/colorWhite"/>
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/google_signin"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
