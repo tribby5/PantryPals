@@ -10,14 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.android.databaes.pantrypals.R;
-import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-
-import java.util.Map;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import pantrypals.discover.DiscoverDetailFragment;
 import pantrypals.discover.DiscoverFragment;
@@ -27,7 +24,6 @@ import pantrypals.models.User;
 import pantrypals.notifications.NotificationsFragment;
 import pantrypals.pantry.PantryTabFragment;
 import pantrypals.profile.ProfileFragment;
-import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.AuthUserInfo;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -103,5 +99,16 @@ public class HomeActivity extends AppCompatActivity implements DiscoverItemClick
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FirebaseAuth.getInstance().signOut();
     }
 }

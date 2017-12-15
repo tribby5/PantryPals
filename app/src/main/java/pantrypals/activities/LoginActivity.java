@@ -70,10 +70,6 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        //TODO remove after testing
-        if(FirebaseAuth.getInstance().getCurrentUser() != null){
-            FirebaseAuth.getInstance().signOut();
-        }
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
