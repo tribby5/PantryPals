@@ -48,7 +48,6 @@ public class LoginActivity extends AppCompatActivity{
     private FirebaseAuth.AuthStateListener mAuthListener;
     private static final int RC_GOOGLE_SIGN_IN = 100;
 
-
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -63,6 +62,11 @@ public class LoginActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        //TODO remove after testing
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            FirebaseAuth.getInstance().signOut();
+        }
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
@@ -145,7 +149,7 @@ public class LoginActivity extends AppCompatActivity{
             public void onClick(View view) {
                 //Toggle to true because there now exists users in the system
                 LoginActivity.existUser = true;
-                Intent register = new Intent(getApplicationContext(), RegistrationActivity.class);
+                Intent register = new Intent(getApplicationContext(), EmailRegistrationActivity.class);
                 startActivity(register);
             }
         });

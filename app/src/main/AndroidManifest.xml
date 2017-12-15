@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="pantrypals.activities.RegistrationActivity" />
+        <activity android:name="pantrypals.activities.EmailRegistrationActivity" />
         <activity android:name="pantrypals.activities.HomeActivity">
             <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />

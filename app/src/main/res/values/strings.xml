@@ -20,18 +20,29 @@
     <string name="register">Register</string>
     <string name="app_display_name">pantry pals</string>
 
-    <!-- Registration page-->
+    <!-- Email Registration page-->
+
     <string name="error_invalid_password_confirm">Passwords do not match</string>
-    <string name="reg_title">Registration</string>
-    <string name="reg_description">Please fill out this form to register for a PantryPals account.</string>
+    <string name="email_reg_title">Email Registration</string>
+    <string name="email_reg_description">Please fill out this form to register for a PantryPals account.</string>
+    <string name="email_reg_email">Email</string>
+    <string name="email_reg_password_requirements">Password must be at least 6 characters.</string>
+    <string name="email_reg_password">Password</string>
+    <string name="email_reg_password_confirm">Confirm Password</string>
+    <string name="email_reg_ButtonReg">Register</string>
+    <string name="email_reg_confirmed">Email vertification has been sent</string>
+
+
+    <!-- Account Creation -->
+    <string name="account_creation_title">Account Creation</string>
+    <string name="account_creation_description">Please fill out this form to set up your account information</string>
     <string name="reg_name_first">First Name</string>
     <string name="reg_name_last">Last Name</string>
-    <string name="reg_email">Email</string>
-    <string name="reg_password_requirements">Password must be at least 6 characters.</string>
-    <string name="reg_password">Password</string>
-    <string name="reg_password_confirm">Confirm Password</string>
-    <string name="reg_ButtonReg">Register</string>
-    <string name="reg_confirmed">Email vertification has been sent</string>
+    <string name="login_identity_title">Identity</string>
+    <string name="reg_bio">About yourself...</string>
+    <string name="reg_preferences">Preferences...</string>
+    <string name="reg_restrictions">Restrictions...</string>
+    <string name="account_creation_button">Create</string>
 
 
     <!-- Navigation bar-->
@@ -91,10 +102,7 @@
     <string name="discover_list_moods">Moods</string>
     <string name="discover_list_cuisines">Cuisines</string>
     <string name="discover_list_communities">Communities</string>
-    <string name="login_identity_title">Identity</string>
-    <string name="reg_bio">About yourself...</string>
-    <string name="reg_preferences">Preferences...</string>
-    <string name="reg_restrictions">Restrictions...</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

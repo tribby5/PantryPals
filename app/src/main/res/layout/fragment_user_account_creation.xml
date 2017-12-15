@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/colorPrimaryDark"
-    tools:context="com.android.databaes.socialpantry.auth.RegistrationActivity">
+    tools:context="pantrypals.auth.AccountCreationFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/TVdescription"
-                android:text="@string/reg_title"
+                android:text="@string/account_creation_title"
                 android:textSize="@dimen/h1Size"
                 android:textStyle="bold"
                 android:textColor="@color/colorWhite"
@@ -33,7 +33,7 @@
                 android:id="@+id/TVdescription"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/reg_description"
+                android:text="@string/account_creation_description"
                 android:textSize="@dimen/h4Size"
                 android:textColor="@color/colorHint"/>
 
@@ -74,54 +74,6 @@
                 android:textColorHint="@color/colorHint"
                 android:textSize="@dimen/h4Size" />
 
-
-            <EditText
-                android:id="@+id/TFemail"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:hint="@string/reg_email"
-                android:text="@string/emptystring"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorHint"
-                android:textSize="@dimen/h4Size" />
-
-            <TextView
-                android:id="@+id/passwordRequire"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="30sp"
-                android:text="@string/reg_password_requirements"
-                android:textAlignment="center"
-                android:textColor="@color/colorHint"
-                android:textSize="@dimen/h4Size" />
-
-            <EditText
-                android:id="@+id/TFpassword"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:hint="@string/reg_password"
-                android:inputType="textPassword"
-                android:text="@string/emptystring"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorHint"
-                android:textSize="@dimen/h4Size" />
-
-            <EditText
-                android:id="@+id/TFpasswordConfirm"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:hint="@string/reg_password_confirm"
-                android:inputType="textPassword"
-                android:text="@string/emptystring"
-                android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorHint"
-                android:textSize="@dimen/h4Size" />
 
             <Space
                 android:layout_width="match_parent"
@@ -183,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/reg_ButtonReg"
+                android:text="@string/account_creation_button"
                 android:textAlignment="center"
                 android:textColor="@color/colorWhite"
                 android:background="@color/colorAccentAlt"
