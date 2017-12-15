@@ -156,8 +156,9 @@ public class HomeFragment extends Fragment {
 
                                     // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
                                     if (groupId != null) {
-                                        if (dataSnapshot.child("/group").hasChild(userId)) {
-                                            display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
+                                        if (dataSnapshot.child("/groups").child(groupId).child("members").hasChild(userId)) {
+                                            display = true;
+                                            //Log.d(TAG, "recipe" + recipeId + " : " + display);
                                         }
                                     }
 
@@ -294,13 +295,6 @@ public class HomeFragment extends Fragment {
                                                     }
                                                 }
 
-                                                // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
-                                                if (groupId != null) {
-                                                    if (dataSnapshot.child("/group").hasChild(userId)) {
-                                                        display = dataSnapshot.child("/group").child(userId).hasChild(groupId);
-                                                    }
-                                                }
-
                                                 // Check if currUser has restrictions for this recipe
                                                 User currUser = dataSnapshot.child("userAcccounts").child(userId).getValue(User.class);
                                                 // Get a set of restrictions for user
@@ -314,6 +308,14 @@ public class HomeFragment extends Fragment {
                                                 List<String> tags = recipe.getTags();
                                                 if (!meetsRestrictions(restrictions, tags)) {
                                                     display = false;
+                                                }
+
+                                                // Check if I'm in this group - if I am, this overrides follow/relevant settings for group recipes
+                                                if (groupId != null) {
+                                                    if (dataSnapshot.child("/groups").child(groupId).child("members").hasChild(userId)) {
+                                                        display = true;
+                                                        //Log.d(TAG, "recipe" + recipeId + " : " + display);
+                                                    }
                                                 }
 
                                                 if (display) {
