@@ -13,6 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="pantrypals.activities.LoginActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,6 +24,7 @@
         <activity android:name="pantrypals.activities.HomeActivity">
 
             <!--
+>>>>>>> 12cc245e04c6b368f23a22adddc134cf8a961bef
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -32,7 +34,7 @@
         </activity>
         <activity android:name="pantrypals.activities.NewRecipeActivity" />
         <activity android:name="pantrypals.activities.AccountCreationActivity" />
-        <activity android:name="pantrypals.activities.AccountCreationActivity"></activity>
+
     </application>
 
 </manifest>

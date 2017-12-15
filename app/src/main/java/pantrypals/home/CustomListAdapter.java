@@ -1,6 +1,11 @@
 package pantrypals.home;
 
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.widget.ArrayAdapter;
 
 /**
@@ -16,11 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.databaes.pantrypals.R;
 import com.google.common.collect.Maps;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,19 +48,31 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import pantrypals.models.Item;
+import pantrypals.models.JointPantry;
 import pantrypals.models.Notification;
+import pantrypals.models.Pantry;
 import pantrypals.models.Recipe;
 import pantrypals.models.TempRecipe;
+import pantrypals.models.User;
 import pantrypals.recipe.RecipeFragment;
 import pantrypals.util.AuthUserInfo;
 
 
 public class CustomListAdapter extends ArrayAdapter<Recipe> {
+
+    @Override
+    public int getCount() {
+        return objects.size();
+    }
 
     private static final String TAG = "CustomListAdapter";
 
@@ -62,11 +82,17 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     private boolean mProcessLike = false;
     private boolean mProcessSave = false;
     private boolean mAddLikeNotifToUser = false;
+    private boolean mProcessJointCardBullet = false;
+    private boolean mProcessCardBullets = false;
     private DatabaseReference refLike;
     private DatabaseReference refSave;
+    private DatabaseReference refRoot;
+    private DatabaseReference refAuthor;
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     private FirebaseAuth mAuth;
     private FragmentManager fm;
-
+    private List<Recipe> objects;
 
     /**
      * Default constructor for the PersonListAdapter
@@ -75,12 +101,21 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
      * @param resource
      * @param objects
      */
-    public CustomListAdapter(Context context, int resource, List<Recipe> objects) {
+    public CustomListAdapter(Context context, int resource, List<Recipe> objects, FragmentActivity activity) {
         super(context, resource, objects);
+        if (activity != null) {
+            mFirebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+        } else {
+            mFirebaseAnalytics = null;
+        }
+
         mContext = context;
         mResource = resource;
+        this.objects = objects;
         refLike = FirebaseDatabase.getInstance().getReference("/recipes");
         refSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
+        refAuthor = FirebaseDatabase.getInstance().getReference("/userAccounts");
+        refRoot = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         if(context != null) {
             this.fm = ((FragmentActivity) context).getSupportFragmentManager();
@@ -102,9 +137,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
         //get the recipe
         final String name = getItem(position).getName();
-        String imgUrl = getItem(position).getImageURL();
+        final String body = getItem(position).getCaption();
+        final String imgUrl = getItem(position).getImageURL();
         final String posterId = getItem(position).getPostedBy().keySet().iterator().next();
-        final String key = getItem(position).getDbKey();
+        final List<Recipe.Ingredient> ingredients = getItem(position).getIngredients();
+        final Recipe r = getItem(position);
+
+        final String key = getItem(position).getDbKey(); // TODO: starting point for debug
 
 
         Log.d(TAG, "getView called");
@@ -117,9 +156,13 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 LayoutInflater inflater = LayoutInflater.from(mContext);
                 convertView = inflater.inflate(mResource, parent, false);
                 holder = new ViewHolder();
+                holder.setRecipeId(key);
                 holder.title = (TextView) convertView.findViewById(R.id.cardTitle);
                 holder.image = (ImageView) convertView.findViewById(R.id.cardImage);
                 holder.dialog = (ProgressBar) convertView.findViewById(R.id.cardProgressDialog);
+                holder.subtitle = convertView.findViewById(R.id.cardSubtitle);
+                holder.body = convertView.findViewById(R.id.cardBody);
+                holder.bullets = convertView.findViewById(R.id.cardBullets);
                 holder.setLikeButton(key);
                 holder.setSaveButton(key);
                 holder.likeButton = (ImageButton) convertView.findViewById(R.id.likeButton);
@@ -127,7 +170,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessLike = true;
-                        refLike.addValueEventListener(new ValueEventListener() {
+                        refLike.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessLike) {
@@ -136,17 +179,24 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                         if (dataSnapshot.child(key).child("likedBy").hasChild(userId)) {
                                             //Already liked
                                             refLike.child(key).child("likedBy").child(userId).removeValue();
+                                            refSave.child(userId).child("likedRecipes").child(key).removeValue();
+                                            log("UNLIKE", "User: " + userId + ", " + "Recipe: " + key);
                                             mProcessLike = false;
                                         } else {
                                             //Not liked yet
                                             refLike.child(key).child("likedBy").child(userId).setValue(true);
-                                            sendLikeNotif(name, key, posterId);
+                                            refSave.child(userId).child("likedRecipes").child(key).setValue(true);
+                                            log("LIKE", "User: " + userId + ", " + "Recipe: " + key);
+                                            sendLikeNotif(name, key, imgUrl, posterId);
                                             mProcessLike = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refLike.child(key).child("likedBy").child(userId).setValue(true);
-                                        sendLikeNotif(name, key, posterId);
+                                        refSave.child(userId).child("likedRecipes").child(key).setValue(true);
+                                        log("LIKE", "User: " + userId + ", " + "Recipe: " + key);
+
+                                        sendLikeNotif(name, key, imgUrl, posterId);
                                         mProcessLike = false;
                                     }
                                 }
@@ -166,29 +216,35 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                     @Override
                     public void onClick(View view) {
                         mProcessSave = true;
-                        refSave.addValueEventListener(new ValueEventListener() {
+                        refSave.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (mProcessSave) {
+                                    String key = holder.getRecipeId();
                                     String userId = mAuth.getCurrentUser().getUid();
                                     if (dataSnapshot.child(userId).hasChild("savedForLater")) {
                                         if (dataSnapshot.child(userId).child("savedForLater").hasChild(key)) {
                                             //Already liked
                                             refSave.child(userId).child("savedForLater").child(key).removeValue();
+                                            log("UNSAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                             mProcessSave = false;
                                         } else {
                                             //Not liked yet
                                             refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                            log("SAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                             mProcessSave = false;
                                         }
                                     } else {
                                         // doesn't have likedBy yet
                                         refSave.child(userId).child("savedForLater").child(key).setValue(true);
+                                        log("SAVE", "User: " + userId + ", " + "Recipe: " + key);
+
                                         mProcessSave = false;
                                     }
                                 }
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
 
@@ -205,8 +261,188 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
             lastPosition = position;
 
             holder.title.setText(name);
-            //holder.description.setText(description);
+            holder.body.setText(body);
 
+            mProcessCardBullets = true;
+
+            if(AuthUserInfo.INSTANCE.getUser().getPersonalPantry() != null) {
+                refRoot.child("pantries").child(AuthUserInfo.INSTANCE.getUser().getPersonalPantry()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        final Pantry pantry = dataSnapshot.getValue(Pantry.class);
+                        refRoot.child("items").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                int numMissing = 0;
+                                for (Recipe.Ingredient ingredient : ingredients) {
+                                    boolean weHaveIt = false;
+                                    for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                                        if (pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
+                                            Item item = itemSnapshot.getValue(Item.class);
+                                            String ingName = ingredient.getName().toLowerCase();
+                                            String itemName = item.getName().toLowerCase();
+                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                                weHaveIt = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (!weHaveIt) {
+                                        numMissing++;
+                                    }
+//                                Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
+                                }
+                                if (mProcessCardBullets) {
+                                    LinearLayout bulletLayout = new LinearLayout(getContext());
+                                    TextView tv = new TextView(getContext());
+                                    ImageView bullet = new ImageView(getContext());
+
+                                    if (numMissing == 0) {
+                                        tv.setText("You have all the ingredients to make this!");
+                                        bullet.setImageResource(R.drawable.green);
+
+                                    } else {
+                                        String ingStr = numMissing == 1 ? "ingredient" : "ingredients";
+                                        tv.setText(String.format(Locale.US, "You are missing %d %s.", numMissing, ingStr));
+                                        bullet.setImageResource(R.drawable.red);
+                                    }
+                                    tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
+                                    layoutParams.setMargins(0, 15, 15, 0);
+                                    bullet.setLayoutParams(layoutParams);
+                                    bulletLayout.addView(bullet);
+                                    bulletLayout.addView(tv);
+                                    holder.bullets.removeAllViews();
+                                    holder.bullets.addView(bulletLayout);
+                                    mProcessCardBullets = false;
+                                }
+                                //Log.d("This is numMissing for " + getItem(position).getName(), numMissing+"");
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                Map<String, Boolean> jps = AuthUserInfo.INSTANCE.getUser().getJointPantries();
+
+                if (jps != null) {
+                    for (final String jpID : jps.keySet()) {
+                        mProcessJointCardBullet = true;
+                        refRoot.child("pantries").child(jpID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                final JointPantry jp = dataSnapshot.getValue(JointPantry.class);
+                                refRoot.child("userAccounts").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                                        final Map<String, Map<String, Object>> users = (Map<String, Map<String, Object>>) dataSnapshot2.getValue();
+                                        refRoot.child("pantries").addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot3) {
+                                                final Map<String, Map<String, Object>> pantries = (Map<String, Map<String, Object>>) dataSnapshot3.getValue();
+                                                refRoot.child("items").addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot4) {
+                                                        Map<String, Map<String, Object>> items = (Map<String, Map<String, Object>>) dataSnapshot4.getValue();
+                                                        boolean canMake = true;
+                                                        for (Recipe.Ingredient ingredient : ingredients) {
+                                                            boolean ingredientOwned = false;
+                                                            for (String uID : jp.getOwnedBy().keySet()) {
+                                                                Map<String, Object> user = users.get(uID);
+                                                                if (user.get("personalPantry") != null) {
+                                                                    Map<String, Object> pantry = pantries.get(user.get("personalPantry"));
+                                                                    for (String itemID : ((Map<String, Object>) pantry.get("items")).keySet()) {
+                                                                        if (((Map<String, Object>) pantry.get("items")).containsKey(itemID)) {
+                                                                            Map<String, Object> item = items.get(itemID);
+                                                                            String ingName = ingredient.getName().toLowerCase();
+                                                                            String itemName = ((String) item.get("name")).toLowerCase();
+                                                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                                                                ingredientOwned = true;
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                                if (ingredientOwned) {
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if (!ingredientOwned) {
+                                                                canMake = false;
+                                                            }
+                                                        }
+                                                        if (mProcessJointCardBullet) {
+                                                            LinearLayout bulletLayout = new LinearLayout(getContext());
+                                                            TextView tv = new TextView(getContext());
+                                                            ImageView bullet = new ImageView(getContext());
+
+                                                            if (canMake) {
+                                                                tv.setText("\"" + jp.getTitle() + "\" has all the ingredients to make this!");
+                                                                bullet.setImageResource(R.drawable.green);
+                                                                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+                                                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(20, 20);
+                                                                layoutParams.setMargins(0, 15, 15, 0);
+                                                                bullet.setLayoutParams(layoutParams);
+                                                                bulletLayout.addView(bullet);
+                                                                bulletLayout.addView(tv);
+                                                                holder.bullets.addView(bulletLayout);
+                                                                mProcessJointCardBullet = false;
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+            }
+
+            refAuthor.child(posterId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    User posterUser = dataSnapshot.getValue(User.class);
+                    holder.subtitle.setText(posterUser.getName());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
 
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
@@ -251,7 +487,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                 public void onClick(View view) {
                     FragmentTransaction t = fm.beginTransaction();
                     t.replace(R.id.frame_layout, RecipeFragment.newFragment(getItem(position).getDbKey()));
-                    t.commit();
+                    t.addToBackStack(null).commit();
                 }
             });
             return convertView;
@@ -262,7 +498,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
     }
 
-    private void sendLikeNotif(String recipeName, String recipeId, final String destId) {
+    private void sendLikeNotif(String recipeName, String recipeId, String recipeImage, final String destId) {
         mAddLikeNotifToUser = true;
         Notification notif = new Notification();
         final String notifId = UUID.randomUUID().toString().substring(0, 30).replace("-", "");
@@ -270,13 +506,15 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         notif.setOriginator(recipeName);
         notif.setLinkID(recipeId);
         notif.setLinkType("recipe");
+        notif.setImageURL(recipeImage);
+        notif.setTimestamp(new Timestamp(System.currentTimeMillis()).toString());
 
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("userAccounts").child(destId).child("notifications").addValueEventListener(new ValueEventListener() {
+        ref.child("userAccounts").child(destId).child("notifications").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(mAddLikeNotifToUser) {
-                    Map<String, Boolean> map = dataSnapshot.getValue(Map.class);
+                    Map<String, Boolean> map = (Map<String, Boolean>)dataSnapshot.getValue();
                     if(map == null) {
                         map = Maps.newHashMap();
                     }
@@ -318,8 +556,11 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
     /**
      * Holds variables in a View
      */
-    private static class ViewHolder {
+    private class ViewHolder {
         TextView title;
+        TextView subtitle;
+        TextView body;
+        LinearLayout bullets;
         //        TextView description;
         ImageView image;
         ProgressBar dialog;
@@ -329,10 +570,24 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
         DatabaseReference mDatabaseSave = FirebaseDatabase.getInstance().getReference("/userAccounts");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+
+        String recipeId;
+
         private ViewHolder() {
             mDatabaseLike.keepSynced(true);
 
         }
+
+
+        public String getRecipeId() {
+            return recipeId;
+        }
+
+        public void setRecipeId(String recipeId) {
+            this.recipeId = recipeId;
+        }
+
+
         private void setLikeButton(final String dbKey) {
             mDatabaseLike.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -383,6 +638,14 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
 
                 }
             });
+        }
+    }
+
+    private void log(String eventType, String value) {
+        if (mFirebaseAnalytics != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString(eventType, value);
+            mFirebaseAnalytics.logEvent("HomeFragment", bundle);
         }
     }
 }

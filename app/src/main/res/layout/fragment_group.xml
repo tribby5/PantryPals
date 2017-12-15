@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.groups.GroupFragment">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -24,6 +25,7 @@
         android:layout_alignStart="@id/group_join_btn"
         android:layout_below="@id/group_name"
         android:layout_marginBottom="15dp"
+        android:textColor="@color/colorHint"
         android:text="Bio" />
 
     <TextView
@@ -33,7 +35,9 @@
         android:layout_below="@+id/group_join_btn"
         android:layout_alignStart="@id/group_join_btn"
         android:layout_marginTop="@dimen/padding"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:text="Name"
+        android:textColor="@color/colorWhite"
         android:textSize="18sp"
         android:textStyle="bold" />
 
@@ -44,26 +48,47 @@
         android:layout_toEndOf="@id/group_img"
         android:layout_alignTop="@+id/group_img"
         android:layout_marginStart="@dimen/padding"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:text="Join group"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/h4Size"
+        android:background="@color/colorGrayText"
+        android:padding="@dimen/padding" />
 
     <ListView
         android:id="@+id/group_feed"
         android:layout_below="@id/group_members"
-        android:layout_above="@id/group_new_post_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark">
 
     </ListView>
+
+
+    <TextView
+        android:id="@+id/group_not_member_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/extraPadding"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:text="You need to be a member to see the posts in this group."
+        android:layout_centerInParent="true"/>
 
     <Button
         android:id="@+id/group_new_post_btn"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:text="New Recipe"
-        android:textColor="@color/colorWhite"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:background="@drawable/rounded_corner_blue"
-        android:layout_height="wrap_content" />
+        android:textColor="@color/colorWhite"
+        android:shadowColor="@color/colorGrayText"
+        android:shadowRadius="20"
+        android:layout_margin="@dimen/padding"
+        android:textSize="@dimen/h4Size"
+        android:padding="@dimen/padding"
+        android:text="New Recipe" />
 
 </RelativeLayout>

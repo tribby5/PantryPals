@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="25dp">
+
+    <TextView
+        android:id="@+id/confirmAddBeforeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/confirm_add_before"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textSize="24sp"
+        />
+
+    <TextView
+        android:id="@+id/confirmAddItemTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textSize="24sp"
+        />
+
+    <TextView
+        android:id="@+id/confirmAddAfterTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/confirm_add_after"
+        android:textAlignment="center"
+        android:layout_gravity="center"
+        android:textSize="24sp"
+        />
+
+
+
+
+</LinearLayout>

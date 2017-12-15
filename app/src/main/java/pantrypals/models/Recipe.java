@@ -1,7 +1,10 @@
 package pantrypals.models;
 
+import android.os.Parcelable;
+
 import com.google.firebase.database.ServerValue;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +12,7 @@ import java.util.Map;
  * Created by Hunter Lee on 11/8/2017.
  */
 
-public class Recipe {
+public class Recipe implements Serializable {
 
     private String name;
     private String text;
@@ -185,7 +188,7 @@ public class Recipe {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public static class Ingredient {
+    public static class Ingredient implements Serializable {
         public Ingredient() {
         }
 

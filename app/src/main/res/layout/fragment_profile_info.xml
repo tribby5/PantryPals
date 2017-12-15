@@ -36,14 +36,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="pref1"
+                    android:text="Loading..."
                     android:textSize="@dimen/h4Size"
                     android:paddingLeft="@dimen/padding"
                     android:paddingRight="@dimen/padding"
                     android:paddingTop="@dimen/smallPadding"
                     android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_purple_fade"
-                    android:textColor="@color/colorPurpleFade"
+                    android:background="@drawable/rounded_corner_pink"
+                    android:textColor="@color/colorWhite"
                     />
 
             </com.wefika.flowlayout.FlowLayout>
@@ -68,7 +68,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="restriction1"
+                    android:text="Loading..."
                     android:textSize="@dimen/h4Size"
                     android:paddingLeft="@dimen/padding"
                     android:paddingRight="@dimen/padding"
@@ -77,46 +77,6 @@
                     android:background="@drawable/rounded_corner_pink"
                     android:textColor="@color/colorWhite"
                     />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="restriction1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="restriction1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="restriction1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
             </com.wefika.flowlayout.FlowLayout>
 
             <TextView
@@ -139,46 +99,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="group1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="group1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="group1"
-                    android:textSize="@dimen/h4Size"
-                    android:paddingLeft="@dimen/padding"
-                    android:paddingRight="@dimen/padding"
-                    android:paddingTop="@dimen/smallPadding"
-                    android:paddingBottom="@dimen/smallPadding"
-                    android:background="@drawable/rounded_corner_pink"
-                    android:textColor="@color/colorWhite"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="group1"
+                    android:text="Loading..."
                     android:textSize="@dimen/h4Size"
                     android:paddingLeft="@dimen/padding"
                     android:paddingRight="@dimen/padding"
@@ -189,6 +110,49 @@
                     />
 
             </com.wefika.flowlayout.FlowLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Joint Pantries"
+                android:textSize="@dimen/h3Size"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
+                android:textColor="@color/colorWhite"/>
+
+            <com.wefika.flowlayout.FlowLayout
+                android:id="@+id/joint_pantries_container"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="start|top"
+                android:paddingTop="@dimen/padding"
+                android:paddingBottom="@dimen/padding">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loading..."
+                    android:textSize="@dimen/h4Size"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingTop="@dimen/smallPadding"
+                    android:paddingBottom="@dimen/smallPadding"
+                    android:background="@drawable/rounded_corner_pink"
+                    android:textColor="@color/colorWhite"
+                    />
+
+            </com.wefika.flowlayout.FlowLayout>
+
+            <Button
+                android:id="@+id/sendInviteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="42dp"
+                android:text="@string/send_invite"
+                android:padding="15dp"
+                android:textSize="10sp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_corner_gray_bg"/>
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

@@ -47,8 +47,25 @@
                 android:layout_height="wrap_content"
                 android:text="@string/login_identity_title"
                 android:textSize="@dimen/h3Size"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
                 android:textStyle="bold"
                 android:textColor="@color/colorWhite"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding">
+            <Button
+                android:id="@+id/uploadAvatarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/create_recipe_title"
+                android:padding="@dimen/padding"
+                android:background="@drawable/rounded_corner_blue"
+                android:textColor="@color/colorWhite"
+                android:layout_centerHorizontal="true"
+                android:text="Upload Avatar" />
+            </RelativeLayout>
 
             <EditText
                 android:id="@+id/TFnameFirst"
@@ -84,6 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Personal Information"
+                android:textAppearance="@style/AppTheme.TextAppearance.Black"
                 android:textSize="@dimen/h3Size"
                 android:textStyle="bold"
                 android:textColor="@color/colorWhite"/>
@@ -100,30 +118,41 @@
                 android:textColorHint="@color/colorHint"
                 android:textSize="@dimen/h4Size" />
 
-            <EditText
-                android:id="@+id/TFpreferences"
-                android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:hint="@string/reg_preferences"
-                android:text="@string/emptystring"
+                android:paddingTop="30sp"
+                android:text="Tell us your preferences!"
                 android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorHint"
+                android:paddingBottom="15sp"
+                android:textColor="@color/colorHint"
                 android:textSize="@dimen/h4Size" />
 
-
-            <EditText
-                android:id="@+id/TFrestrictions"
-                android:layout_width="wrap_content"
+            <com.wefika.flowlayout.FlowLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:hint="@string/reg_restrictions"
-                android:text="@string/emptystring"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:id="@+id/reg_prefs_flow_layout">
+            </com.wefika.flowlayout.FlowLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="30sp"
+                android:text="Tell us about any restrictions you have!"
                 android:textAlignment="center"
-                android:textColor="@color/colorWhite"
-                android:textColorHint="@color/colorHint"
+                android:paddingBottom="15sp"
+                android:textColor="@color/colorHint"
                 android:textSize="@dimen/h4Size" />
+
+            <com.wefika.flowlayout.FlowLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:id="@+id/reg_restrictions_flow_layout">
+            </com.wefika.flowlayout.FlowLayout>
 
             <Space
                 android:layout_width="match_parent"

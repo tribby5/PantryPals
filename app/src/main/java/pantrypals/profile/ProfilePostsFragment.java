@@ -74,6 +74,7 @@ public class ProfilePostsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Recipe> recipes = Lists.newArrayList();
                 for(DataSnapshot recipeSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, recipeSnapshot.getKey());
                     Recipe recipe = recipeSnapshot.getValue(Recipe.class);
                     if(recipe.getPostedBy().keySet().iterator().next().equals(getArguments().get(ARG_ID))) {
                         recipe.setDbKey(recipeSnapshot.getKey());
@@ -81,7 +82,7 @@ public class ProfilePostsFragment extends Fragment {
                     }
                 }
                 for(int i = 0; i < recipes.size(); i++) {
-                    CustomListAdapter adapter = new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes);
+                    CustomListAdapter adapter = new CustomListAdapter(getContext(), R.layout.card_layout_main, recipes, getActivity());
                     ll.addView(adapter.getView(i, null, null));
                 }
             }

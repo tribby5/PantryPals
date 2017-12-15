@@ -18,10 +18,13 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+
 public class EmailRegistrationActivity extends AppCompatActivity {
+
 
     private static EmailRegistrationActivity checkLogin;
     private FirebaseAuth mAuth;
+
 
     //UI components
     private EditText newUserEmail;
@@ -33,13 +36,16 @@ public class EmailRegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_email_registration);
+
         setOnClick();
         checkLogin = this;
         newUserEmail = (EditText)findViewById(R.id.TFemail);
         newUserPassword = (EditText)findViewById(R.id.TFpassword);
         newUserPasswordConfirm = (EditText) findViewById(R.id.TFpasswordConfirm);
+
         mAuth= FirebaseAuth.getInstance();
     }
+
 
     //Allow access to this activity through this method
     public static EmailRegistrationActivity getInstance(){
@@ -56,6 +62,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
                 newUserEmail.setError(null);
                 newUserPassword.setError(null);
                 newUserPasswordConfirm.setError(null);
+
 
                 final String email = newUserEmail.getText().toString();
                 final String password = newUserPassword.getText().toString();
@@ -96,6 +103,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
                                     if(task.isSuccessful()) {
 
+
                                         //Verification email
                                         FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification()
                                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -111,6 +119,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
                                         Intent accountIntent = new Intent(getApplicationContext(), AccountCreationActivity.class);
                                         startActivity(accountIntent);
+
                                     }
                                 }
                             });
@@ -126,4 +135,8 @@ public class EmailRegistrationActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
+
+
+
+
 }

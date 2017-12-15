@@ -31,7 +31,7 @@ public class PantryItemsAdapter extends BaseAdapter{
         this.items = new ArrayList<>(items);
     }
 
-    void refresh(ArrayList<Item> items) {
+    void refresh(Collection<Item> items) {
         this.items = new ArrayList<>(items);
         notifyDataSetChanged();
     }

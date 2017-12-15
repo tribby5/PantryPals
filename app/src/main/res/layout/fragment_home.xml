@@ -2,7 +2,18 @@
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
+android:background="@color/colorPrimaryDark"
 tools:context="pantrypals.home.HomeFragment">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/home_feed_title"
+        android:text="Home Feed"
+        android:padding="@dimen/padding"
+        android:textSize="@dimen/h3Size"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
+        android:textColor="@color/colorWhite"/>
 
     <Button
         android:id="@+id/newPostButton"
@@ -10,14 +21,20 @@ tools:context="pantrypals.home.HomeFragment">
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:textAppearance="@style/AppTheme.TextAppearance.Black"
         android:background="@drawable/rounded_corner_blue"
         android:textColor="@color/colorWhite"
+        android:shadowColor="@color/colorGrayText"
+        android:shadowRadius="20"
+        android:textSize="@dimen/h4Size"
+        android:padding="@dimen/padding"
+        android:layout_margin="@dimen/padding"
         android:text="New Recipe" />
 
     <ListView
         android:id="@+id/feedListView"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/newPostButton" />
+        android:layout_below="@id/home_feed_title"/>
 
 </RelativeLayout>

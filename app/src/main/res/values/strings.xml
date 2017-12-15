@@ -74,6 +74,10 @@
     <string name="my_pantry">My Pantry</string>
     <string name="joint_pantries">Joint Pantries</string>
     <string name="add_item_title">Add Item to Pantry</string>
+    <string name="confirm_add_before">Are you sure you want to add </string>
+    <string name="confirm_add_after"> to your joint pantry?</string>
+    <string name="invalid_add_text">Sorry, that item is already in this joint pantry.</string>
+    <string name="add_item_from_my_pantry_title">Add Item from My Pantry</string>
     <string name="add_item">Add</string>
     <string name="add_new_joint_pantry">Add New Joint Pantry</string>
 
@@ -107,4 +111,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!-- profile-->
+    <string name="send_invite">Send Invite</string>
+    <string name="send">Send</string>
+    <string name="invite_to_jpantry_title">Select a Joint Pantry</string>
+    <string name="confirmInvBefore">Are you sure you want to invite </string>
+    <string name="confirmInvMiddle"> to join the </string>
+    <string name="confirmInvAfter"> joint pantry?</string>
+    <string name="invalidInviteText">Sorry, this user is already an owner of this joint pantry.</string>
 </resources>

@@ -1,8 +1,10 @@
 package pantrypals.recipe;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.ListView;
 
@@ -25,7 +27,7 @@ public class RecipeListView extends ListView {
     public static ListView newInstance(Context context, List<Recipe> recipes) {
         ListView recipeListView = new RecipeListView(context);
 
-        CustomListAdapter adapter = new CustomListAdapter(context, R.layout.card_layout_main, recipes);
+        CustomListAdapter adapter = new CustomListAdapter(context, R.layout.card_layout_main, recipes, null);
         recipeListView.setAdapter(adapter);
 
         return recipeListView;

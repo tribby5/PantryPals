@@ -74,7 +74,7 @@ public class SearchPageFragment extends Fragment {
 
         adapter.addTab(SearchResultFragment.newInstance(query, SearchType.ALL), "All");
         adapter.addTab(SearchResultFragment.newInstance(query, SearchType.PEOPLE), "People");
-        adapter.addTab(SearchResultFragment.newInstance(query, SearchType.POSTS), "Posts");
+        adapter.addTab(SearchResultFragment.newInstance(query, SearchType.RECIPES), "Recipes");
         adapter.addTab(SearchResultFragment.newInstance(query, SearchType.GROUPS), "Groups");
 
         viewPager.setAdapter(adapter);

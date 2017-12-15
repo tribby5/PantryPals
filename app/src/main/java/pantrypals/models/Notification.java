@@ -11,6 +11,7 @@ public class Notification {
     private String linkType;
     private String message;
     private String timestamp;
+    private String imageURL;
 
     public Notification() {
         // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
@@ -54,5 +55,13 @@ public class Notification {
 
     public void setOriginator(String originator) {
         this.originator = originator;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

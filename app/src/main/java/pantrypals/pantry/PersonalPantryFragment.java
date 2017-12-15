@@ -27,7 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,7 +42,7 @@ public class PersonalPantryFragment extends Fragment {
     private static final String TAG = "PersonalPantryFragment";
 
 
-    private ArrayList<Item> items;
+    private HashMap<String, Item> items;
     private PantryItemsAdapter adapter;
     private String add_item_name;
     private double add_item_amount;
@@ -55,7 +54,7 @@ public class PersonalPantryFragment extends Fragment {
     private DatabaseReference pantryRef;
     private DatabaseReference itemsRef;
     private PantryItemsAdapter itemsAdapter;
-    private ItemsRetriever itemsRetriever;
+    private DatabaseRetriever itemsRetriever;
     private User user;
     private View view;
 
@@ -83,8 +82,8 @@ public class PersonalPantryFragment extends Fragment {
         });
         databaseRef = FirebaseDatabase.getInstance().getReference();
         pantryID = this.getArguments().getString("pantryID");
-        items = new ArrayList<>();
-        itemsAdapter = new PantryItemsAdapter(getActivity(), items);
+        items = new HashMap<>();
+        itemsAdapter = new PantryItemsAdapter(getActivity(), items.values());
         this.view = view;
         getMyPantry();
 
@@ -155,8 +154,8 @@ public class PersonalPantryFragment extends Fragment {
 
     //Assumes pantry exists
     private void fillPantry(){
-        itemsRetriever = new ItemsRetriever(pantryID, itemsAdapter);
-        items = itemsRetriever.retrievePantryItems();
+        itemsRetriever = new DatabaseRetriever();
+        items = itemsRetriever.retrievePantryItems(pantryID, itemsAdapter);
         setupItemListView(view);
     }
 
@@ -175,39 +174,6 @@ public class PersonalPantryFragment extends Fragment {
 
     }
 
-//    private void retrievePantryItems() {
-//        itemsRef = FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.items));
-//        pantryRef.child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Pantry pantry = dataSnapshot.getValue(JointPantry.class);
-//                for (String itemID : pantry.getItems().keySet()){
-//                    System.out.println("PRINT: itemID = "+itemID);
-//                    itemsRef.child(itemID).addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            Item item = dataSnapshot.getValue(Item.class);
-//                            System.out.println("PRINT: item name = "+item.getName());
-//                            items.add(item);
-//                            System.out.println("PRINT: items.size() = "+items.size());
-//                            itemsAdapter.refresh(items);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//                }
-//                itemsAdapter.refresh(items);
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
 
     private void addButtonClick(final View v){
         //builder
@@ -228,7 +194,11 @@ public class PersonalPantryFragment extends Fragment {
                 EditText itemAmount = (EditText) dialogView.findViewById(R.id.add_item_amount);
                 EditText itemDate = (EditText) dialogView.findViewById(R.id.add_item_date);
                 add_item_name = itemName.getText().toString();
-                add_item_amount = Double.parseDouble(itemAmount.getText().toString());
+                try{
+                    add_item_amount = Double.parseDouble(itemAmount.getText().toString());
+                } catch (Exception e) {
+                    add_item_amount = 0.0;
+                }
                 add_item_date = itemDate.getText().toString();
 
 
@@ -252,8 +222,8 @@ public class PersonalPantryFragment extends Fragment {
                         .child(pantryID).child(getResources().getString(R.string.items)).setValue(myItems).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        items = itemsRetriever.retrievePantryItems();
-                        itemsAdapter.refresh(items);
+                        items = itemsRetriever.retrievePantryItems(pantryID, itemsAdapter);
+                        itemsAdapter.refresh(items.values());
                     }
                 });
 
