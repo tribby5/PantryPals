@@ -269,6 +269,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
                                         writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions, avatar);
 //                                      }
+                                        finish();
                                     }
                                 }
                             });
