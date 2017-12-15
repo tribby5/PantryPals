@@ -277,7 +277,7 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                 for (Recipe.Ingredient ingredient : ingredients) {
                                     boolean weHaveIt = false;
                                     for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                                        if (pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
+                                        if (pantry.getItems() != null && pantry.getItems().containsKey(itemSnapshot.getKey())) {      // if we have this item
                                             Item item = itemSnapshot.getValue(Item.class);
                                             String ingName = ingredient.getName().toLowerCase();
                                             String itemName = item.getName().toLowerCase();
