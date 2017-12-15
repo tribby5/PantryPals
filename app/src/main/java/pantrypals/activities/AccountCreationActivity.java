@@ -151,7 +151,7 @@ public class AccountCreationActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 Log.d("WORKS", "USER ID " + FirebaseAuth.getInstance().getCurrentUser().getUid());
                 Log.d("WORKS", "Successfully registered");
-                //log(FirebaseAnalytics.Event.SIGN_UP, mAuth.getCurrentUser().toString());
+                log(FirebaseAnalytics.Event.SIGN_UP, FirebaseAuth.getInstance().getCurrentUser().getUid());
                 Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(mainIntent);
             }
