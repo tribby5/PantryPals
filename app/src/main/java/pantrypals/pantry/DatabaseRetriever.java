@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import pantrypals.models.Item;
 import pantrypals.models.JointPantry;
+import pantrypals.models.Pantry;
 import pantrypals.models.User;
 
 /**
@@ -37,7 +38,7 @@ public class DatabaseRetriever {
         FirebaseDatabase.getInstance().getReference().child("pantries").child(pantryID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                JointPantry pantry = dataSnapshot.getValue(JointPantry.class);
+                Pantry pantry = dataSnapshot.getValue(Pantry.class);
                 if (pantry.getItems() != null) {
                     for (final String itemID : pantry.getItems().keySet()) {
                         itemsRef.child(itemID).addValueEventListener(new ValueEventListener() {
@@ -74,13 +75,13 @@ public class DatabaseRetriever {
         this.jPantries = new HashMap<>();
         final DatabaseReference pantriesRef = FirebaseDatabase.getInstance().getReference().child("pantries");
         final DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("userAccounts");
-        usersRef.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 if (user.getJointPantries() != null) {
                     for (final String jPantryID : user.getJointPantries().keySet()) {
-                        pantriesRef.child(jPantryID).addValueEventListener(new ValueEventListener() {
+                        pantriesRef.child(jPantryID).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 JointPantry jPantry = dataSnapshot.getValue(JointPantry.class);
