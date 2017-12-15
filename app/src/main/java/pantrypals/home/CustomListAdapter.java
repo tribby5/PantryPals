@@ -281,7 +281,10 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                             Item item = itemSnapshot.getValue(Item.class);
                                             String ingName = ingredient.getName().toLowerCase();
                                             String itemName = item.getName().toLowerCase();
-                                            if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
+                                            if (ingName.equals(itemName)) {
+                                                weHaveIt = true;
+                                                break;
+                                            } else if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
                                                 weHaveIt = true;
                                                 break;
                                             }
@@ -367,6 +370,10 @@ public class CustomListAdapter extends ArrayAdapter<Recipe> {
                                                                                 Map<String, Object> item = items.get(itemID);
                                                                                 String ingName = ingredient.getName().toLowerCase();
                                                                                 String itemName = ((String) item.get("name")).toLowerCase();
+                                                                                if (ingName.equals(itemName)) {
+                                                                                    ingredientOwned = true;
+                                                                                    break;
+                                                                                } else
                                                                                 if (!(ingName.equals("") || itemName.equals("")) && (ingName.contains(itemName) || itemName.contains(ingName))) {
                                                                                     ingredientOwned = true;
                                                                                     break;
