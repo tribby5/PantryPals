@@ -1,6 +1,9 @@
 package pantrypals.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,8 @@ import android.widget.Toast;
 
 import com.android.databaes.pantrypals.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.collect.Maps;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -25,6 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.wefika.flowlayout.FlowLayout;
 
 import java.util.HashMap;
@@ -36,6 +44,7 @@ import pantrypals.models.User;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class RegistrationActivity extends AppCompatActivity {
+    private static final int GALLERY_INTENT = 2;
 
     private static RegistrationActivity checkLogin;
     private FirebaseAuth mAuth;
@@ -43,9 +52,12 @@ public class RegistrationActivity extends AppCompatActivity {
     private FirebaseAnalytics mFirebaseAnalytics;
 
     private DatabaseReference mRef = FirebaseDatabase.getInstance().getReference();
+    private StorageReference mStorage;
+    private ProgressDialog mProgressDialog;
 
     private Map<String, Boolean> preferences = Maps.newHashMap();
     private Map<String, Boolean> restrictions = Maps.newHashMap();
+    private String avatar;
 
     //UI components
     private EditText newUserFirstName;
@@ -56,6 +68,8 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText newUserBio;
     private FlowLayout newUserPreferencesFlowLayout;
     private FlowLayout newUserRestrictionsFlowLayout;
+    private Button newUserAvatarButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +87,18 @@ public class RegistrationActivity extends AppCompatActivity {
         newUserBio = (EditText) findViewById(R.id.TFbio);
         newUserPreferencesFlowLayout = (FlowLayout) findViewById(R.id.reg_prefs_flow_layout);
         newUserRestrictionsFlowLayout = (FlowLayout) findViewById(R.id.reg_restrictions_flow_layout);
+        newUserAvatarButton = (Button) findViewById(R.id.uploadAvatarButton);
+        mStorage = FirebaseStorage.getInstance().getReference();
+        mProgressDialog = new ProgressDialog(this);
+        newUserAvatarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, GALLERY_INTENT);
+            }
+        });
+
 
         addPrefs();
         addRestrictions();
@@ -241,7 +267,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 });
                                         log(FirebaseAnalytics.Event.SIGN_UP, mAuth.getCurrentUser().toString());
                                         Toast.makeText(RegistrationActivity.this, getResources().getString(R.string.reg_confirmed), Toast.LENGTH_LONG).show();
-                                        writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions);
+                                        writeNewUser(user.getUid(), displayName, email, bio, preferences, restrictions, avatar);
 //                                      }
                                     }
                                 }
@@ -251,13 +277,14 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
-    private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions) {
+    private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions, String avatar) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
         user.setBio(bio);
         user.setPreferences(preferences);
         user.setRestrictions(restrictions);
+        user.setAvatar(avatar);
 
         //Creates personal pantry and return keys to store it with
         String pantryKey = createPersonalPantry();
@@ -287,6 +314,44 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_INTENT && resultCode == RESULT_OK) {
+            mProgressDialog.setMessage("Uploading image...");
+            mProgressDialog.show();
+            Uri uri = data.getData();
+            StorageReference filepath = mStorage.child("RecipeImages").child(uri.getLastPathSegment());
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    avatar = taskSnapshot.getDownloadUrl().toString();
+                    toastMessage("Image upload succeeded.");
+                    mProgressDialog.dismiss();
+
+                    // change the button text to uploaded
+                    changeUploadButtonText();
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    toastMessage("Image upload failed. Please try again.");
+                    mProgressDialog.dismiss();
+                }
+            });
+        }
+    }
+
+    private void changeUploadButtonText() {
+        newUserAvatarButton.setText("AVATAR UPLOADED");
+    }
+
+
+    private void toastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
 
     private void log(String eventType, String value) {
         Bundle bundle = new Bundle();
