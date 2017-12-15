@@ -5,8 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/account_creation"
     android:background="@color/colorPrimaryDark"
-    tools:context="pantrypals.auth.AccountCreationFragment">
+    tools:context="pantrypals.activities.AccountCreationActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -128,14 +129,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="36sp" />
 
-
-
             <Button
-                android:id="@+id/Bregister"
+                android:id="@+id/BCreate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/account_creation_button"
+                android:clickable="true"
                 android:textAlignment="center"
                 android:textColor="@color/colorWhite"
                 android:background="@color/colorAccentAlt"

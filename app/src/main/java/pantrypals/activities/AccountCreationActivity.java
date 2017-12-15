@@ -1,16 +1,17 @@
-package pantrypals.auth;
+package pantrypals.activities;
 
-
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.databaes.pantrypals.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.common.collect.Maps;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,11 +25,7 @@ import java.util.Map;
 import pantrypals.models.Pantry;
 import pantrypals.models.User;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AccountCreationFragment extends Fragment {
-
+public class AccountCreationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     //UI components
@@ -38,37 +35,24 @@ public class AccountCreationFragment extends Fragment {
     private EditText newUserPreferences;
     private EditText newUserRestrictions;
 
-
-    public AccountCreationFragment() {
-
-    }
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_account_creation);
 
+        newUserFirstName = (EditText) findViewById(R.id.TFnameFirst);
+        newUserLastName = (EditText) findViewById(R.id.TFnameLast);
+        newUserBio = (EditText) findViewById(R.id.TFbio);
+        newUserPreferences = (EditText) findViewById(R.id.TFpreferences);
+        newUserRestrictions = (EditText) findViewById(R.id.TFrestrictions);
+
+        setOnClick();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_user_account_creation, container, false);
-
-        newUserFirstName = (EditText) view.findViewById(R.id.TFnameFirst);
-        newUserLastName = (EditText) view.findViewById(R.id.TFnameLast);
-        newUserBio = (EditText) view.findViewById(R.id.TFbio);
-        newUserPreferences = (EditText) view.findViewById(R.id.TFpreferences);
-        newUserRestrictions = (EditText) view.findViewById(R.id.TFrestrictions);
-
-        setOnClick(view);
-
-        return view;
-    }
-
-    private void setOnClick(View view) {
-        Button Bregister = (Button) view.findViewById(R.id.Bregister);
+    private void setOnClick() {
+        Button Bregister = (Button) findViewById(R.id.BCreate);
         Bregister.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
 
@@ -111,6 +95,7 @@ public class AccountCreationFragment extends Fragment {
 
 
     private void writeNewUser(String userId, String name, String email, String bio, Map<String, Boolean> preferences, Map<String, Boolean> restrictions) {
+        Log.d("WORKS", "FIRING");
         User user = new User();
         user.setName(name);
         user.setEmail(email);
@@ -122,7 +107,15 @@ public class AccountCreationFragment extends Fragment {
         String pantryKey = createPersonalPantry();
         user.setPersonalPantry(pantryKey);
 
-        FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts)).child(userId).setValue(user);
+        FirebaseDatabase.getInstance().getReference().child(getResources().getString(R.string.userAccounts)).child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.d("WORKS", "USER ID " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                Log.d("WORKS", "Successfully registered");
+                Intent mainIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(mainIntent);
+            }
+        });
 
     }
 
@@ -141,5 +134,7 @@ public class AccountCreationFragment extends Fragment {
         //Returns pantry key
         return key;
     }
+
+
 
 }

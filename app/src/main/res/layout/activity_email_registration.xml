@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/frame_layout_master"
     android:background="@color/colorPrimaryDark"
     tools:context="pantrypals.activities.EmailRegistrationActivity">
+
 
     <ScrollView
         android:layout_width="match_parent"
